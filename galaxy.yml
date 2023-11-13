@@ -1,0 +1,43 @@
+---
+
+namespace: bodsch
+name: galaxy
+
+version: 0.0.1
+
+readme: README.md
+
+authors:
+  - Bodo Schulz (@bodsch)
+
+description: A collection of Ansible roles for the Grafana universe.
+
+license:
+  - Apache-2.0
+
+license_file: ''
+
+tags:
+  - monitoring
+  - grafana
+  - observa
+
+dependencies:
+  bodsch.core: ">=1.1.2"
+  bodsch.scm: "*"
+
+repository: https://github.com/bodsch/ansible-collection-grafana
+documentation: https://github.com/bodsch/ansible-collection-grafana/README.md
+homepage: https://github.com/bodsch/ansible-collection-grafana
+issues: https://github.com/bodsch/ansible-collection-grafana/issues
+
+build_ignore:
+  - "galaxy.yml"
+  - "*.pyc"
+  - "*.retry"
+  - ".ansible-lint"
+  - ".editorconfig"
+  - ".flake8"
+  - ".gitignore"
+  - ".yamllint"
+  - ".github"

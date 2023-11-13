@@ -1,0 +1,275 @@
+---
+
+- name: user and group handling
+  when:
+    - grafana_system_user != "root"
+  block:
+    - name: create grafana group
+      ansible.builtin.group:
+        name: "{{ grafana_system_group }}"
+        state: present
+        system: true
+
+    - name: create grafana user
+      ansible.builtin.user:
+        name: "{{ grafana_system_user }}"
+        groups: "{{ grafana_system_group }}"
+        append: true
+        shell: /usr/sbin/nologin
+        system: true
+        createhome: false
+        home: /nonexistent
+
+- name: create install directory
+  ansible.builtin.file:
+    path: "{{ grafana_install_path }}"
+    state: directory
+    owner: "{{ grafana_system_user }}"
+    group: "{{ grafana_system_group }}"
+    mode: 0755
+
+- name: create config directory
+  ansible.builtin.file:
+    state: directory
+    path: /etc/grafana
+    group: "{{ grafana_system_group }}"
+    mode: 0755
+
+- name: create grafana lib directory
+  ansible.builtin.file:
+    state: directory
+    path: "{{ grafana_data_dir }}/{{ item }}"
+    owner: "{{ grafana_system_user }}"
+    group: "{{ grafana_system_group }}"
+    mode: 0775
+  loop:
+    - alerting
+    - csv
+    - dashboards
+    - plugins
+    - png
+    - sessions
+    - storage
+
+- name: create grafana log directory
+  ansible.builtin.file:
+    state: directory
+    path: "{{ grafana_log_dir }}"
+    mode: 0755
+
+- name: detect installed grafana binary
+  ansible.builtin.stat:
+    path: "{{ grafana_install_path }}/bin/{{ grafana_release.binary }}"
+  register: stat_grafana_binary
+
+- name: detect activated grafana binary
+  ansible.builtin.stat:
+    path: /usr/sbin/{{ grafana_release.binary }}
+  register: stat_grafana_activated
+
+- name: define install and activate
+  ansible.builtin.set_fact:
+    grafana_must_be_install_or_activate: "{{
+      (stat_grafana_binary.stat is defined and not stat_grafana_binary.stat.exists | default('false')) or
+      not stat_grafana_activated.stat | bodsch.core.linked_version(install_path=grafana_install_path + '/bin', version=grafana_version)
+    }}"
+
+- name: install and activate grafana
+  when:
+    - grafana_must_be_install_or_activate | default('true')
+  block:
+    - name: propagate files
+      block:
+        - name: create remote temp directory
+          ansible.builtin.file:
+            path: "{{ grafana_remote_tmp_directory }}"
+            state: directory
+            mode: 0755
+          when:
+            - not grafana_direct_download
+
+        - name: propagate grafana archive
+          ansible.builtin.copy:
+            src: "{{ grafana_local_tmp_directory }}/{{ grafana_release.file }}"
+            dest: "{{ grafana_remote_tmp_directory }}"
+            mode: 0755
+            owner: "{{ grafana_system_user }}"
+            group: "{{ grafana_system_group }}"
+            remote_src: "{{ 'true' if grafana_direct_download else 'false' }}"
+
+        - name: extract grafana archive
+          become: true
+          ansible.builtin.unarchive:
+            src: "{{ grafana_remote_tmp_directory }}/{{ grafana_release.file }}"
+            dest: "{{ grafana_install_path }}"
+            copy: false
+            extra_opts:
+              - --strip-components=1
+          register: _extract_archive
+
+        - name: create link to working directory
+          ansible.builtin.file:
+            state: link
+            src: "{{ grafana_install_path }}"
+            dest: "{{ grafana_share_dir }}"
+            force: true
+            follow: false
+          notify:
+            - restart grafana
+
+        - name: find grafana binaries
+          ansible.builtin.find:
+            paths: "{{ grafana_install_path }}/bin/"
+            file_type: file
+            patterns:
+              - "grafana*"
+            recurse: false
+          register: found_binaries
+
+        - name: create link to binaries
+          ansible.builtin.file:
+            src: "{{ item }}"
+            dest: "/usr/sbin/{{ item | basename }}"
+            state: link
+            force: true
+            follow: false
+          loop: "{{ found_binaries.files | file_list | reject('search', 'md5') }}"
+          notify:
+            - restart grafana
+
+      rescue:
+        - name: delete install directory
+          ansible.builtin.file:
+            path: "{{ grafana_install_path }}"
+            state: absent
+
+        - name: exit with fail
+          ansible.builtin.fail:
+            msg: A serious error occurred during the installation of the binary.
+
+- name: find grafana provisioning
+  ansible.builtin.stat:
+    path: /etc/grafana/provisioning
+    get_checksum: false
+  register: _grafana_provisioning_dir
+  ignore_errors: true
+
+- name: copy sample provisioning configurations
+  ansible.builtin.copy:
+    src: "{{ grafana_install_path }}/conf/provisioning"
+    dest: /etc/grafana/
+    owner: root
+    group: "{{ grafana_system_group }}"
+    mode: 0755
+    force: true
+    remote_src: true
+  notify:
+    - reload grafana
+  when:
+    - _grafana_provisioning_dir is defined
+    - _grafana_provisioning_dir.stat is defined
+    - not _grafana_provisioning_dir.stat.exists | default('false')
+
+- name: systemd
+  when:
+    - ansible_service_mgr | lower == "systemd"
+  block:
+    - name: create grafana run configuration
+      ansible.builtin.template:
+        src: "default/grafana-server.j2"
+        dest: "{{ grafana_defaults_directory }}/grafana-server"
+        force: true
+        owner: root
+        group: "{{ grafana_system_group }}"
+        mode: 0644
+      notify:
+        - validate config
+        - reload grafana
+
+    - name: create systemd service unit
+      ansible.builtin.template:
+        src: "init/systemd/grafana-server.service.j2"
+        dest: "{{ systemd_lib_directory }}/grafana-server.service"
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - daemon-reload
+        - restart grafana
+
+- name: openrc
+  when:
+    - ansible_service_mgr | lower == "openrc"
+  block:
+    - name: create openrc service configuration
+      ansible.builtin.template:
+        src: "init/openrc/conf.d/grafana-server.j2"
+        dest: "/etc/conf.d/grafana-server"
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: create openrc init configuration
+      ansible.builtin.template:
+        src: "init/openrc/init.d/grafana-server.j2"
+        dest: "/etc/init.d/grafana-server"
+        owner: root
+        group: root
+        mode: 0750
+
+- name: create custom fact file
+  bodsch.core.facts:
+    name: grafana
+    facts:
+      edition: "{{ grafana_edition }}"
+      version: "{{ grafana_version }}"
+
+- name: python support
+  when:
+    - grafana_python_packages is defined
+    - grafana_python_packages | length > 0
+  block:
+    - name: create pip requirements file
+      bodsch.core.pip_requirements:
+        name: grafana
+        requirements: "{{ grafana_python_packages }}"
+      register: pip_requirements
+
+    - name: fail if pip not installed
+      ansible.builtin.fail:
+        msg: python pip is not installed
+      when:
+        - not pip_requirements.pip.present
+
+    - name: install python packages  # noqa no-handler
+      ansible.builtin.pip:
+        state: present
+        requirements: "{{ pip_requirements.requirements_file }}"
+        extra_args: "{{ grafana_python_extra_args | default([]) | bodsch.core.python_extra_args(python_version=ansible_python.version) | default(omit) }}"
+      register: pip_install
+      ignore_errors: false
+      no_log: true
+      when:
+        - pip_requirements.requirements_file is defined
+        - pip_requirements.changed
+
+    - name: failed
+      ansible.builtin.debug:
+        msg: "{{ pip_install.stdout }}"
+      when:
+        - pip_install.failed is defined
+        - pip_install.failed
+
+  rescue:
+    - name: remove pip requirements
+      bodsch.core.pip_requirements:
+        name: grafana
+        requirements: "{{ grafana_python_packages }}"
+        state: absent
+
+    - name: pip requirements installation failed
+      ansible.builtin.fail:
+        msg: "{{ pip_install.msg }}"
+      when:
+        - pip_install.failed
+...

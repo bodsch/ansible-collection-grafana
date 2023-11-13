@@ -1,0 +1,52 @@
+---
+
+- name: restart grafana
+  become: true
+  ansible.builtin.service:
+    name: grafana-server
+    state: restarted
+
+- name: reload grafana
+  become: true
+  ansible.builtin.service:
+    name: grafana-server
+    state: reloaded
+
+- name: validate config  # noqa no-changed-when
+  ansible.builtin.command: /bin/true
+
+- name: daemon-reload
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+  when:
+    - ansible_service_mgr | lower == "systemd"
+  notify:
+    - restart grafana
+
+- name: list service accounts files
+  run_once: true
+  ansible.builtin.debug:
+    msg: "{{ found_sa_keyfiles.files | file_list }}"
+  when:
+    - found_sa_keyfiles is defined
+    - found_sa_keyfiles.files is defined
+
+- name: list api key files
+  run_once: true
+  ansible.builtin.debug:
+    msg: "{{ found_api_keyfiles.files | file_list }}"
+  when:
+    - found_api_keyfiles is defined
+    - found_api_keyfiles.files is defined
+
+
+- name: information about grafana plugins
+  ansible.builtin.debug:
+    msg: "{{ install_plugins.msg }}"
+  when:
+    - install_plugins is defined
+    - install_plugins.msg is defined
+
+...

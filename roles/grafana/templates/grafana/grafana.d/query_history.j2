@@ -1,0 +1,7 @@
+{% if grafana_config_query_history is defined and
+      grafana_config_query_history | count > 0 and
+      grafana_config_query_history.enabled | bool %}
+
+[query_history]
+enabled                         = {{ grafana_config_query_history.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}

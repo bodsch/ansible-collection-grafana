@@ -1,0 +1,7 @@
+{% if grafana_config_profile is defined and
+      grafana_config_profile | count > 0 and
+      grafana_config_profile.enabled | bool %}
+
+[profile]
+enabled                         = {{ grafana_config_profile.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}

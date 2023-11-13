@@ -1,0 +1,17 @@
+{% if grafana_config_smtp.enabled is defined %}
+
+[smtp]
+enabled = {{ grafana_config_smtp.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if grafana_config_smtp.enabled %}
+;host = localhost:25
+;user =
+;password =
+;cert_file =
+;key_file =
+;skip_verify = false
+;from_address = admin@grafana.localhost
+;from_name = Grafana
+;ehlo_identity = dashboard.example.com
+;startTLS_policy = NoStartTLS
+  {% endif %}
+{% endif %}

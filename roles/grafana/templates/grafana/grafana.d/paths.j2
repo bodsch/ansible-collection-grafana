@@ -1,0 +1,22 @@
+
+[paths]
+{% if grafana_config_paths.data is defined and
+      grafana_config_paths.data | string | length > 0 %}
+data                            = {{ grafana_config_paths.data }}
+{% endif %}
+{% if grafana_config_paths.temp_data_lifetime is defined and
+      grafana_config_paths.temp_data_lifetime | string | length > 0 %}
+temp_data_lifetime              = {{ grafana_config_paths.temp_data_lifetime }}
+{% endif %}
+{% if grafana_config_paths.logs is defined and
+      grafana_config_paths.logs | string | length > 0 %}
+logs                            = {{ grafana_config_paths.logs }}
+{% endif %}
+{% if grafana_config_paths.plugins is defined and
+      grafana_config_paths.plugins | string | length > 0 %}
+plugins                         = {{ grafana_config_paths.plugins }}
+{% endif %}
+{% if grafana_config_paths.provisioning is defined and
+      grafana_config_paths.provisioning | string | length > 0 %}
+provisioning                    = {{ grafana_config_paths.provisioning }}
+{% endif %}

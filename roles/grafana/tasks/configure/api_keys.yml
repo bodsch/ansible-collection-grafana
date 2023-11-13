@@ -1,0 +1,64 @@
+---
+
+# TODO
+# https://grafana.com/docs/grafana/latest/developers/http_api/create-api-tokens-for-org/#how-to-create-a-new-organization-and-an-api-token
+
+- name: ensure grafana key directory exists
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.file:
+    path: "{{ grafana_api.store_directory }}/{{ inventory_hostname }}"
+    state: directory
+    mode: 0750
+
+- name: manage api keys
+  grafana_api_keys:
+    state: manage
+    grafana_url: "http://127.0.0.1:3000"
+    grafana_admin:
+      username: "{{ grafana_config_security.admin_user }}"
+      password: "{{ grafana_config_security.admin_password }}"
+    api_keys: "{{ grafana_api['keys'] }}"
+  no_log: true
+  register: manage_api_keys
+  when:
+    - grafana_api['keys'] is defined
+    - grafana_api['keys'] | default([]) | count > 0
+
+- name: save key files to ansible controller
+  become: true
+  ansible.builtin.fetch:
+    src: "{{ item.value.result.key_file }}"
+    dest: "{{ grafana_api.store_directory }}/{{ inventory_hostname }}/{{ item.value.result.key_file | basename }}"
+    flat: true
+    validate_checksum: false
+    mode: 0644
+  no_log: true
+  loop: "{{ manage_api_keys['result'] | dict2items }}"
+  loop_control:
+    label: "{{ grafana_api.store_directory }}/{{ inventory_hostname }}/{{ item.value.result.key_file | basename }}"
+  when:
+    - item.value.result is defined
+    - item.value.result.key is defined
+
+- name: list api key files
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.find:
+    paths: "{{ grafana_api.store_directory }}/{{ inventory_hostname }}/"
+    patterns:
+      - "api_*.key"
+    recurse: false
+    file_type: file
+  register: found_api_keyfiles
+  notify:
+    - list api key files
+
+# - name: list api key files
+#   run_once: true
+#   ansible.builtin.debug:
+#     msg: "{{ found_api_keyfiles.files | file_list }}"
+
+...

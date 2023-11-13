@@ -1,0 +1,99 @@
+{% if grafana_config_security is defined %}
+
+[security]
+  {% if grafana_config_security.disable_initial_admin_creation is defined %}
+disable_initial_admin_creation  = {{ grafana_config_security.disable_initial_admin_creation | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_security.admin_user is defined and
+        grafana_config_security.admin_user | string | length > 0 %}
+admin_user                      = {{ grafana_config_security.admin_user }}
+  {% endif %}
+  {% if grafana_config_security.admin_password is defined and
+        grafana_config_security.admin_password | string | length > 0 %}
+admin_password                  = {{ grafana_config_security.admin_password }}
+  {% endif %}
+  {% if grafana_config_security.secret_key is defined and
+        grafana_config_security.secret_key | string | length > 0 %}
+secret_key                      = {{ grafana_config_security.secret_key }}
+  {% endif %}
+  {% if grafana_config_security.encryption_provider is defined and
+        grafana_config_security.encryption_provider | string | length > 0 %}
+encryption_provider             = {{ grafana_config_security.encryption_provider }}
+  {% endif %}
+  {% if grafana_edition == "enterprise" %}
+    {% if grafana_config_security.available_encryption_providers is defined and
+          grafana_config_security.available_encryption_providers | count > 0 %}
+available_encryption_providers  = {{ grafana_config_security.available_encryption_providers | join(' ') }}
+    {% endif %}
+  {% endif %}
+  {% if grafana_config_security.disable_gravatar is defined %}
+disable_gravatar                = {{ grafana_config_security.disable_gravatar | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_security.data_source_proxy_whitelist is defined and
+        grafana_config_security.data_source_proxy_whitelist | count > 0 %}
+data_source_proxy_whitelist     = {{ grafana_config_security.data_source_proxy_whitelist | join(' ') }}
+  {% endif %}
+  {% if grafana_config_security.disable_brute_force_login_protection is defined %}
+disable_brute_force_login_protection = {{ grafana_config_security.disable_brute_force_login_protection | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_security.cookie_secure is defined %}
+cookie_secure                   = {{ grafana_config_security.cookie_secure | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_security.cookie_samesite is defined and
+        grafana_config_security.cookie_samesite in ["lax", "strict", "none", "disabled"] %}
+cookie_samesite                 = {{ grafana_config_security.cookie_samesite }}
+  {%endif %}
+  {% if grafana_config_security.allow_embedding is defined %}
+allow_embedding                 = {{ grafana_config_security.allow_embedding | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_security.strict_transport_security is defined %}
+strict_transport_security       = {{ grafana_config_security.strict_transport_security | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% if grafana_config_security.strict_transport_security_max_age_seconds and
+          grafana_config_security.strict_transport_security_max_age_seconds | string | length > 0 %}
+strict_transport_security_max_age_seconds = {{ grafana_config_security.strict_transport_security_max_age_seconds }}
+    {% endif %}
+    {% if grafana_config_security.strict_transport_security_preload %}
+strict_transport_security_preload = {{ grafana_config_security.strict_transport_security_preload | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if grafana_config_security.strict_transport_security_subdomains %}
+strict_transport_security_subdomains = {{ grafana_config_security.strict_transport_security_subdomains | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+  {% endif %}
+  {% if grafana_config_security.x_content_type_options %}
+x_content_type_options          = {{ grafana_config_security.x_content_type_options | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_security.x_xss_protection %}
+x_xss_protection                = {{ grafana_config_security.x_xss_protection | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_security.content_security_policy %}
+content_security_policy         = {{ grafana_config_security.content_security_policy | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% if grafana_config_security.content_security_policy_template is defined and
+          grafana_config_security.content_security_policy_template | count > 0 %}
+      {% set policy = grafana_config_security.content_security_policy_template | content_security_policy() %}
+content_security_policy_template = """{{ policy }}"""
+    {% endif %}
+  {% endif %}
+  {% if grafana_config_security.angular_support_enabled is defined %}
+angular_support_enabled         = {{ grafana_config_security.angular_support_enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_security.csrf_trusted_origins is defined and
+        grafana_config_security.csrf_trusted_origins | count %}
+csrf_trusted_origins            = {{ grafana_config_security.csrf_trusted_origins | join(' ') }}
+  {% endif %}
+  {% if grafana_config_security.csrf_additional_headers is defined and
+        grafana_config_security.csrf_additional_headers | count > 0 %}
+csrf_additional_headers         = {{ grafana_config_security.csrf_additional_headers | join(' ')  }}
+  {% endif %}
+
+  {% if grafana_config_security.encryption is defined %}
+[security.encryption]
+    {% if grafana_config_security.encryption.data_keys_cache_ttl is defined and
+          grafana_config_security.encryption.data_keys_cache_ttl | string | length > 0 %}
+data_keys_cache_ttl             = {{ grafana_config_security.encryption.data_keys_cache_ttl }}
+    {% endif %}
+    {% if grafana_config_security.encryption.data_keys_cache_cleanup_interval is defined and
+          grafana_config_security.encryption.data_keys_cache_cleanup_interval | string | length > 0 %}
+data_keys_cache_cleanup_interval = {{ grafana_config_security.encryption.data_keys_cache_cleanup_interval }}
+    {% endif %}
+  {% endif %}
+{% endif %}

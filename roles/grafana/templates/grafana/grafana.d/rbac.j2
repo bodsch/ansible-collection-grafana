@@ -1,0 +1,7 @@
+{% if grafana_config_rbac is defined and
+      grafana_config_rbac | count > 0 and
+      grafana_config_rbac.permission_cache | bool %}
+
+[rbac]
+permission_cache                = {{ grafana_config_rbac.permission_cache | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}

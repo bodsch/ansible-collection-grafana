@@ -1,0 +1,7 @@
+{% if grafana_config_help is defined and
+      grafana_config_help | count > 0 and
+      grafana_config_help.enabled | bool %}
+
+[help]
+enabled                         = {{ grafana_config_help.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}

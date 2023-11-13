@@ -1,0 +1,103 @@
+---
+
+# - name: validate variables
+#   ansible.builtin.fail:
+#     msg: "'grafana_datasources' should be a list!\nPlease update your configuration."
+#   when:
+#     - grafana_datasources | bodsch.core.type != "list"
+
+- name: ensure datasources are present (without provisioning)
+  community.grafana.grafana_datasource:
+    name: "{{ item.key }}"
+    state: "{{ item.value.state | default('present') }}"
+    # grafana
+    grafana_url: http://127.0.0.1:3000
+    grafana_user: "{{ grafana_config_security.admin_user }}"
+    grafana_password: "{{ grafana_config_security.admin_password }}"
+    grafana_api_key: "{{ grafana_config_security.api_key | default(omit) }}"
+    # -------------------------------------------------------------------
+    # grafana_security: "{{ item.value.user | default(omit) }}"
+    #url: "{{ item.value.url | default('http://127.0.0.1') }}"
+    #url_password: "{{ item.value.url_password | default(omit) }}"
+    #url_username: "{{ item.value.url_username | default(omit) }}"
+    additional_json_data: "{{ item.value.json_data | default({}) }}"
+    # Defined data is used for datasource secureJsonData
+    # https://docs.ansible.com/ansible/latest/collections/community/grafana/grafana_datasource_module.html#parameter-additional_secure_json_data
+    additional_secure_json_data: "{{ item.value.json_secure_data | default({}) }}"
+    # AWS ...
+    # aws_access_key: "{{ item.value.aws_access_key | default(omit) }}"
+    # aws_assume_role_arn: ""
+    # aws_auth_type: "{{ item.value.aws_auth_type | default(omit) }}"
+    # aws_credentials_profile: "{{ item.value.aws_credentials_profile | default(omit) }}"
+    # aws_custom_metrics_namespaces: "{{ item.value.aws_custom_metrics_namespaces | default(omit) }}"
+    # aws_default_region: "{{ item.value.aws_default_region | default(omit) }}"
+    # aws_secret_key: "{{ item.value.aws_secret_key | default(omit) }}"
+    # -------------------------------------------------------------------
+    # azure ...
+    # azure_client: ""
+    # azure_cloud: ""
+    # azure_secret: ""
+    # azure_tenant: ""
+    # -------------------------------------------------------------------
+    # basic auth ...
+    basic_auth_password: "{{ item.value.basic_auth.password | default(omit) }}"
+    basic_auth_user: "{{ item.value.basic_auth.username | default(omit) }}"
+    # -------------------------------------------------------------------
+    # client_cert: ""
+    # client_key: ""
+    database: "{{ item.value.database | default(omit) }}"
+    # datasource ...
+    access: "{{ item.value.datasource.access | default(omit) }}"
+    ds_type: "{{ item.value.datasource.type }}"
+    ds_url: "{{ item.value.datasource.url }}"
+    # -------------------------------------------------------------------
+    # elasticsearch
+    # enforce_secure_data: ""
+    # es_version: ""
+    # interval: ""
+    # max_concurrent_shard_requests: ""
+    # time_field: ""
+    # time_interval: ""
+    # -------------------------------------------------------------------
+    is_default: "{{ item.value.default | default(omit) }}"
+    org_id: "{{ item.value.org_id | default('1') | int }}"
+    password: "{{ item.value.password | default(omit) }}"
+    # sslmode: ""
+    # tls_ca_cert: ""
+    # tls_client_cert: ""
+    # tls_client_key: ""
+    # tls_skip_verify: ""
+    use_proxy: "{{ item.value.use_proxy | default('true') | bool }}"
+    user: "{{ item.value.user | default(omit) }}"
+    # validate_certs: ""
+    with_credentials: "{{ item.value.with_credentials | default('false') | bool }}"
+    # opentsdb ...
+    # tsdb_resolution: ""
+    # tsdb_version: ""
+    # -------------------------------------------------------------------
+    # zabbix ...
+    # trends: ""
+    # zabbix_password: ""
+    # zabbix_user: ""
+    # -------------------------------------------------------------------
+  loop: "{{ grafana_datasources | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}, type {{ item.value.datasource.type }}"
+  when:
+    - not grafana_provisioning.enabled | default('true')
+
+- name: create or update datasources file (provisioning)
+  become: true
+  ansible.builtin.template:
+    src: grafana/datasources/datasource.yml.j2
+    dest: "/etc/grafana/provisioning/datasources/ansible.yaml"
+    backup: false
+    owner: root
+    group: grafana
+    mode: 0640
+  notify:
+    - restart grafana
+  when:
+    - grafana_provisioning.enabled | default('true')
+
+...

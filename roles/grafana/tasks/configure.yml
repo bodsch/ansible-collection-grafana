@@ -1,0 +1,83 @@
+---
+
+- name: ensure that {{ grafana_config_dir }} exists
+  ansible.builtin.file:
+    state: directory
+    path: "{{ grafana_config_dir }}"
+    owner: root
+    group: "{{ grafana_system_group }}"
+    mode: 0755
+
+- name: create grafana.ini
+  ansible.builtin.template:
+    src: "grafana/grafana.ini.j2"
+    dest: "{{ grafana_config_dir }}/grafana.ini"
+    force: true
+    owner: root
+    group: "{{ grafana_system_group }}"
+    mode: 0640
+  notify:
+    - validate config
+    - restart grafana
+
+- name: create ldap.toml
+  ansible.builtin.template:
+    src: "grafana/ldap.toml.j2"
+    dest: "{{ grafana_config_dir }}/ldap.toml"
+    force: true
+    owner: root
+    group: "{{ grafana_system_group }}"
+    mode: 0640
+  when:
+    - grafana_config_auth is defined
+    - grafana_config_auth.ldap is defined
+    - grafana_config_auth.ldap.enabled | default('false') | bool
+  notify:
+    - validate config
+    - restart grafana
+
+- name: flush ansible handlers to start grafana-server
+  ansible.builtin.meta: flush_handlers
+
+- name: ensure grafana is started
+  become: true
+  ansible.builtin.service:
+    name: grafana-server
+    state: started
+
+- name: check if grafana-server are available
+  ansible.builtin.wait_for:
+    path: "{{ grafana_pidfile }}"
+    state: present
+    delay: 2
+    msg: "Timeout to find {{ grafana_pidfile }}"
+  ignore_errors: false
+
+- name: manage grafana API keys
+  ansible.builtin.include_tasks: configure/api_keys.yml
+  when:
+    - grafana_api is defined
+    - grafana_api.keys is defined
+
+- name: manage grafana service accounts
+  ansible.builtin.include_tasks: configure/service_accounts.yml
+  when:
+    - grafana_service_accounts is defined
+    - grafana_service_accounts.accounts is defined
+
+- name: manage grafana plugins
+  ansible.builtin.include_tasks: configure/plugins.yml
+  when:
+    - grafana_plugins | default([]) | count > 0
+
+# - name: notifications
+#   include_tasks: configure/notifications.yml
+#   when:
+#     - grafana_alert_notifications | default([]) | count > 0
+
+- name: manage grafana datasources
+  ansible.builtin.include_tasks: configure/datasources.yml
+  when:
+    - grafana_datasources | default({}) | count > 0
+
+...

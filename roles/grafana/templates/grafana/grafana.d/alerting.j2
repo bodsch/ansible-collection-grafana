@@ -1,0 +1,50 @@
+{% if grafana_config_alerting.enabled is defined  and
+      grafana_config_alerting | count > 0 and
+      grafana_config_alerting.enabled | bool %}
+
+[alerting]
+enabled                         = {{ grafana_config_alerting.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if grafana_config_alerting.enabled %}
+    {% if grafana_config_alerting.execute_alerts is defined %}
+execute_alerts                  = {{ grafana_config_alerting.execute_alerts | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if grafana_config_alerting.error_or_timeout is defined and
+          grafana_config_alerting.error_or_timeout | string | length > 0 and
+          grafana_config_alerting.error_or_timeout in ["alerting", "keep_state"] %}
+error_or_timeout                = {{ grafana_config_alerting.error_or_timeout }}
+    {% endif %}
+    {% if grafana_config_alerting.nodata_or_nullvalues is defined and
+          grafana_config_alerting.nodata_or_nullvalues | string | length > 0 and
+          grafana_config_alerting.nodata_or_nullvalues in ["alerting", "no_data", "keep_state", "ok"] %}
+nodata_or_nullvalues            = {{ grafana_config_alerting.nodata_or_nullvalues }}
+    {% endif %}
+    {% if grafana_config_alerting.concurrent_render_limit is defined and
+          grafana_config_alerting.concurrent_render_limit | string | length > 0 %}
+concurrent_render_limit         = {{ grafana_config_alerting.concurrent_render_limit }}
+    {% endif %}
+    {% if grafana_config_alerting.evaluation_timeout_seconds is defined and
+          grafana_config_alerting.evaluation_timeout_seconds | string | length > 0 %}
+evaluation_timeout_seconds      = {{ grafana_config_alerting.evaluation_timeout_seconds }}
+    {% endif %}
+    {% if grafana_config_alerting.notification_timeout_seconds is defined and
+          grafana_config_alerting.notification_timeout_seconds | string | length > 0 %}
+notification_timeout_seconds    = {{ grafana_config_alerting.notification_timeout_seconds }}
+    {% endif %}
+    {% if grafana_config_alerting.max_attempts is defined and
+          grafana_config_alerting.max_attempts | string | length > 0 %}
+max_attempts                    = {{ grafana_config_alerting.max_attempts }}
+    {% endif %}
+    {% if grafana_config_alerting.min_interval_seconds is defined and
+          grafana_config_alerting.min_interval_seconds | string | length > 0 %}
+min_interval_seconds            = {{ grafana_config_alerting.min_interval_seconds }}
+    {% endif %}
+    {% if grafana_config_alerting.max_annotation_age is defined and
+          grafana_config_alerting.max_annotation_age | string | length > 0 %}
+max_annotation_age              = {{ grafana_config_alerting.max_annotation_age }}
+    {% endif %}
+    {% if grafana_config_alerting.max_annotations_to_keep is defined and
+          grafana_config_alerting.max_annotations_to_keep | string | length > 0 %}
+max_annotations_to_keep         = {{ grafana_config_alerting.max_annotations_to_keep }}
+    {% endif %}
+  {% endif %}
+{% endif %}

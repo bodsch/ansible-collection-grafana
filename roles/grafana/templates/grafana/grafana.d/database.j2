@@ -1,0 +1,92 @@
+{% if grafana_config_database is defined %}
+
+[database]
+  {% if grafana_config_database.type is defined and
+        grafana_config_database.type | string | length > 0 and
+        grafana_config_database.type in ["sqlite3", "mysql", "postgres"] %}
+type                            = {{ grafana_config_database.type }}
+  {% endif %}
+  {% if grafana_config_database.type == "sqlite3" %}
+    {% if grafana_config_database.path is defined and
+          grafana_config_database.path | string | length > 0 %}
+path                            = {{ grafana_config_database.path }}
+    {% endif %}
+    {% if grafana_config_database.cache_mode is defined and
+          grafana_config_database.cache_mode | string | length > 0 and
+          grafana_config_database.cache_mode in ["private", "shared"] %}
+cache_mode                      = {{ grafana_config_database.cache_mode }}
+    {% endif %}
+  {% endif %}
+  {% if grafana_config_database.type in ["mysql", "postgres"] %}
+    {% if grafana_config_database.host is defined and
+          grafana_config_database.host | string | length > 0 %}
+host                            = {{ grafana_config_database.host }}
+    {% endif %}
+    {% if grafana_config_database.name is defined and
+          grafana_config_database.name | string | length > 0 %}
+name                            = {{ grafana_config_database.name }}
+    {% if grafana_config_database.user is defined and
+          grafana_config_database.user | string | length > 0 %}
+    {% endif %}
+user                            = {{ grafana_config_database.user }}
+    {% endif %}
+    {% if grafana_config_database.password is defined and
+          grafana_config_database.password | string | length > 0 %}
+password                        = {{ grafana_config_database.password }}
+    {% endif %}
+    {% if grafana_config_database.url is defined and
+          grafana_config_database.url | string | length > 0 %}
+url                             = {{ grafana_config_database.url }}
+    {% endif %}
+    {% if grafana_config_database.type == "postgres" %}
+      {% if grafana_config_database.ssl_mode is defined and
+            grafana_config_database.ssl_mode | string | length > 0 and
+            grafana_config_database.ssl_mode in ["disable", "require", "verify-full"] %}
+ssl_mode                        = {{ grafana_config_database.ssl_mode }}
+      {% endif %}
+    {% endif %}
+    {% if grafana_config_database.type == "mysql" %}
+      {% if grafana_config_database.isolation_level is defined and
+            grafana_config_database.isolation_level | string | length > 0 and
+            grafana_config_database.isolation_level | lower in ["read-uncommitted", "read-committed", "repeatable-read", "serializable" ] %}
+isolation_level                 = {{ grafana_config_database.isolation_level | upper }}
+      {% endif %}
+    {% endif %}
+    {% if grafana_config_database.ca_cert_path is defined and
+          grafana_config_database.ca_cert_path | string | length > 0 %}
+ca_cert_path                    = {{ grafana_config_database.ca_cert_path }}
+    {% endif %}
+    {% if grafana_config_database.client_key_path is defined and
+          grafana_config_database.client_key_path | string | length > 0 %}
+client_key_path                 = {{ grafana_config_database.client_key_path }}
+    {% endif %}
+    {% if grafana_config_database.client_cert_path is defined and
+          grafana_config_database.client_cert_path | string | length > 0 %}
+client_cert_path                = {{ grafana_config_database.client_cert_path }}
+    {% endif %}
+    {% if grafana_config_database.server_cert_name is defined and
+          grafana_config_database.server_cert_name | string | length > 0 %}
+server_cert_name                = {{ grafana_config_database.server_cert_name }}
+    {% endif %}
+  {% endif %}
+  {% if grafana_config_database.max_idle_conn is defined and
+        grafana_config_database.max_idle_conn | string | length > 0 %}
+max_idle_conn                   = {{ grafana_config_database.max_idle_conn }}
+  {% endif %}
+  {% if grafana_config_database.max_open_conn is defined and
+        grafana_config_database.max_open_conn | string | length > 0 %}
+max_open_conn                   = {{ grafana_config_database.max_open_conn }}
+  {% endif %}
+  {% if grafana_config_database.conn_max_lifetime is defined and
+        grafana_config_database.conn_max_lifetime | string | length > 0 %}
+conn_max_lifetime               = {{ grafana_config_database.conn_max_lifetime }}
+  {% endif %}
+  {% if grafana_config_database.log_queries is defined and
+        grafana_config_database.log_queries | string | length > 0 %}
+log_queries                     = {{ grafana_config_database.log_queries | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_database.locking_attempt_timeout_sec is defined and
+        grafana_config_database.locking_attempt_timeout_sec | string | length > 0 %}
+locking_attempt_timeout_sec     = {{ grafana_config_database.locking_attempt_timeout_sec }}
+  {% endif %}
+{% endif %}

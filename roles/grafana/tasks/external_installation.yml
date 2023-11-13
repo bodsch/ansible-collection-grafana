@@ -1,0 +1,63 @@
+---
+
+- name: detect our installation path '{{ grafana_install_path | dirname }}'
+  ansible.builtin.stat:
+    path: "{{ grafana_install_path | dirname }}"
+    get_checksum: false
+  register: stat_grafana_path
+  ignore_errors: true
+
+- name: detect old installation
+  ansible.builtin.stat:
+    path: /usr/sbin/grafana-server
+    get_checksum: false
+  register: stat_old_grafana_path
+  ignore_errors: true
+
+- name: detect if this an upgrade
+  ansible.builtin.set_fact:
+    grafana_upgrade: "{{ stat_grafana_path | upgrade(stat_old_grafana_path) }}"
+
+- name: old installation
+  when:
+    - grafana_upgrade
+  block:
+    - name: stop old service
+      ansible.builtin.service:
+        name: grafana-server
+        state: stopped
+        enabled: false
+      notify:
+        - daemon-reload
+
+    - name: uninstall old grafana installation
+      ansible.builtin.package:
+        name: grafana
+        state: absent
+
+    - name: remove installed systemd unit
+      ansible.builtin.file:
+        state: absent
+        path: "{{ item }}"
+      loop:
+        - /etc/systemd/system/grafana-server.service
+        - /usr/lib/systemd/system/grafana-server.service
+
+    - name: remove installed grafana
+      ansible.builtin.file:
+        state: absent
+        path: "{{ stat_grafana_path.stat.path }}"
+      when:
+        - stat_grafana_path.stat.path is defined
+        - stat_grafana_path.stat.path | string | length > 0
+
+- name: remove grafana apt repository
+  ansible.builtin.apt_repository:
+    repo: deb https://packages.grafana.com/oss/deb stable main
+    state: absent
+    update_cache: true
+  when:
+    - ansible_pkg_mgr == "apt"
+
+- name: flush handlers
+  ansible.builtin.meta: flush_handlers

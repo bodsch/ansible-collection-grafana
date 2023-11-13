@@ -1,0 +1,76 @@
+{% if grafana_config_plugin is defined and
+      grafana_config_plugin | count > 0 %}
+  {% if grafana_config_plugin.grafana_image_renderer is defined and
+        grafana_config_plugin.grafana_image_renderer | count > 0 %}
+
+[plugin.grafana-image-renderer]
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.timezone is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.timezone | string | length > 0 %}
+rendering_timezone              = {{ grafana_config_plugin.grafana_image_renderer.rendering.timezone }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.language is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.language | string | length > 0 %}
+rendering_language              = {{ grafana_config_plugin.grafana_image_renderer.rendering.language }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.viewport.device_scale_factor is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.viewport.device_scale_factor | string | length > 0 %}
+rendering_viewport_device_scale_factor = {{ grafana_config_plugin.grafana_image_renderer.rendering.viewport.device_scale_factor }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.ignore_https_errors is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.ignore_https_errors | string | length > 0 %}
+rendering_ignore_https_errors   = {{ grafana_config_plugin.grafana_image_renderer.rendering.ignore_https_errors }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.verbose_logging is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.verbose_logging | string | length > 0 %}
+rendering_verbose_logging       = {{ grafana_config_plugin.grafana_image_renderer.rendering.verbose_logging }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.dumpio is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.dumpio | string | length > 0 %}
+rendering_dumpio                = {{ grafana_config_plugin.grafana_image_renderer.rendering.dumpio }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.args is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.args | count > 0 %}
+rendering_args                  = {{ grafana_config_plugin.grafana_image_renderer.rendering.args | join(', ') }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.chrome_bin is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.chrome_bin | string | length > 0 %}
+rendering_chrome_bin            = {{ grafana_config_plugin.grafana_image_renderer.rendering.chrome_bin }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.mode is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.mode | string | length > 0 %}
+rendering_mode                  = {{ grafana_config_plugin.grafana_image_renderer.rendering.mode }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.clustering.mode is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.clustering.mode | string | length > 0 %}
+rendering_clustering_mode       = {{ grafana_config_plugin.grafana_image_renderer.rendering.clustering.mode }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.clustering.max_concurrency is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.clustering.max_concurrency | string | length > 0 %}
+rendering_clustering_max_concurrency = {{ grafana_config_plugin.grafana_image_renderer.rendering.clustering.max_concurrency }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.clustering.timeout is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.clustering.timeout | string | length > 0 %}
+rendering_clustering_timeout    = {{ grafana_config_plugin.grafana_image_renderer.rendering.clustering.timeout }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.viewport.max_width is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.viewport.max_width | string | length > 0 %}
+rendering_viewport_max_width    = {{ grafana_config_plugin.grafana_image_renderer.rendering.viewport.max_width }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.viewport.max_height is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.viewport.max_height | string | length > 0 %}
+rendering_viewport_max_height   = {{ grafana_config_plugin.grafana_image_renderer.rendering.viewport.max_height }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.rendering.viewport.max_device_scale_factor is defined and
+          grafana_config_plugin.grafana_image_renderer.rendering.viewport.max_device_scale_factor | string | length > 0 %}
+rendering_viewport_max_device_scale_factor = {{ grafana_config_plugin.grafana_image_renderer.rendering.viewport.max_device_scale_factor }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.grpc.host is defined and
+          grafana_config_plugin.grafana_image_renderer.grpc.host | string | length > 0 %}
+grpc_host                       = {{ grafana_config_plugin.grafana_image_renderer.grpc.host }}
+    {% endif %}
+    {% if grafana_config_plugin.grafana_image_renderer.grpc.port is defined and
+          grafana_config_plugin.grafana_image_renderer.grpc.port | string | length > 0 %}
+grpc_port                       = {{ grafana_config_plugin.grafana_image_renderer.grpc.port }}
+    {% endif %}
+  {% endif %}
+{% endif %}

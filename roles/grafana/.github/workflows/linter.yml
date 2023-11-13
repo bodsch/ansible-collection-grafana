@@ -1,0 +1,81 @@
+---
+
+name: code linter
+
+on:
+  schedule:
+    - cron: "0 4 * * 0"
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+  push:
+    branches:
+      - 'main'
+      - 'feature/**'
+      - '!doc/**'
+    paths:
+      - "!Makefile"
+      - "!README.md"
+      - "tasks/**"
+  pull_request:
+    branches:
+      - 'main'
+      - 'feature/**'
+      - '!doc/**'
+    paths:
+      - "!Makefile"
+      - "!README.md"
+      - "tasks/**"
+
+defaults:
+  run:
+    working-directory: 'ansible-grafana'
+
+jobs:
+  lint:
+    name: "linting with python ${{ matrix.python_version }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python_version:
+          - "3.11.3"
+
+    steps:
+      - name: 🛎 Checkout
+        uses: actions/checkout@v3
+        with:
+          path: 'ansible-grafana'
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: 🐍 set up python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "${{ matrix.python_version }}"
+
+      - name: install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r test-requirements.txt
+
+      - name: flake8
+        run: |
+          flake8 .
+
+      - name: yamllint
+        run: |
+          yamllint .
+
+      - name: ansible-lint
+        run: |
+          ansible-lint .
+
+...

@@ -1,0 +1,13 @@
+---
+
+- name: restart grafana if needed
+  ansible.builtin.meta: flush_handlers
+
+- name: ensure grafana is enabled on boot
+  become: true
+  ansible.builtin.service:
+    name: grafana-server
+    enabled: true
+    state: started
+
+...

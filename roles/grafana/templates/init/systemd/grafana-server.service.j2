@@ -1,0 +1,57 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description             = grafana server
+Documentation           = http://docs.grafana.org
+Wants                   = network-online.target
+After                   = network-online.target
+After                   = postgresql.service mariadb.service mysql.service
+
+[Service]
+Type                    = simple
+Environment             = "GOMAXPROCS={{ ansible_processor_vcpus | default(ansible_processor_count) }}"
+EnvironmentFile         = {{ grafana_defaults_directory }}/grafana-server
+
+User                    = {{ grafana_system_user }}
+Group                   = {{ grafana_system_group }}
+
+WorkingDirectory        = {{ grafana_share_dir }}
+RuntimeDirectory        = grafana
+RuntimeDirectoryMode    = 0750
+
+ExecReload              = /bin/kill -HUP $MAINPID
+ExecStart               = /usr/sbin/grafana-server $OPTIONS
+
+LimitNOFILE             = 10000
+SyslogIdentifier        = grafana-server
+Restart                 = on-failure
+
+TimeoutStopSec          = 20
+CapabilityBoundingSet   =
+DeviceAllow             =
+LockPersonality         = true
+MemoryDenyWriteExecute  = false
+NoNewPrivileges         = true
+
+PrivateDevices          = true
+PrivateTmp              = true
+ProtectClock            = true
+ProtectControlGroups    = true
+ProtectHome             = true
+ProtectHostname         = true
+ProtectKernelLogs       = true
+ProtectKernelModules    = true
+ProtectKernelTunables   = true
+ProtectProc             = invisible
+ProtectSystem           = full
+
+RemoveIPC               = true
+RestrictAddressFamilies = AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces      = true
+RestrictRealtime        = true
+RestrictSUIDSGID        = true
+SystemCallArchitectures = native
+
+[Install]
+Alias                   = grafana.service
+WantedBy                = multi-user.target

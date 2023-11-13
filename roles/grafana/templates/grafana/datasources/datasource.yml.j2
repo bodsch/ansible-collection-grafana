@@ -1,0 +1,110 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+{% set data, remove_ds = grafana_datasources | absent_datasources %}
+---
+# config file version
+apiVersion: 1
+
+# list of datasources that should be deleted from the database
+{% if remove_ds is defined and
+      remove_ds | count > 0 %}
+deleteDatasources:
+  {% for datasource in remove_ds %}
+  - name: {{ datasource.name }}
+    {% if datasource.org_id is defined and
+          datasource.org_id | string | length > 0 %}
+    orgId: {{ datasource.org_id }}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% if grafana_datasources is defined %}
+datasources:
+  {% for datasource, values in grafana_datasources.items() %}
+    {% if values.datasource.type in ["influxdb", "prometheus", "graphite", "loki"] %}
+  - name: {{ datasource }}
+    editable: true
+    version: 1
+    type: {{ values.datasource.type }}
+      {% if values.use_proxy is defined %}
+    proxy: "{{ item.value.use_proxy | default('true') | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}"
+      {% endif %}
+    url: {{ values.datasource.url }}
+      {% if values.datasource.proxy is defined %}
+    proxy: {{ values.datasource.proxy | default('false') | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+      {% endif %}
+      {% if values.org_id is defined %}
+    orgId: {{ values.org_id }}
+      {% endif %}
+      {% if values.user is defined %}
+    user: {{ values.user }}
+      {% endif %}
+      {% if values.database is defined %}
+    database: {{ values.database }}
+      {% endif %}
+      {% if values.basic_auth is defined and
+            values.basic_auth.username is defined and
+            values.basic_auth.username | string | length > 0 and
+            values.basic_auth.password is defined and
+            values.basic_auth.password | string | length > 0 %}
+    basicAuth: true
+    basicAuthUser: {{ values.basic_auth.username }}
+    basicAuthPass: {{ values.basic_auth.password }}
+      {% endif %}
+      {% if values.default is defined %}
+    isDefault: {{ values.default | default('false') | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+      {% endif %}
+      {% if values.json_data is defined %}
+    jsonData:
+      {{ values.json_data | to_nice_yaml | indent(6, False) }}
+      {% endif %}
+      {% if values.json_secure_data is defined %}
+    secureJsonData:
+      {{ values.json_secure_data | to_nice_yaml | indent(6, False) }}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{#
+# # list of datasources to insert/update depending
+# # on what's available in the database
+#datasources:
+#   # <string, required> name of the datasource. Required
+# - name: Graphite
+#   # <string, required> datasource type. Required
+#   type: graphite
+#   # <string, required> access mode. direct or proxy. Required
+#   access: proxy
+#   # <int> org id. will default to orgId 1 if not specified
+#   orgId: 1
+#   # <string> url
+#   url: http://localhost:8080
+#   # <string> database user, if used
+#   user:
+#   # <string> database name, if used
+#   database:
+#   # <bool> enable/disable basic auth
+#   basicAuth:
+#   # <string> basic auth username
+#   basicAuthUser:
+#   # <bool> enable/disable with credentials headers
+#   withCredentials:
+#   # <bool> mark as default datasource. Max one per org
+#   isDefault:
+#   # <map> fields that will be converted to json and stored in json_data
+#   jsonData:
+#      graphiteVersion: "1.1"
+#      tlsAuth: true
+#      tlsAuthWithCACert: true
+#      httpHeaderName1: "Authorization"
+#   # <string> json object of data that will be encrypted.
+#   secureJsonData:
+#     tlsCACert: "..."
+#     tlsClientCert: "..."
+#     tlsClientKey: "..."
+#     # <openshift\kubernetes token example>
+#     httpHeaderValue1: "Bearer xf5yhfkpsnmgo"
+#   version: 1
+#   # <bool> allow users to edit datasources from the UI.
+#   editable: false
+#}
+...

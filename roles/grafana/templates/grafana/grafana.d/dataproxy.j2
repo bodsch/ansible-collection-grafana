@@ -1,0 +1,53 @@
+{% if grafana_config_dataproxy is defined and
+      grafana_config_dataproxy.enabled %}
+
+[dataproxy]
+  {% if grafana_config_dataproxy.logging is defined and
+        grafana_config_dataproxy.logging | string | length > 0 %}
+logging                         = {{ grafana_config_dataproxy.logging | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_dataproxy.timeout is defined and
+        grafana_config_dataproxy.timeout | string | length > 0 %}
+timeout                         = {{ grafana_config_dataproxy.timeout }}
+  {% endif %}
+  {% if grafana_config_dataproxy.dialTimeout is defined and
+        grafana_config_dataproxy.dialTimeout | string | length > 0 %}
+dialTimeout                     = {{ grafana_config_dataproxy.dialTimeout }}
+  {% endif %}
+  {% if grafana_config_dataproxy.keep_alive_seconds is defined and
+        grafana_config_dataproxy.keep_alive_seconds | string | length > 0 %}
+keep_alive_seconds              = {{ grafana_config_dataproxy.keep_alive_seconds }}
+  {% endif %}
+  {% if grafana_config_dataproxy.tls_handshake_timeout_seconds is defined and
+        grafana_config_dataproxy.tls_handshake_timeout_seconds | string | length > 0 %}
+tls_handshake_timeout_seconds   = {{ grafana_config_dataproxy.tls_handshake_timeout_seconds }}
+  {% endif %}
+  {% if grafana_config_dataproxy.expect_continue_timeout_seconds is defined and
+        grafana_config_dataproxy.expect_continue_timeout_seconds | string | length > 0 %}
+expect_continue_timeout_seconds = {{ grafana_config_dataproxy.expect_continue_timeout_seconds }}
+  {% endif %}
+  {% if grafana_config_dataproxy.max_conns_per_host is defined and
+        grafana_config_dataproxy.max_conns_per_host | string | length > 0 %}
+max_conns_per_host              = {{ grafana_config_dataproxy.max_conns_per_host }}
+  {% endif %}
+  {% if grafana_config_dataproxy.max_idle_connections is defined and
+        grafana_config_dataproxy.max_idle_connections | string | length > 0 %}
+max_idle_connections            = {{ grafana_config_dataproxy.max_idle_connections }}
+  {% endif %}
+  {% if grafana_config_dataproxy.idle_conn_timeout_seconds is defined and
+        grafana_config_dataproxy.idle_conn_timeout_seconds | string | length > 0 %}
+idle_conn_timeout_seconds       = {{ grafana_config_dataproxy.idle_conn_timeout_seconds }}
+  {% endif %}
+  {% if grafana_config_dataproxy.send_user_header is defined and
+        grafana_config_dataproxy.send_user_header | string | length > 0 %}
+send_user_header                = {{ grafana_config_dataproxy.logging | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_dataproxy.response_limit is defined and
+        grafana_config_dataproxy.response_limit | string | length > 0 %}
+response_limit                  = {{ grafana_config_dataproxy.response_limit }}
+  {% endif %}
+  {% if grafana_config_dataproxy.row_limit is defined and
+        grafana_config_dataproxy.row_limit | string | length > 0 %}
+row_limit                       = {{ grafana_config_dataproxy.row_limit }}
+  {% endif %}
+{% endif %}

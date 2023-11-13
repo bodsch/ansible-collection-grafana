@@ -1,0 +1,7 @@
+---
+
+- name: ca_grafana
+  src: https://github.com/cloudalchemy/ansible-grafana.git
+  scm: git
+
+...

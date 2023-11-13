@@ -1,0 +1,63 @@
+
+[server]
+{% if grafana_config_server.protocol is defined and
+      grafana_config_server.protocol | string | length > 0 and
+      grafana_config_server.protocol in ["http", "https", "h2", "socket"] %}
+protocol                        = {{ grafana_config_server.protocol }}
+{% endif %}
+{% if grafana_config_server.http_addr is defined and
+      grafana_config_server.http_addr | string | length > 0 %}
+http_addr                       = {{ grafana_config_server.http_addr }}
+{% endif %}
+{% if grafana_config_server.http_port is defined and
+      grafana_config_server.http_port | string | length > 0 %}
+http_port                       = {{ grafana_config_server.http_port }}
+{% endif %}
+{% if grafana_config_server.domain is defined and
+      grafana_config_server.domain | string | length > 0 %}
+domain                          = {{ grafana_config_server.domain }}
+{% endif %}
+{% if grafana_config_server.enforce_domain is defined and
+      grafana_config_server.enforce_domain | string | length > 0 %}
+enforce_domain                  = {{ grafana_config_server.enforce_domain | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+{% if grafana_config_server.root_url is defined and
+      grafana_config_server.root_url | string | length > 0 %}
+root_url                        = {{ grafana_config_server.root_url }}
+{% endif %}
+{% if grafana_config_server.serve_from_sub_path is defined and
+      grafana_config_server.serve_from_sub_path | string | length > 0 %}
+serve_from_sub_path             = {{ grafana_config_server.serve_from_sub_path | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+{% if grafana_config_server.router_logging is defined and
+      grafana_config_server.router_logging | string | length > 0 %}
+router_logging                  = {{ grafana_config_server.router_logging | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+{% if grafana_config_server.static_root_path is defined and
+      grafana_config_server.static_root_path | string | length > 0 %}
+static_root_path                = {{ grafana_config_server.static_root_path }}
+{% endif %}
+{% if grafana_config_server.enable_gzip is defined and
+      grafana_config_server.enable_gzip | string | length > 0 %}
+enable_gzip                     = {{ grafana_config_server.enable_gzip | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+{% if grafana_config_server.protocol == "https" and
+      grafana_config_server.cert_file is defined and
+      grafana_config_server.cert_key is defined and
+      grafana_config_server.cert_file | string | length > 0 and
+      grafana_config_server.cert_key | string | length > 0 %}
+cert_file                       = {{ grafana_config_server.cert_file }}
+cert_key                        = {{ grafana_config_server.cert_key }}
+{% endif %}
+{% if grafana_config_server.socket is defined and
+      grafana_config_server.socket | string | length > 0 %}
+socket                          = {{grafana_config_server.socket }}
+{% endif %}
+{% if grafana_config_server.cdn_url is defined and
+      grafana_config_server.cdn_url | string | length > 0 %}
+cdn_url                         = {{ grafana_config_server.cdn_url }}
+{% endif %}
+{% if grafana_config_server.read_timeout is defined and
+      grafana_config_server.read_timeout | string | length > 0 %}
+read_timeout                    = {{ grafana_config_server.read_timeout }}
+{% endif %}

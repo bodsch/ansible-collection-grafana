@@ -1,0 +1,56 @@
+---
+
+grafana_provisioning:
+  # Should we use the provisioning capability when possible (provisioning require grafana >= 5.0)
+  enabled: false
+
+grafana_api: {}
+
+grafana_service_accounts:
+  accounts:
+    - name: sa-backup
+      role: Admin
+      # state: absent
+    - name: sa-export-dashboards
+      role: Viewer
+      # state: absent
+
+grafana_plugins:
+  - grafana-worldmap-panel
+  - marcusolsson-gantt-panel
+
+grafana_config_security:
+  secret_key: uvvC9ogZSsf.iVaq7iuM5L;jxh9t,HzKyWLxk.V:jm
+  content_security_policy: true
+
+grafana_datasources:
+  prometheus:
+    # state: absent
+    datasource:
+      type: "prometheus"
+      # access: "proxy"
+      url: "http://prometheus.mydomain"
+    # basic_auth:
+    #   # Auth: true
+    #   username: "admin"
+    #   password: "password"
+    default: true
+    # json_data:
+    #   tlsAuth: false
+    #   tlsAuthWithCACert: false
+    #   tlsSkipVerify: true
+
+  prometheus_2:
+    # state: absent
+    datasource:
+      type: "prometheus"
+      # access: "proxy"
+      url: "http://prometheus2.mydomain"
+
+  loki:
+    datasource:
+      type: "loki"
+      url: "http://loki.cmsops.arri.com"
+    editable: true
+
+...

@@ -1,0 +1,143 @@
+{% if grafana_config_log is defined %}
+
+[log]
+  {% if grafana_config_log.mode is defined and
+        grafana_config_log.mode | default([]) | count > 0 and
+        grafana_config_log.mode | compare_list(["console", "file", "syslog"]) %}
+mode                            = {{ grafana_config_log.mode | join(' ') }}
+  {% endif %}
+  {% if grafana_config_log.level is defined and
+        grafana_config_log.level | string | length > 0 and
+        grafana_config_log.level in ["debug", "info", "warn", "error", "critical"] %}
+level                           = {{ grafana_config_log.level }}
+  {% endif %}
+  {% if grafana_config_log.filters is defined and
+        grafana_config_log.filters | count > 0 %}
+filters                         = {{ grafana_config_log.filters | join(' ') }}
+  {% endif %}
+  {% if "console" in grafana_config_log.mode %}
+
+[log.console]
+    {% if grafana_config_log.console.level is defined and
+          grafana_config_log.console.level | string | length > 0 and
+          grafana_config_log.console.level in ["debug", "info", "warn", "error", "critical"] %}
+level                           = {{ grafana_config_log.console.level | default(grafana_config_log.level) }}
+    {% endif %}
+    {% if grafana_config_log.console.format is defined and
+          grafana_config_log.console.format | string | length > 0 and
+          grafana_config_log.console.format in ["text", "console", "json"] %}
+format                          = {{ grafana_config_log.console.format }}
+    {% endif %}
+  {% endif %}
+  {% if "file" in grafana_config_log.mode %}
+
+[log.file]
+    {% if grafana_config_log.file.level is defined and
+          grafana_config_log.file.level | string | length > 0 and
+          grafana_config_log.file.level in ["debug", "info", "warn", "error", "critical"] %}
+level                           = {{ grafana_config_log.file.level | default(grafana_config_log.level) }}
+    {% endif %}
+    {% if grafana_config_log.file.format is defined and
+          grafana_config_log.file.format | string | length > 0 and
+          grafana_config_log.file.format in ["text", "console", "json"] %}
+format                          = {{ grafana_config_log.file.format }}
+    {% endif %}
+    {% if grafana_config_log.file.log_rotate is defined and
+          grafana_config_log.file.log_rotate | string | length > 0 %}
+log_rotate                      = {{ grafana_config_log.file.log_rotate | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if grafana_config_log.file.max_lines is defined and
+          grafana_config_log.file.max_lines | string | length > 0 %}
+max_lines                       = {{ grafana_config_log.file.max_lines }}
+    {% endif %}
+    {% if grafana_config_log.file.max_size_shift is defined and
+          grafana_config_log.file.max_size_shift | string | length > 0 %}
+max_size_shift                  = {{ grafana_config_log.file.max_size_shift }}
+    {% endif %}
+    {% if grafana_config_log.file.daily_rotate is defined and
+          grafana_config_log.file.daily_rotate | string | length > 0 %}
+daily_rotate                    = {{ grafana_config_log.file.daily_rotate | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if grafana_config_log.file.max_days is defined and
+          grafana_config_log.file.max_days | string | length > 0 %}
+max_days                        = {{ grafana_config_log.file.max_days }}
+    {% endif %}
+  {% endif %}
+  {% if "syslog" in grafana_config_log.mode %}
+
+[log.syslog]
+    {% if grafana_config_log.syslog.level is defined and
+          grafana_config_log.syslog.level | string | length > 0 and
+          grafana_config_log.syslog.level in ["debug", "info", "warn", "error", "critical"] %}
+level                           = {{ grafana_config_log.syslog.level | default(grafana_config_log.level) }}
+    {% endif %}
+    {% if grafana_config_log.syslog.format is defined and
+          grafana_config_log.syslog.format | string | length > 0 and
+          grafana_config_log.syslog.format in ["text", "console", "json"] %}
+format                          = {{ grafana_config_log.syslog.format }}
+    {% endif %}
+    {% if grafana_config_log.syslog.network is defined and
+          grafana_config_log.syslog.network | string | length > 0 and
+          grafana_config_log.syslog.network in ["tcp", "udp", "unix", ""] %}
+network                         = {{ grafana_config_log.syslog.network }}
+    {% endif %}
+    {% if grafana_config_log.syslog.address is defined and
+          grafana_config_log.syslog.address | string | length > 0%}
+address                         = {{ grafana_config_log.syslog.address }}
+    {% endif %}
+    {% if grafana_config_log.syslog.facility is defined and
+          grafana_config_log.syslog.facility | string | length > 0 and
+          grafana_config_log.syslog.facility in ["user","daemon", "local0", "local1", "local2", "local3", "local4", "local5", "local6", "local7" ] %}
+facility                        = {{ grafana_config_log.syslog.facility }}
+    {% endif %}
+    {% if grafana_config_log.syslog.tag is defined and
+          grafana_config_log.syslog.tag | string | length > 0 %}
+tag                             = {{ grafana_config_log.syslog.tag }}
+    {% endif %}
+  {% endif %}
+  {% if grafana_config_log.frontend.enabled %}
+
+[log.frontend]
+enabled                         = {{ grafana_config_log.frontend.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% if grafana_config_log.frontend.provider is defined and
+          grafana_config_log.frontend.provider | string | length > 0 %}
+provider                        = {{ grafana_config_log.frontend.provider }}
+    {% endif %}
+    {% if grafana_config_log.frontend.sentry_dsn is defined and
+          grafana_config_log.frontend.sentry_dsn | string | length > 0 %}
+sentry_dsn                      = {{ grafana_config_log.frontend.sentry_dsn }}
+    {% endif %}
+    {% if grafana_config_log.frontend.custom_endpoint is defined and
+          grafana_config_log.frontend.custom_endpoint | string | length > 0 %}
+custom_endpoint                 = {{ grafana_config_log.frontend.custom_endpoint }}
+    {% endif %}
+    {% if grafana_config_log.frontend.sample_rate is defined and
+          grafana_config_log.frontend.sample_rate | string | length > 0 %}
+sample_rate                     = {{ grafana_config_log.frontend.sample_rate }}
+    {% endif %}
+    {% if grafana_config_log.frontend.log_endpoint.requests_per_second_limit is defined and
+          grafana_config_log.frontend.log_endpoint.requests_per_second_limit | string | length > 0 %}
+log_endpoint_requests_per_second_limit = {{ grafana_config_log.frontend.log_endpoint.requests_per_second_limit }}
+    {% endif %}
+    {% if grafana_config_log.frontend.log_endpoint.burst_limit is defined and
+          grafana_config_log.frontend.log_endpoint.burst_limit | string | length > 0 %}
+log_endpoint_burst_limit        = {{ grafana_config_log.frontend.log_endpoint.burst_limit }}
+    {% endif %}
+    {% if grafana_config_log.frontend.instrumentations.errors_enabled is defined and
+          grafana_config_log.frontend.instrumentations.errors_enabled | string | length > 0 %}
+instrumentations_errors_enabled = {{ grafana_config_log.frontend.instrumentations.errors_enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if grafana_config_log.frontend.instrumentations.console_enabled is defined and
+          grafana_config_log.frontend.instrumentations.console_enabled | string | length > 0 %}
+instrumentations_console_enabled = {{ grafana_config_log.frontend.instrumentations.console_enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if grafana_config_log.frontend.instrumentations.webvitals_enabled is defined and
+          grafana_config_log.frontend.instrumentations.webvitals_enabled | string | length > 0 %}
+instrumentations_webvitals_enabled = {{ grafana_config_log.frontend.instrumentations.webvitals_enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if grafana_config_log.frontend.api_key is defined and
+          grafana_config_log.frontend.api_key | string | length > 0 %}
+api_key                         = {{ grafana_config_log.frontend.api_key }}
+    {% endif %}
+  {% endif %}
+{% endif %}

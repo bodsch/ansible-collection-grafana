@@ -1,0 +1,206 @@
+---
+
+role_name_check: 1
+
+dependency:
+  name: galaxy
+
+driver:
+  name: docker
+
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+  flake8 .
+
+platforms:
+  - name: database
+    image: "bodsch/ansible-debian:11"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
+    privileged: true
+    pre_build_image: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /var/lib/containerd
+    capabilities:
+      - SYS_ADMIN
+    tmpfs:
+      - /run
+      - /tmp
+    groups:
+      - database
+    published_ports:
+      - 3306:3306
+    labels:
+      service-discovery: "true"
+      service-discover: "true"
+    docker_networks:
+      - name: grafana
+        ipam_config:
+          - subnet: "10.13.0.0/24"
+            gateway: "10.13.0.1"
+    networks:
+      - name: grafana
+        ipv4_address: "10.13.0.10"
+
+  - name: influxdb
+    image: "bodsch/ansible-debian:11"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
+    privileged: true
+    pre_build_image: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /var/lib/containerd
+    capabilities:
+      - SYS_ADMIN
+    tmpfs:
+      - /run
+      - /tmp
+    groups:
+      - tsdb
+    published_ports:
+      - 8086:8086
+    labels:
+      service-discovery: "true"
+      service-discover: "true"
+    networks:
+      - name: grafana
+        ipv4_address: "10.13.0.11"
+
+  - name: prometheus
+    image: "bodsch/ansible-debian:12"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
+    privileged: true
+    pre_build_image: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /var/lib/containerd
+    capabilities:
+      - SYS_ADMIN
+    tmpfs:
+      - /run
+      - /tmp
+    groups:
+      - tsdb
+    published_ports:
+      - 9090:9090
+    labels:
+      service-discovery: "true"
+      service-discover: "true"
+      service-discover.enabled: "true"
+      service-discover.port.9090: "/metrics"
+    networks:
+      - name: grafana
+        ipv4_address: "10.13.0.12"
+
+  - name: auth
+    image: "bodsch/ansible-debian:12"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
+    privileged: true
+    pre_build_image: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /var/lib/containerd
+    capabilities:
+      - SYS_ADMIN
+    tmpfs:
+      - /run
+      - /tmp
+    groups:
+      - ldap
+    published_ports:
+      - 636:636
+      - 389:389
+    labels:
+      service-discover.enabled: "false"
+      service-discovery: "false"
+      service-discover: "false"
+    networks:
+      - name: grafana
+        ipv4_address: "10.13.0.13"
+
+  - name: nginx
+    image: "bodsch/ansible-debian:12"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /var/lib/containerd
+    capabilities:
+      - SYS_ADMIN
+    tmpfs:
+      - /run
+      - /tmp
+    published_ports:
+      - 80:80
+      - 443:443
+    labels:
+      service-discovery: "true"
+      service-discover: "true"
+    networks:
+      - name: grafana
+        ipv4_address: "10.13.0.14"
+
+  - name: instance
+    image: "bodsch/ansible-${DISTRIBUTION:-debian:12}"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
+    privileged: true
+    pre_build_image: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /var/lib/containerd
+    capabilities:
+      - SYS_ADMIN
+    tmpfs:
+      - /run
+      - /tmp
+    published_ports:
+      - 3000:3000
+    labels:
+      service-discovery: "true"
+      service-discover: "true"
+    networks:
+      - name: grafana
+        ipv4_address: "10.13.0.20"
+
+provisioner:
+  name: ansible
+  ansible_args:
+    - --diff
+    #- -v
+  config_options:
+    defaults:
+      deprecation_warnings: true
+      stdout_callback: yaml
+      callbacks_enabled: profile_tasks
+      gathering: smart
+      #fact_caching: jsonfile
+      #fact_caching_timeout: 8640
+      #fact_caching_connection: ansible_facts
+
+scenario:
+  test_sequence:
+    - destroy
+    - dependency
+    - syntax
+    - create
+    - prepare
+    - converge
+    - verify
+    - destroy
+
+verifier:
+  name: testinfra

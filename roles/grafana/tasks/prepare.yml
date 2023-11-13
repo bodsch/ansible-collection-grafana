@@ -1,0 +1,88 @@
+---
+
+- name: include OS specific configuration ({{ ansible_distribution }} ({{ ansible_os_family }}) {{ ansible_distribution_major_version }})
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      paths:
+        - "vars"
+      files:
+        # eg. debian-10 / ubuntu-20.04 / centos-8 / oraclelinux-8
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}.yml"
+        # eg. archlinux-systemd / archlinux-openrc
+        - "{{ ansible_distribution | lower }}-{{ ansible_service_mgr | lower }}.yml"
+        # eg. debian / ubuntu / centos / oraclelinux
+        - "{{ ansible_distribution | lower }}.yml"
+        # eg. redhat / debian / archlinux
+        - "{{ ansible_os_family | lower }}.yml"
+        # artixlinux
+        - "{{ ansible_os_family | lower | replace(' ', '') }}.yml"
+        - default.yaml
+      skip: true
+
+- name: install dependency
+  ansible.builtin.package:
+    name: "{{ grafana_requirements }}"
+    state: present
+  when:
+    - grafana_requirements | default([]) | count > 0
+
+- name: validate datasource types
+  ansible.builtin.set_fact:
+    valid_datasources: "{{ grafana_datasources | validate_datasource_type() }}"
+
+- name: Fails if unsupported data sources have been configured
+  ansible.builtin.fail:
+    msg: "{{ valid_datasources.msg }}"
+  when:
+    - valid_datasources is defined
+    - not valid_datasources.valid
+
+- name: merge grafana configuration between defaults and custom
+  ansible.builtin.set_fact:
+    grafana_config_alerting: "{{ grafana_defaults_config_alerting | combine(grafana_config_alerting, recursive=True) }}"
+    grafana_config_analytics: "{{ grafana_defaults_config_analytics | combine(grafana_config_analytics, recursive=True) }}"
+    grafana_config_annotations: "{{ grafana_defaults_config_annotations | combine(grafana_config_annotations, recursive=True) }}"
+    grafana_config_auth: "{{ grafana_defaults_config_auth | combine(grafana_config_auth, recursive=True) }}"
+    grafana_config_aws: "{{ grafana_defaults_config_aws | combine(grafana_config_aws, recursive=True) }}"
+    grafana_config_azure: "{{ grafana_defaults_config_azure | combine(grafana_config_azure, recursive=True) }}"
+    grafana_config_dashboards: "{{ grafana_defaults_config_dashboards | combine(grafana_config_dashboards, recursive=True) }}"
+    grafana_config_database: "{{ grafana_defaults_config_database | combine(grafana_config_database, recursive=True) }}"
+    grafana_config_dataproxy: "{{ grafana_defaults_config_dataproxy | combine(grafana_config_dataproxy, recursive=True) }}"
+    grafana_config_datasources: "{{ grafana_defaults_config_datasources | combine(grafana_config_datasources, recursive=True) }}"
+    grafana_config_date_formats: "{{ grafana_defaults_config_date_formats | combine(grafana_config_date_formats, recursive=True) }}"
+    grafana_config_emails: "{{ grafana_defaults_config_emails | combine(grafana_config_emails, recursive=True) }}"
+    grafana_config_enterprise: "{{ grafana_defaults_config_enterprise | combine(grafana_config_enterprise, recursive=True) }}"
+    grafana_config_explore: "{{ grafana_defaults_config_explore | combine(grafana_config_explore, recursive=True) }}"
+    grafana_config_expressions: "{{ grafana_defaults_config_expressions | combine(grafana_config_expressions, recursive=True) }}"
+    grafana_config_external_image_storage: "{{ grafana_defaults_config_external_image_storage | combine(grafana_config_external_image_storage, recursive=True) }}"
+    grafana_config_feature_toggles: "{{ grafana_defaults_config_feature_toggles | combine(grafana_config_feature_toggles, recursive=True) }}"
+    grafana_config_general: "{{ grafana_defaults_config_general | combine(grafana_config_general, recursive=True) }}"
+    grafana_config_geomap: "{{ grafana_defaults_config_geomap | combine(grafana_config_geomap, recursive=True) }}"
+    grafana_config_grafana_com: "{{ grafana_defaults_config_grafana_com | combine(grafana_config_grafana_com, recursive=True) }}"
+    grafana_config_help: "{{ grafana_defaults_config_help | combine(grafana_config_help, recursive=True) }}"
+    grafana_config_live: "{{ grafana_defaults_config_live | combine(grafana_config_live, recursive=True) }}"
+    grafana_config_log: "{{ grafana_defaults_config_log | combine(grafana_config_log, recursive=True) }}"
+    grafana_config_metrics: "{{ grafana_defaults_config_metrics | combine(grafana_config_metrics, recursive=True) }}"
+    grafana_config_panels: "{{ grafana_defaults_config_panels | combine(grafana_config_panels, recursive=True) }}"
+    grafana_config_paths: "{{ grafana_defaults_config_paths | combine(grafana_config_paths, recursive=True) }}"
+    grafana_config_plugin: "{{ grafana_defaults_config_plugin | combine(grafana_config_plugin, recursive=True) }}"
+    grafana_config_plugins: "{{ grafana_defaults_config_plugins | combine(grafana_config_plugins, recursive=True) }}"
+    grafana_config_profile: "{{ grafana_defaults_config_profile | combine(grafana_config_profile, recursive=True) }}"
+    grafana_config_query_history: "{{ grafana_defaults_config_query_history | combine(grafana_config_query_history, recursive=True) }}"
+    grafana_config_quota: "{{ grafana_defaults_config_quota | combine(grafana_config_quota, recursive=True) }}"
+    grafana_config_rbac: "{{ grafana_defaults_config_rbac | combine(grafana_config_rbac, recursive=True) }}"
+    grafana_config_remote_cache: "{{ grafana_defaults_config_remote_cache | combine(grafana_config_remote_cache, recursive=True) }}"
+    grafana_config_rendering: "{{ grafana_defaults_config_rendering | combine(grafana_config_rendering, recursive=True) }}"
+    grafana_config_security: "{{ grafana_defaults_config_security | combine(grafana_config_security, recursive=True) }}"
+    grafana_config_server: "{{ grafana_defaults_config_server | combine(grafana_config_server, recursive=True) }}"
+    grafana_config_smtp: "{{ grafana_defaults_config_smtp | combine(grafana_config_smtp, recursive=True) }}"
+    grafana_config_snapshots: "{{ grafana_defaults_config_snapshots | combine(grafana_config_snapshots, recursive=True) }}"
+    grafana_config_tracing: "{{ grafana_defaults_config_tracing | combine(grafana_config_tracing, recursive=True) }}"
+    grafana_config_unified_alerting: "{{ grafana_defaults_config_unified_alerting | combine(grafana_config_unified_alerting, recursive=True) }}"
+    grafana_config_users: "{{ grafana_defaults_config_users | combine(grafana_config_users, recursive=True) }}"
+    grafana_config_ldap: "{{ grafana_defaults_config_ldap | combine(grafana_config_ldap, recursive=True) }}"
+    grafana_api: "{{ grafana_defaults_api | combine(grafana_api, recursive=True) }}"
+    grafana_service_accounts: "{{ grafana_defaults_service_accounts | combine(grafana_service_accounts, recursive=True) }}"
+
+...

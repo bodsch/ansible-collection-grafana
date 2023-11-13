@@ -1,0 +1,12 @@
+---
+
+vault__ldap:
+  admin: xxx
+
+vault__database:
+  grafana: grafana
+
+vault__influxdb:
+  molecule: admin
+
+...
