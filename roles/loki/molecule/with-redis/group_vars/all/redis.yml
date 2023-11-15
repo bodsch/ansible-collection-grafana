@@ -1,0 +1,6 @@
+---
+
+redis_network:
+  bind: "0.0.0.0"
+
+...

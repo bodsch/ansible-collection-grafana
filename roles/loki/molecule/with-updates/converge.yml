@@ -1,0 +1,19 @@
+---
+
+- name: converge
+  hosts: instance
+  any_errors_fatal: false
+  become: false
+
+  roles:
+    - role: ansible-loki
+      vars:
+        loki_version: "2.5.0"
+
+    - role: ansible-loki
+      vars:
+        loki_version: "2.6.1"
+
+    - role: ansible-loki
+      vars:
+        loki_version: "2.7.2"

@@ -1,0 +1,77 @@
+---
+
+loki_version: "2.7.2"
+loki_release_download_url: https://github.com/grafana/loki/releases
+
+loki_system_user: loki
+loki_system_group: loki
+loki_config_dir: /etc/loki
+loki_storage_dir: /var/lib/loki
+
+loki_direct_download: false
+
+loki_service:
+  restart: false
+  max_runtime: 7d
+
+# A comma-separated list of components to run.
+# The default value "all" runs Loki in single binary mode.
+# The value "read" is an alias to run only read-path related components such as
+# the querier and query-frontend, but all in the same process.
+# The value "write" is an alias to run only write-path related components such as
+# the distributor and compactor, but all in the same process.
+# Supported values: all, compactor, distributor, ingester, querier, query-scheduler,
+#  ingester-querier, query-frontend, index-gateway, ruler, table-manager, read, write.
+loki_targets:
+  - all
+
+loki_auth_enabled: false
+
+loki_config_service: {}
+
+loki_config_server: {}
+
+loki_config_common: {}
+
+loki_config_distributor: {}
+
+loki_config_querier: {}
+
+loki_config_query_range: {}
+
+loki_config_query_scheduler: {}
+
+loki_config_index_gateway: {}
+
+loki_config_ingester: {}
+
+loki_config_ingester_client: {}
+
+loki_config_storage: {}
+
+loki_config_chunk_store: {}
+
+loki_config_schema: {}
+
+loki_config_limits: {}
+
+loki_config_frontend: {}
+
+loki_config_frontend_worker: {}
+
+loki_config_runtime: {}
+
+loki_config_table_manager: {}
+
+loki_config_memberlist: {}
+
+loki_config_compactor: {}
+
+loki_config_ruler: {}
+
+loki_config_tracing: {}
+
+loki_config_analytics:
+  reporting_enabled: false
+
+...

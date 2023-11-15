@@ -1,0 +1,13 @@
+---
+
+- name: restart loki if needed
+  ansible.builtin.meta: flush_handlers
+
+- name: ensure loki is enabled on boot
+  become: true
+  ansible.builtin.service:
+    name: loki
+    enabled: true
+    state: started
+
+...

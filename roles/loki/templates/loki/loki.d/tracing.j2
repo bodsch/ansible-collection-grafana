@@ -1,0 +1,8 @@
+{# https://grafana.com/docs/loki/latest/configuration/#tracing #}
+{% if loki_config_tracing | default({}) | count > 0 %}
+
+tracing:
+  {% if loki_config_tracing.enabled is defined %}
+  enabled: {{ loki_config_tracing.enabled | default('false') | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+{% endif %}

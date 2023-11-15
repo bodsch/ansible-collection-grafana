@@ -1,0 +1,29 @@
+---
+
+- name: create loki configuration directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: "{{ loki_system_group }}"
+    mode: 0770
+  with_items:
+    - "{{ loki_config_dir }}"
+
+- name: create loki configuration
+  ansible.builtin.template:
+    src: "loki/loki.yml.j2"
+    dest: "{{ loki_config_dir }}/loki.yml"
+    force: true
+    owner: root
+    group: "{{ loki_system_group }}"
+    mode: 0640
+  notify:
+    - verify config
+    - restart loki
+    - wait for running service
+
+#- name: restart loki if needed
+#  ansible.builtin.meta: flush_handlers
+
+...

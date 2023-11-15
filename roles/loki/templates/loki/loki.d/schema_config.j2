@@ -1,0 +1,7 @@
+{# https://grafana.com/docs/loki/latest/configuration/#schema_config #}
+{% if loki_config_schema | default({}) | count > 0 %}
+  {% import 'jinja_macros.j2' as tpl with context %}
+
+schema_config:
+  {{ tpl.makro_schema_config(loki_config_schema) | indent(2, False) -}}
+{% endif %}

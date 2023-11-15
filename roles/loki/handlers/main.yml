@@ -1,0 +1,47 @@
+---
+
+- name: daemon-reload
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+  when:
+    - ansible_service_mgr | lower == "systemd"
+
+- name: verify config  # noqa no-changed-when
+  become: true
+  ansible.builtin.command: |
+    loki \
+      -verify-config \
+      -log.level debug \
+      -config.file {{ loki_config_dir }}/loki.yml
+
+- name: restart loki
+  become: true
+  ansible.builtin.service:
+    name: loki
+    state: restarted
+
+- name: reload loki
+  become: true
+  ansible.builtin.service:
+    name: loki
+    state: reloaded
+
+- name: wait for running service
+  ansible.builtin.wait_for:
+    host: "{{ loki_config_server.http_listen_address | default('127.0.0.1') }}"
+    port: "{{ loki_config_server.http_listen_port | default('3100') }}"
+    sleep: 2
+    connect_timeout: 3
+    state: started
+    #active_connection_states:
+    #  - ESTABLISHED
+    delay: 2              # No wait before first check (sec)
+    timeout: 120          # Stop checking after timeout (sec)
+    msg: timeout for start service
+  #ignore_errors: true
+  #retries: 10
+  #delay: 10
+
+...
