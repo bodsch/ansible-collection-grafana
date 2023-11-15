@@ -1,0 +1,22 @@
+---
+
+grafana_dashboards_delegate_to: localhost
+
+dashboard_source: "{{ grafana_dashboards_git.url | bodsch.grafana.dashboard_hash(grafana_dashboards_git.version) }}"
+
+grafana_dashboards_local_tmp_directory: "{{
+  lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
+  default(lookup('env', 'HOME') ~ '/.cache/ansible/grafana-dashboards', true) }}/{{ dashboard_source }}"
+
+grafana_dashboards_remote_tmp_directory: "/var/tmp/grafana-dashboards/{{ dashboard_source }}"
+
+grafana_dashboards_dependencies:
+  - git
+  - rsync
+
+grafana_dashboards_python_packages:
+  - name: dirsync
+
+changed_git_sources: false
+
+...

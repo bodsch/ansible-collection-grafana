@@ -1,0 +1,8 @@
+---
+
+grafana_dashboards_git:
+  update: true
+  url: https://gitlab.com/coremedia-as-code/monitoring/grafana-dashboards.git
+  version: master
+
+...

@@ -1,0 +1,59 @@
+---
+
+- name: include OS specific configuration
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      paths:
+        - "vars"
+      files:
+        # eg. debian-10 / ubuntu-20 / centos-8 / oraclelinux-8
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}.yml"
+        # eg. archlinux-systemd / archlinux-openrc
+        - "{{ ansible_distribution | lower }}-{{ ansible_service_mgr | lower }}.yml"
+        # eg. debian / ubuntu / centos / oraclelinux
+        - "{{ ansible_distribution | lower }}.yml"
+        # eg. redhat / debian
+        - "{{ ansible_os_family | lower }}.yml"
+        # artixlinux
+        - "{{ ansible_os_family | lower | replace(' ', '') }}.yml"
+        - default.yml
+      skip: true
+
+- name: install dependencies
+  become: true
+  ansible.builtin.package:
+    name: "{{ grafana_dashboards_dependencies }}"
+    state: present
+  when:
+    - grafana_dashboards_dependencies | default([]) | count > 0
+
+- name: gathering facts now
+  ansible.builtin.setup:
+
+- name: define delegate instance for download handling
+  ansible.builtin.set_fact:
+    grafana_dashboards_delegate_to: "{{ ansible_host }}"
+    grafana_dashboards_local_tmp_directory: "{{
+        lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
+        default('/var/cache/ansible/grafana_dashboards', true) }}/{{ grafana_dashboards_main_version }}"
+  run_once: "{{ 'true' if not grafana_dashboards_direct_download else 'false' }}"
+  when:
+    - grafana_dashboards_direct_download
+
+- name: create download directory
+  become: false
+  delegate_to: "{{ grafana_dashboards_delegate_to }}"
+  ansible.builtin.file:
+    path: "{{ grafana_dashboards_local_tmp_directory }}"
+    state: directory
+    mode: 0750
+  run_once: "{{ 'true' if not grafana_dashboards_direct_download else 'false' }}"
+
+- name: create remote temp directory
+  ansible.builtin.file:
+    path: "{{ grafana_dashboards_remote_tmp_directory }}"
+    state: directory
+    mode: 0750
+
+...

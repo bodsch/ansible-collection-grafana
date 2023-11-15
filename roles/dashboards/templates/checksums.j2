@@ -1,0 +1,7 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+{% for i in archiv_checksums.results %}
+  {% set file = i['stat']['path'] %}
+  {% set file = file.split('/')[-1] %}
+  {% set checksum = i['stat']['checksum'] %}
+{{ "{:40}".format(file) }}  {{ checksum }}
+{% endfor %}

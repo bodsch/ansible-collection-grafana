@@ -1,0 +1,59 @@
+---
+
+- name: check if there are any dashboards on our ansible controller
+  delegate_to: localhost
+  become: false
+  ansible.builtin.find:
+    paths: "{{ grafana_dashboards_local_tmp_directory }}"
+    patterns: "*.json"
+    file_type: file
+    recurse: true
+  run_once: true
+  register: found_dashboards
+
+- name: reduce the found dashboards to the subdirectories and remove the basepath
+  ansible.builtin.set_fact:
+    sub_directories: "{{ found_dashboards | bodsch.grafana.sub_directories(path_reduce=grafana_dashboards_local_tmp_directory, uniq=True) }}"
+
+- name: syncronize local dashboards to our remote system
+  ansible.posix.synchronize:
+    src: "{{ grafana_dashboards_local_tmp_directory }}/"
+    dest: "{{ grafana_dashboards_remote_tmp_directory }}/"
+    rsync_opts:
+      - "--archive"
+      - "--recursive"
+      - "--delete"
+      - "--exclude='.git'"
+      - "--quiet"
+
+- name: syncronize changed dashboards
+  become: true
+  sync_dashboards:
+    source_directory: "{{ grafana_dashboards_remote_tmp_directory }}/"
+    destination_directory: "{{ grafana_data_dir }}/dashboards/"
+    include_pattern:
+      - "*.json$"
+  register: sync_out
+
+- name: change ownership
+  ansible.builtin.file:
+    path: "{{ grafana_data_dir }}/dashboards/"
+    group: grafana
+    mode: 0755
+    recurse: true
+  changed_when: false
+
+- name: create / update dashboards file (provisioning)
+  become: true
+  ansible.builtin.template:
+    src: "provisioning.j2"
+    dest: "/etc/grafana/provisioning/dashboards/{{ item }}.yml"
+    owner: root
+    group: grafana
+    mode: 0644
+  loop:
+    "{{ sub_directories }}"
+  notify:
+    - restart grafana
+
+...

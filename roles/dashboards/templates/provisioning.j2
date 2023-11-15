@@ -1,0 +1,9 @@
+---
+apiVersion: 1
+providers:
+  - name: '{{ item }}'
+    orgId: {{ grafana_organisation_id | default('1') }}
+    folder: '{{ item }}'
+    type: file
+    options:
+      path: "{{ grafana_data_dir }}/dashboards/{{ item }}"

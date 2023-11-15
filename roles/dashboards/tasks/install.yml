@@ -1,0 +1,69 @@
+---
+
+- name: git clone repository
+  delegate_to: localhost
+  become: false
+  ansible.builtin.git:
+    repo: "{{ grafana_dashboards_git.url }}"
+    version: "{{ grafana_dashboards_git.version }}"
+    # update: "{{ grafana_dashboards_git.update | default('true') | bool }}"
+    dest: "{{ grafana_dashboards_local_tmp_directory }}"
+    force: true
+    depth: 1
+  register: _git_clone
+  when:
+    - grafana_dashboards_git is defined
+    - grafana_dashboards_git.url is defined
+    - grafana_dashboards_git.version is defined
+  notify:
+    - changes git sources
+    - changed message
+  changed_when:
+    - _git_clone.changed
+
+- name: force handler after changed git repository
+  ansible.builtin.meta: flush_handlers
+
+- name: python support
+  when:
+    - grafana_dashboards_python_packages is defined
+    - grafana_dashboards_python_packages | count > 0
+  block:
+    - name: create pip requirements file
+      bodsch.core.pip_requirements:
+        name: grafana_dashboards
+        requirements: "{{ grafana_dashboards_python_packages }}"
+      register: pip_requirements
+
+    - name: fail if pip not installed
+      ansible.builtin.fail:
+        msg: python pip is not installed
+      when:
+        - not pip_requirements.pip.present
+
+    - name: install python packages  # noqa no-handler
+      ansible.builtin.pip:
+        requirements: "{{ pip_requirements.requirements_file }}"
+        state: present
+        extra_args: "{{ grafana_dashboards_python_extra_args | default([]) | bodsch.core.python_extra_args(python_version=ansible_python.version) | default(omit) }}"
+      when:
+        - pip_requirements.requirements_file is defined
+        - pip_requirements.changed
+
+    - name: do facts module to get latest information
+      ansible.builtin.setup:
+
+  rescue:
+    - name: remove pip requirements
+      bodsch.core.pip_requirements:
+        name: grafana_dashboards
+        requirements: "{{ grafana_dashboards_python_packages }}"
+        state: absent
+
+    - name: pip requirements installation failed
+      ansible.builtin.fail:
+        msg: "{{ pip_install.msg }}"
+      when:
+        - pip_install.failed
+
+...
