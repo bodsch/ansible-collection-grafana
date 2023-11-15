@@ -16,7 +16,7 @@
 
 - name: detect if this an upgrade
   ansible.builtin.set_fact:
-    grafana_upgrade: "{{ stat_grafana_path | upgrade(stat_old_grafana_path) }}"
+    grafana_upgrade: "{{ stat_grafana_path | bodsch.grafana.upgrade(stat_old_grafana_path) }}"
 
 - name: old installation
   when:

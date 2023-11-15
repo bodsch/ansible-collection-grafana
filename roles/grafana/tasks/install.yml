@@ -133,7 +133,7 @@
             state: link
             force: true
             follow: false
-          loop: "{{ found_binaries.files | file_list | reject('search', 'md5') }}"
+          loop: "{{ found_binaries.files | bodsch.grafana.file_list | reject('search', 'md5') }}"
           notify:
             - restart grafana
 

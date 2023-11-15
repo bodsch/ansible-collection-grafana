@@ -3,7 +3,7 @@
 [log]
   {% if grafana_config_log.mode is defined and
         grafana_config_log.mode | default([]) | count > 0 and
-        grafana_config_log.mode | compare_list(["console", "file", "syslog"]) %}
+        grafana_config_log.mode | bodsch.grafana.compare_list(["console", "file", "syslog"]) %}
 mode                            = {{ grafana_config_log.mode | join(' ') }}
   {% endif %}
   {% if grafana_config_log.level is defined and

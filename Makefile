@@ -3,7 +3,7 @@ export TOX_SCENARIO         ?= default
 export TOX_ANSIBLE          ?= ansible_6.1
 
 export COLLECTION_NAMESPACE ?= bodsch
-export COLLECTION_NAME      ?= prometheus
+export COLLECTION_NAME      ?= grafana
 export COLLECTION_ROLE      ?=
 export COLLECTION_SCENARIO  ?= default
 

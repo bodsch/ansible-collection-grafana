@@ -3,7 +3,7 @@
 namespace: bodsch
 name: galaxy
 
-version: 0.0.1
+version: 0.0.2
 
 readme: README.md
 
@@ -23,7 +23,7 @@ tags:
   - observa
 
 dependencies:
-  bodsch.core: ">=1.1.2"
+  bodsch.core: ">=1.1.4"
   bodsch.scm: "*"
 
 repository: https://github.com/bodsch/ansible-collection-grafana

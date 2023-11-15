@@ -29,7 +29,7 @@
 
 - name: validate datasource types
   ansible.builtin.set_fact:
-    valid_datasources: "{{ grafana_datasources | validate_datasource_type() }}"
+    valid_datasources: "{{ grafana_datasources | bodsch.grafana.validate_datasource_type() }}"
 
 - name: Fails if unsupported data sources have been configured
   ansible.builtin.fail:

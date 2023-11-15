@@ -1,6 +1,6 @@
 {% if grafana_config_aws.allowed_auth_providers is defined and
       grafana_config_aws.allowed_auth_providers | string | length > 0 and
-      grafana_config_aws.allowed_auth_providers | compare_list(["default", "keys", "credentials", "ec2_iam_role"]) %}
+      grafana_config_aws.allowed_auth_providers | bodsch.grafana.compare_list(["default", "keys", "credentials", "ec2_iam_role"]) %}
 
 [aws]
 allowed_auth_providers          = {{ grafana_config_aws.allowed_auth_providers | join(',') }}

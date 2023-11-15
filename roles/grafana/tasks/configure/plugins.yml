@@ -1,7 +1,7 @@
 ---
 
 - name: install grafana plugins
-  grafana_plugins:
+  bodsch.grafana.grafana_plugins:
     command: install
     plugins_dir: "{{ grafana_data_dir }}/plugins"
     plugins: "{{ grafana_plugins }}"

@@ -28,7 +28,7 @@
 - name: list service accounts files
   run_once: true
   ansible.builtin.debug:
-    msg: "{{ found_sa_keyfiles.files | file_list }}"
+    msg: "{{ found_sa_keyfiles.files | bodsch.grafana.file_list }}"
   when:
     - found_sa_keyfiles is defined
     - found_sa_keyfiles.files is defined
@@ -36,7 +36,7 @@
 - name: list api key files
   run_once: true
   ansible.builtin.debug:
-    msg: "{{ found_api_keyfiles.files | file_list }}"
+    msg: "{{ found_api_keyfiles.files | bodsch.grafana.file_list }}"
   when:
     - found_api_keyfiles is defined
     - found_api_keyfiles.files is defined
