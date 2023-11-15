@@ -1,0 +1,375 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# {{ ansible_managed }}
+
+{% set _loglevel = "info" %}
+{% set _configfile = promtail_config_dir + '/promtail.yml' %}
+{% if promtail_runtime is defined and
+      promtail_runtime | length > 0 %}
+  {% set _data = promtail_runtime %}
+{% endif %}
+
+OPTIONS="
+{% if _data | count > 0 %}
+  {# client (deprecated) #}
+  {% if _data.support_deprecated_options | default('false') | bool %}
+    {% if _data.client.batch_size_bytes is defined and
+          _data.client.batch_size_bytes | string | length > 0 %}
+  -client.batch-size-bytes {{ _data.client.batch_size_bytes }} \
+    {% endif %}
+    {% if _data.external_labels is defined and
+          _data.client.external_labels | string | length > 0 %}
+  -client.external-labels {{ _data.client.external_labels }} \
+    {% endif %}
+  {% endif %}
+  {# config #}
+  {% if _data.config.expand_env is defined and
+        _data.config.expand_env | length > 0 %}
+  -config.expand-env {{ _data.config.expand_env }} \
+  {% endif %}
+  {% if _data.config.file is defined and
+        _data.config.file | string | length > 0 %}
+    {% set _configfile = _data.config.file %}
+  {% endif %}
+  -config.file {{ _configfile }} \
+  {# limit #}
+  {% if _data.limit.readline_burst is defined and
+        _data.limit.readline_burst | string | length > 0 %}
+  -limit.readline-burst {{ _data.limit.readline_burst }} \
+  {% endif %}
+  {% if _data.limit.readline_rate is defined and
+        _data.limit.readline_rate | string | length > 0 %}
+  -limit.readline-rate {{ _data.limit.readline_rate }} \
+  {% endif %}
+  {% if _data.limit.readline_rate_drop is defined and
+        _data.limit.readline_rate_drop | string | length > 0 %}
+  -limit.readline-rate-drop {{ _data.limit.readline_rate_drop }} \
+  {% endif %}
+  {% if _data.limit.readline_rate_enabled is defined and
+        _data.limit.readline_rate_enabled | string | length > 0 %}
+  -limit.readline-rate-enabled {{ _data.limit.readline_rate_enabled }} \
+  {% endif %}
+  {# log #}
+  {% if _data.limit.readline_rate_enabled is defined and
+        _data.limit.readline_rate_enabled | string | length > 0 and
+        _data.limit.readline_rate_enabled | bool %}
+  -log-config-reverse-order \
+  {% endif %}
+  {% if _data.log.format is defined and
+        _data.log.format in ["logfmt", "json"] %}
+  -log.format {{ _data.log.format }} \
+  {% endif %}
+  {% if _data.log.level in ["debug", "info", "warn", "error"] %}
+    {% set _loglevel = _data.log.level %}
+  {% endif %}
+  -log.level {{ _loglevel }} \
+  {# positions #}
+  {% if _data.positions.file is defined and
+        _data.positions.file | string | length > 0 %}
+  -positions.file {{ _data.positions.file }} \
+  {% endif %}
+  {% if _data.positions.ignore_invalid_yaml is defined and
+        _data.positions.ignore_invalid_yaml | string | length > 0 and
+        _data.positions.ignore_invalid_yaml | bool %}
+  -positions.ignore-invalid-yaml \
+  {% endif %}
+  {% if _data.positions.sync_period is defined and
+        _data.positions.sync_period | string | length > 0 %}
+  -positions.sync-period {{ _data.positions.sync_period }} \
+  {% endif %}
+  {# server #}
+  {% if _data.server.disable is defined and
+        _data.server.disable | string | length > 0 and
+        _data.server.disable | bool %}
+  -server.disable \
+  {% else %}
+    {% if _data.server.graceful_shutdown_timeout is defined and
+          _data.server.graceful_shutdown_timeout | string | length > 0 %}
+  -server.graceful-shutdown-timeout {{ _data.server.graceful_shutdown_timeout }} \
+    {% endif %}
+    {# grpc #}
+    {% if _data.server.grpc.conn_limit is defined and
+          _data.server.grpc.conn_limit | string | length > 0 %}
+  -server.grpc-conn-limit {{ _data.server.grpc.conn_limit }} \
+    {% endif %}
+    {% if _data.server.grpc.listen_address is defined and
+          _data.server.grpc.listen_address | string | length > 0 %}
+  -server.grpc-listen-address {{ _data.server.grpc.listen_address }} \
+    {% endif %}
+    {% if _data.server.grpc.listen_network is defined and
+          _data.server.grpc.listen_network | string | length > 0 %}
+  -server.grpc-listen-network {{ _data.server.grpc.listen_network }} \
+    {% endif %}
+    {% if _data.server.grpc.listen_port is defined and
+          _data.server.grpc.listen_port | string | length > 0 %}
+  -server.grpc-listen-port {{ _data.server.grpc.listen_port }} \
+    {% endif %}
+    {% if _data.server.grpc.max_concurrent_streams is defined and
+          _data.server.grpc.max_concurrent_streams | string | length > 0 %}
+  -server.grpc-max-concurrent-streams {{ _data.server.grpc.max_concurrent_streams }} \
+    {% endif %}
+    {% if _data.server.grpc.max_recv_msg_size_bytes is defined and
+          _data.server.grpc.max_recv_msg_size_bytes | string | length > 0 %}
+  -server.grpc-max-recv-msg-size-bytes {{ _data.server.grpc.max_recv_msg_size_bytes }} \
+    {% endif %}
+    {% if _data.server.grpc.max_send_msg_size_bytes is defined and
+          _data.server.grpc.max_send_msg_size_bytes | string | length > 0 %}
+  -server.grpc-max-send-msg-size-bytes {{ _data.server.grpc.max_send_msg_size_bytes }} \
+    {% endif %}
+    {% if _data.server.grpc.tls.ca_path is defined and
+          _data.server.grpc.tls.ca_path | string | length > 0 %}
+  -server.grpc-tls-ca-path {{ _data.server.grpc.tls.ca_path }} \
+    {% endif %}
+    {% if _data.server.grpc.tls.cert_path is defined and
+          _data.server.grpc.tls.cert_path | string | length > 0 %}
+  -server.grpc-tls-cert-path {{ _data.server.grpc.tls.cert_path }} \
+    {% endif %}
+    {% if _data.server.grpc.tls.client_auth is defined and
+          _data.server.grpc.tls.client_auth | string | length > 0 %}
+  -server.grpc-tls-client-auth {{ _data.server.grpc.tls.client_auth }} \
+    {% endif %}
+    {% if _data.server.grpc.tls.key_path is defined and
+          _data.server.grpc.tls.key_path | string | length > 0 %}
+  -server.grpc-tls-key-path {{ _data.server.grpc.tls.key_path }} \
+    {% endif %}
+    {% if _data.server.grpc.keepalive.max_connection_age is defined and
+          _data.server.grpc.keepalive.max_connection_age | string | length > 0 %}
+  -server.grpc.keepalive.max-connection-age {{ _data.server.grpc.keepalive.max_connection_age }} \
+    {% endif %}
+    {% if _data.server.grpc.keepalive.max_connection_age_grace is defined and
+          _data.server.grpc.keepalive.max_connection_age_grace | string | length > 0 %}
+  -server.grpc.keepalive.max-connection-age-grace {{ _data.server.grpc.keepalive.max_connection_age_grace }} \
+    {% endif %}
+    {% if _data.server.grpc.keepalive.max_connection_idle is defined and
+          _data.server.grpc.keepalive.max_connection_idle | string | length > 0 %}
+  -server.grpc.keepalive.max-connection-idle {{ _data.server.grpc.keepalive.max_connection_idle }} \
+    {% endif %}
+    {% if _data.server.grpc.keepalive.min_time_between_pings is defined and
+          _data.server.grpc.keepalive.min_time_between_pings | string | length > 0 %}
+  -server.grpc.keepalive.min-time-between-pings {{ _data.server.grpc.keepalive.min_time_between_pings }} \
+    {% endif %}
+    {% if _data.server.grpc.keepalive.min_time_between_pings is defined and
+          _data.server.grpc.keepalive.min_time_between_pings | string | length > 0 and
+          _data.server.grpc.keepalive.min_time_between_pings | bool %}
+  -server.grpc.keepalive.ping-without-stream-allowed
+    {% endif %}
+    {% if _data.server.grpc.keepalive.time is defined and
+          _data.server.grpc.keepalive.time | string | length > 0 %}
+  -server.grpc.keepalive.time {{ _data.server.grpc.keepalive.time }} \
+    {% endif %}
+    {% if _data.server.grpc.keepalive.timeout is defined and
+          _data.server.grpc.keepalive.timeout | string | length > 0 %}
+  -server.grpc.keepalive.timeout {{ _data.server.grpc.keepalive.timeout }} \
+    {% endif %}
+    {# http #}
+    {% if _data.server.http.conn_limit is defined and
+          _data.server.http.conn_limit | string | length > 0 %}
+  -server.http-conn-limit {{ _data.server.http.conn_limit }} \
+    {% endif %}
+    {% if _data.server.http.idle_timeout is defined and
+          _data.server.http.idle_timeout | string | length > 0 %}
+  -server.http-idle-timeout {{ _data.server.http.idle_timeout }} \
+    {% endif %}
+    {% if _data.server.http.listen_address is defined and
+          _data.server.http.listen_address | string | length > 0 %}
+  -server.http-listen-address {{ _data.server.http.listen_address }} \
+    {% endif %}
+    {% if _data.server.http.listen_network is defined and
+          _data.server.http.listen_network | string | length > 0 %}
+  -server.http-listen-network {{ _data.server.http.listen_network }} \
+    {% endif %}
+    {% if _data.server.http.listen_port is defined and
+          _data.server.http.listen_port | string | length > 0 %}
+  -server.http-listen-port {{ _data.server.http.listen_port }} \
+    {% endif %}
+    {% if _data.server.http.read_timeout is defined and
+          _data.server.http.read_timeout | string | length > 0 %}
+  -server.http-read-timeout {{ _data.server.http.read_timeout }} \
+    {% endif %}
+    {% if _data.server.http.tls.ca_path is defined and
+          _data.server.http.tls.ca_path | string | length > 0 %}
+  -server.http-tls-ca-path {{ _data.server.http.tls.ca_path }} \
+    {% endif %}
+    {% if _data.server.http.tls.cert_path is defined and
+          _data.server.http.tls.cert_path | string | length > 0 %}
+  -server.http-tls-cert-path {{ _data.server.http.tls.cert_path }} \
+    {% endif %}
+    {% if _data.server.http.tls.client_auth is defined and
+          _data.server.http.tls.client_auth | string | length > 0 %}
+  -server.http-tls-client-auth {{ _data.server.http.tls.client_auth }} \
+    {% endif %}
+    {% if _data.server.http.tls.key_path is defined and
+          _data.server.http.tls.key_path | string | length > 0 %}
+  -server.http-tls-key-path {{ _data.server.http.tls.key_path }} \
+    {% endif %}
+    {% if _data.server.http.write_timeout is defined and
+          _data.server.http.write_timeout | string | length > 0 %}
+  -server.http-write-timeout {{ _data.server.http.write_timeout }} \
+    {% endif %}
+    {# server log #}
+    {% if _data.server.log.request_at_info_level_enabled is defined and
+          _data.server.log.request_at_info_level_enabled | string | length > 0 and
+          _data.server.log.request_at_info_level_enabled | bool %}
+  -server.log-request-at-info-level-enabled \
+    {% endif %}
+    {% if _data.server.log.source.ips_enabled is defined and
+          _data.server.log.source.ips_enabled | string | length > 0 and
+          _data.server.log.source.ips_enabled | bool %}
+  -server.log-source-ips-enabled \
+    {% endif %}
+    {% if _data.server.log.source.ips_header is defined and
+          _data.server.log.source.ips_header | string | length > 0 %}
+  -server.log-source-ips-header {{ _data.server.log.source.ips_header }} \
+    {% endif %}
+    {% if _data.server.log.source.ips_regex is defined and
+          _data.server.log.source.ips_regex | string | length > 0 %}
+  -server.log-source-ips-regex {{ _data.server.log.source.ips_regex }} \
+    {% endif %}
+    {# server ... #}
+    {% if _data.server.path_prefix is defined and
+          _data.server.path_prefix | string | length > 0 %}
+  -server.path-prefix {{ _data.server.path_prefix }} \
+    {% endif %}
+    {% if _data.server.register_instrumentation is defined and
+          _data.server.register_instrumentation | string | length > 0 and
+          _data.server.register_instrumentation | bool %}
+  -server.register-instrumentation \
+    {% endif %}
+    {% if _data.target.sync_period is defined and
+          _data.target.sync_period | string | length > 0 %}
+  -target.sync-period {{ _data.target.sync_period }} \
+    {% endif %}
+  {% endif %}
+{% endif %}
+"
+{#
+promtail --help
+Usage of config-file-loader:
+  -client.batch-size-bytes int
+        Maximum batch size to accrue before sending (deprecated). (default 1048576)
+  -client.batch-wait duration
+        Maximum wait period before sending batch (deprecated). (default 1s)
+  -client.external-labels value
+        list of external labels to add to each log (e.g: --client.external-labels=lb1=v1,lb2=v2) (deprecated).
+  -client.max-backoff duration
+        Maximum backoff time between retries (deprecated). (default 5m0s)
+  -client.max-retries int
+        Maximum number of retires when sending batches (deprecated). (default 10)
+  -client.min-backoff duration
+        Initial backoff time between retries (deprecated). (default 500ms)
+  -client.tenant-id string
+        Tenant ID to use when pushing logs to Loki (deprecated).
+  -client.timeout duration
+        Maximum time to wait for server to respond to a request (deprecated). (default 10s)
+  -client.url value
+        URL of log server (deprecated).
+  -config.expand-env
+        Expands ${var} in config according to the values of the environment variables.
+  -config.file string
+        yaml file to load
+  -dry-run
+        Start Promtail but print entries instead of sending them to Loki.
+  -inspect
+        Allows for detailed inspection of pipeline stages
+  -limit.readline-burst int
+        The cap in the quantity of burst lines that this instance of Promtail may push to Loki. (default 10000)
+  -limit.readline-rate float
+        The rate limit in log lines per second that this instance of Promtail may push to Loki. (default 10000)
+  -limit.readline-rate-drop
+        When true, exceeding the rate limit causes this instance of Promtail to discard log lines, rather than sending them to Loki. (default true)
+  -limit.readline-rate-enabled
+        When true, enforces rate limiting on this instance of Promtail.
+  -log-config-reverse-order
+        Dump the entire Loki config object at Info log level with the order reversed, reversing the order makes viewing the entries easier in Grafana.
+  -log.format value
+        Output log messages in the given format. Valid formats: [logfmt, json] (default logfmt)
+  -log.level value
+        Only log messages with the given severity or above. Valid levels: [debug, info, warn, error] (default info)
+  -positions.file string
+        Location to read/write positions from. (default "/var/log/positions.yaml")
+  -positions.ignore-invalid-yaml
+        whether to ignore & later overwrite positions files that are corrupted
+  -positions.sync-period duration
+        Period with this to sync the position file. (default 10s)
+  -print-config-stderr
+        Dump the entire Loki config object to stderr
+  -server.disable
+        Disable the http and grpc server.
+  -server.graceful-shutdown-timeout duration
+        Timeout for graceful shutdowns (default 30s)
+  -server.grpc-conn-limit int
+        Maximum number of simultaneous grpc connections, <=0 to disable
+  -server.grpc-listen-address string
+        gRPC server listen address.
+  -server.grpc-listen-network string
+        gRPC server listen network (default "tcp")
+  -server.grpc-listen-port int
+        gRPC server listen port. (default 9095)
+  -server.grpc-max-concurrent-streams uint
+        Limit on the number of concurrent streams for gRPC calls (0 = unlimited) (default 100)
+  -server.grpc-max-recv-msg-size-bytes int
+        Limit on the size of a gRPC message this server can receive (bytes). (default 4194304)
+  -server.grpc-max-send-msg-size-bytes int
+        Limit on the size of a gRPC message this server can send (bytes). (default 4194304)
+  -server.grpc-tls-ca-path string
+        GRPC TLS Client CA path.
+  -server.grpc-tls-cert-path string
+        GRPC TLS server cert path.
+  -server.grpc-tls-client-auth string
+        GRPC TLS Client Auth type.
+  -server.grpc-tls-key-path string
+        GRPC TLS server key path.
+  -server.grpc.keepalive.max-connection-age duration
+        The duration for the maximum amount of time a connection may exist before it will be closed. Default: infinity (default 2562047h47m16.854775807s)
+  -server.grpc.keepalive.max-connection-age-grace duration
+        An additive period after max-connection-age after which the connection will be forcibly closed. Default: infinity (default 2562047h47m16.854775807s)
+  -server.grpc.keepalive.max-connection-idle duration
+        The duration after which an idle connection should be closed. Default: infinity (default 2562047h47m16.854775807s)
+  -server.grpc.keepalive.min-time-between-pings duration
+        Minimum amount of time a client should wait before sending a keepalive ping. If client sends keepalive ping more often, server will send GOAWAY and close the connection. (default 5m0s)
+  -server.grpc.keepalive.ping-without-stream-allowed
+        If true, server allows keepalive pings even when there are no active streams(RPCs). If false, and client sends ping when there are no active streams, server will send GOAWAY and close the connection.
+  -server.grpc.keepalive.time duration
+        Duration after which a keepalive probe is sent in case of no activity over the connection., Default: 2h (default 2h0m0s)
+  -server.grpc.keepalive.timeout duration
+        After having pinged for keepalive check, the duration after which an idle connection should be closed, Default: 20s (default 20s)
+  -server.http-conn-limit int
+        Maximum number of simultaneous http connections, <=0 to disable
+  -server.http-idle-timeout duration
+        Idle timeout for HTTP server (default 2m0s)
+  -server.http-listen-address string
+        HTTP server listen address.
+  -server.http-listen-network string
+        HTTP server listen network, default tcp (default "tcp")
+  -server.http-listen-port int
+        HTTP server listen port. (default 80)
+  -server.http-read-timeout duration
+        Read timeout for HTTP server (default 30s)
+  -server.http-tls-ca-path string
+        HTTP TLS Client CA path.
+  -server.http-tls-cert-path string
+        HTTP server cert path.
+  -server.http-tls-client-auth string
+        HTTP TLS Client Auth type.
+  -server.http-tls-key-path string
+        HTTP server key path.
+  -server.http-write-timeout duration
+        Write timeout for HTTP server (default 30s)
+  -server.log-request-at-info-level-enabled
+        Optionally log requests at info level instead of debug level.
+  -server.log-source-ips-enabled
+        Optionally log the source IPs.
+  -server.log-source-ips-header string
+        Header field storing the source IPs. Only used if server.log-source-ips-enabled is true. If not set the default Forwarded, X-Real-IP and X-Forwarded-For headers are used
+  -server.log-source-ips-regex string
+        Regex for matching the source IPs. Only used if server.log-source-ips-enabled is true. If not set the default Forwarded, X-Real-IP and X-Forwarded-For headers are used
+  -server.path-prefix string
+        Base path to serve all API routes from (e.g. /v1/)
+  -server.register-instrumentation
+        Register the intrumentation handlers (/metrics etc). (default true)
+  -stdin
+        Set to true to pipe logs to promtail.
+  -target.sync-period duration
+        Period to resync directories being watched and files being tailed. (default 10s)
+  -version
+        Print this builds version information
+#}

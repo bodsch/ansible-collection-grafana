@@ -1,0 +1,9 @@
+{% if promtail_version is version_compare('2.7', '>=' ) %}
+  {% if promtail_limits is defined and
+        promtail_limits | length > 0 %}
+    {% set _data = promtail_limits %}
+
+limits_config:
+  {{ _data | to_nice_yaml(indent=2) | indent(2, False) }}
+  {% endif %}
+{% endif %}

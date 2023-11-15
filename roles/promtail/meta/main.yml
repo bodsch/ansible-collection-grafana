@@ -1,0 +1,45 @@
+---
+
+galaxy_info:
+  role_name: promtail
+
+  author: Bodo Schulz
+  description: ansible role to setup promtail
+  license: Apache
+  min_ansible_version: "2.9"
+
+  platforms:
+    - name: ArchLinux
+    - name: Debian
+      versions:
+        # 10
+        - buster
+        # 11
+        - bullseye
+        # 12
+        - bookworm
+    - name: Ubuntu
+      versions:
+        # 20.04 LTS (Focal Fossa)
+        - focal
+        # 22.04 LTS (Jammy Jellyfish)
+        - jammy
+        # 22.10 (Kinetic Kudu)
+        # - kinetic
+        # 23.04 (Lunar Lobster)
+        # - lunar
+
+  galaxy_tags:
+    - promtail
+    - loki
+    - logging
+    - collector
+    - monitoring
+    - metrics
+    - system
+    - grafana
+    - prometheus
+
+dependencies: []
+
+...

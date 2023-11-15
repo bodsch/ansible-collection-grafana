@@ -1,0 +1,225 @@
+{% if promtail_server is defined and
+      promtail_server | length > 0 %}
+  {% set _data = promtail_server %}
+
+server:
+    {# http #}
+    {% if _data.http is defined and
+          _data.http | length > 0 %}
+      {% if _data.http.listen.network is defined and
+            _data.http.listen.network | string | length > 0 %}
+  http_listen_network: {{ _data.http.listen.network }}
+      {% endif %}
+      {% if _data.http.listen.address is defined and
+            _data.http.listen.address | string | length > 0 %}
+  http_listen_address: {{ _data.http.listen.address }}
+      {% endif %}
+      {% if _data.http.listen.port is defined and
+            _data.http.listen.port | string | length > 0 %}
+  http_listen_port: {{ _data.http.listen.port }}
+      {% endif %}
+      {% if _data.http.listen.conn_limit is defined and
+            _data.http.listen.conn_limit | string | length > 0 %}
+  http_listen_conn_limit: {{ _data.http.listen.conn_limit }}
+      {% endif %}
+      {# http tls #}
+      {% if _data.http.tls is defined and
+            _data.http.tls | length > 0 %}
+  http_tls_config:
+        {% if _data.http.tls.cert_file is defined and
+              _data.http.tls.cert_file | string | length > 0 %}
+    cert_file: {{ _data.http.tls.cert_file }}
+        {% endif %}
+        {% if _data.http.tls.key_file is defined and
+              _data.http.tls.key_file | string | length > 0 %}
+    key_file: {{ _data.http.tls.key_file }}
+        {% endif %}
+        {% if _data.http.tls.client.auth_type is defined and
+              _data.http.tls.client.auth_type | string | length > 0 %}
+    client_auth_type: {{ _data.http.tls.client.auth_type }}
+        {% endif %}
+        {% if _data.http.tls.client.ca_file is defined and
+              _data.http.tls.client.ca_file | string | length > 0 %}
+    client_ca_file: {{ _data.http.tls.client.ca_file }}
+        {% endif %}
+      {% endif %}
+      {# http timeouts #}
+      {% if _data.http.server.timeouts.read is defined and
+            _data.http.server.timeouts.read | string | length > 0 %}
+  http_server_read_timeout: {{ _data.http.server.timeouts.read }}
+      {% endif %}
+      {% if _data.http.server.timeouts.write is defined and
+            _data.http.server.timeouts.write | string | length > 0 %}
+  http_server_write_timeout: {{ _data.http.server.timeouts.write }}
+      {% endif %}
+      {% if _data.http.server.timeouts.idle is defined and
+            _data.http.server.timeouts.idle | string | length > 0 %}
+  http_server_idle_timeout: {{ _data.http.server.timeouts.idle }}
+      {% endif %}
+    {% endif %}
+    {# grpc #}
+    {% if _data.grpc is defined and
+          _data.grpc | length > 0 %}
+      {% if _data.grpc.listen.network is defined and
+            _data.grpc.listen.network | string | length > 0 %}
+  grpc_listen_network: {{ _data.grpc.listen.network }}
+      {% endif %}
+      {% if _data.grpc.listen.address is defined and
+            _data.grpc.listen.address | string | length > 0 %}
+  grpc_listen_address: {{ _data.grpc.listen.address }}
+      {% endif %}
+      {% if _data.grpc.listen.port is defined and
+            _data.grpc.listen.port | string | length > 0 %}
+  grpc_listen_port: {{ _data.grpc.listen.port }}
+      {% endif %}
+      {% if _data.grpc.listen.conn_limit is defined and
+            _data.grpc.listen.conn_limit | string | length > 0 %}
+  grpc_listen_conn_limit: {{ _data.grpc.listen.conn_limit }}
+      {% endif %}
+      {# grpc tls #}
+      {% if _data.grpc.tls is defined and
+            _data.grpc.tls | length > 0 %}
+  grpc_tls_config:
+        {% if _data.grpc.tls.cert_file is defined and
+              _data.grpc.tls.cert_file | string | length > 0 %}
+    cert_file: {{ _data.grpc.tls.cert_file }}
+        {% endif %}
+        {% if _data.grpc.tls.key_file is defined and
+              _data.grpc.tls.key_file | string | length > 0 %}
+    key_file: {{ _data.grpc.tls.key_file }}
+        {% endif %}
+        {% if _data.grpc.tls.client.auth_type is defined and
+              _data.grpc.tls.client.auth_type | string | length > 0 %}
+    client_auth_type: {{ _data.grpc.tls.client.auth_type }}
+        {% endif %}
+        {% if _data.grpc.tls.client.ca_file is defined and
+              _data.grpc.tls.client.ca_file | string | length > 0 %}
+    client_ca_file: {{ _data.grpc.tls.client.ca_file }}
+        {% endif %}
+      {% endif %}
+      {# grpc server #}
+      {% if _data.grpc.server is defined and
+            _data.grpc.server | length > 0 %}
+        {% if _data.grpc.server.msg_size is defined and
+              _data.grpc.server.msg_size | length > 0 %}
+          {% if _data.grpc.server.msg_size.max_recv is defined and
+                _data.grpc.server.msg_size.max_recv | string | length > 0 %}
+  grpc_server_max_recv_msg_size: {{ _data.grpc.server.msg_size.max_recv }}
+          {% endif %}
+          {% if _data.grpc.server.msg_size.max_send is defined and
+                _data.grpc.server.msg_size.max_send | string | length > 0 %}
+  grpc_server_max_send_msg_size: {{ _data.grpc.server.msg_size.max_send }}
+          {% endif %}
+        {% endif %}
+        {% if _data.grpc.server.max_concurrent_streams is defined and
+              _data.grpc.server.max_concurrent_streams | string | length > 0 %}
+  grpc_server_max_concurrent_streams: {{ _data.grpc.server.max_concurrent_streams }}
+        {% endif %}
+
+        {% if _data.grpc.server.max_connection is defined and
+              _data.grpc.server.max_connection | length > 0 %}
+          {% if _data.grpc.server.max_connection.idle is defined and
+                _data.grpc.server.max_connection.idle | string | length > 0 %}
+  grpc_server_max_connection_idle: {{ _data.grpc.server.max_connection.idle }}
+          {% endif %}
+          {% if _data.grpc.server.max_connection.age is defined and
+                _data.grpc.server.max_connection.age | string | length > 0 %}
+  grpc_server_max_connection_age: {{ _data.grpc.server.max_connection.age }}
+          {% endif %}
+          {% if _data.grpc.server.max_connection.age_grace is defined and
+                _data.grpc.server.max_connection.age_grace | string | length > 0 %}
+  grpc_server_max_connection_age_grace: {{ _data.grpc.server.max_connection.age_grace }}
+          {% endif %}
+        {% endif %}
+        {% if _data.grpc.server.keepalive is defined and
+              _data.grpc.server.keepalive | length > 0 %}
+          {% if _data.grpc.server.keepalive.time is defined and
+                _data.grpc.server.keepalive.time | string | length > 0 %}
+  grpc_server_keepalive_time: {{ _data.grpc.server.keepalive.time }}
+            {% endif %}
+          {% if _data.grpc.server.keepalive.timeout is defined and
+                _data.grpc.server.keepalive.timeout | string | length > 0 %}
+  grpc_server_keepalive_timeout: {{ _data.grpc.server.keepalive.timeout }}
+          {% endif %}
+        {% endif %}
+        {% if _data.grpc.server.min_time_between_pings is defined and
+              _data.grpc.server.min_time_between_pings | string | length > 0 %}
+  grpc_server_min_time_between_pings: {{ _data.grpc.server.min_time_between_pings }}
+        {% endif %}
+        {% if _data.grpc.server.ping_without_stream_allowed is defined and
+              _data.grpc.server.ping_without_stream_allowed | string | length > 0 %}
+  grpc_server_ping_without_stream_allowed: {{ _data.grpc.server.ping_without_stream_allowed | bool | ternary('true', 'false') }}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+    {# tls #}
+    {% if _data.tls is defined and
+          _data.tls | length > 0 %}
+      {% if _data.tls.cipher_suites is defined and
+            _data.tls.cipher_suites | string | length > 0 %}
+  tls_cipher_suites: {{ _data.tls.cipher_suites }}
+      {% endif %}
+      {% if _data.tls.min_version is defined and
+            _data.tls.min_version | string | length > 0 %}
+  tls_min_version: {{ _data.tls.min_version }}
+      {% endif %}
+    {% endif %}
+    {# ... #}
+    {% if _data.register_instrumentation is defined and
+          _data.register_instrumentation | string | length > 0 %}
+  register_instrumentation: {{ _data.register_instrumentation | bool | ternary('true', 'false') }}
+    {% endif %}
+    {% if _data.graceful_shutdown_timeout is defined and
+          _data.graceful_shutdown_timeout | string | length > 0 %}
+  graceful_shutdown_timeout: {{ _data.graceful_shutdown_timeout }}
+    {% endif %}
+    {# log #}
+    {% if _data.log is defined and
+          _data.log | length > 0 %}
+      {% if _data.log.format is defined and
+            _data.log.format in ["logfmt", "json"] %}
+  log_format: {{ _data.log.format }}
+      {% endif %}
+      {% if _data.log.level is defined and
+            _data.log.level in ["debug", "info", "warn", "error"] %}
+  log_level: {{ _data.log.level }}
+      {% endif %}
+      {% if _data.log.source.ips_enabled is defined and
+            _data.log.source.ips_enabled | string | length > 0 %}
+  log_source_ips_enabled: {{ _data.log.source.ips_enabled | bool | ternary('true', 'false') }}
+      {% endif %}
+      {% if _data.log.source.ips_header is defined and
+            _data.log.source.ips_header | string | length > 0 %}
+  log_source_ips_header: {{ _data.log.source.ips_header }}
+      {% endif %}
+      {% if _data.log.source.ips_regex is defined and
+            _data.log.source.ips_regex | string | length > 0 %}
+  log_source_ips_regex: {{ _data.log.source.ips_regex }}
+      {% endif %}
+      {% if _data.log.request_at_info_level_enabled is defined and
+            _data.log.request_at_info_level_enabled | string | length > 0 %}
+  log_request_at_info_level_enabled: {{ _data.log.request_at_info_level_enabled | bool | ternary('true', 'false') }}
+      {% endif %}
+    {% endif %}
+    {# ... #}
+    {% if _data.http_path_prefix is defined and
+          _data.http_path_prefix | string | length > 0 %}
+  http_path_prefix: {{ _data.http_path_prefix }}
+    {% endif %}
+    {% if _data.external_url is defined and
+          _data.external_url | string | length > 0 %}
+  external_url: {{ _data.external_url }}
+    {% endif %}
+    {% if _data.health_check_target is defined and
+          _data.health_check_target | string | length > 0 %}
+  health_check_target: {{ _data.health_check_target | bool | ternary('true', 'false') }}
+    {% endif %}
+    {% if _data.disable is defined and
+          _data.disable | string | length > 0 %}
+  disable: {{ _data.disable | bool | ternary('true', 'false') }}
+    {% endif %}
+    {% if _data.enable_runtime_reload is defined and
+          _data.enable_runtime_reload | string | length > 0 %}
+  enable_runtime_reload: {{ _data.enable_runtime_reload | bool | ternary('true', 'false') }}
+    {% endif %}
+{% endif %}

@@ -1,0 +1,162 @@
+---
+
+nginx_gzip:
+  enabled: true
+
+# nginx_custom_includes:
+#   prometheus.conf: |
+#     # https://nginx.org/en/docs/http/ngx_http_core_module.html#satisfy
+#     satisfy any;
+#     # Die IP des HAProxy
+#     # damit ist es möglich das Jobs, die über den Jenkins aufgerufen werden und gegen
+#     # die admin URLs (https://admin.*.DOMAIN.TLD/admin/*) gehen
+#     # ohne Username/Passwort zu nutzen
+#     # Alle anderen Requests benötigen weiterhin die Authentifizierung via BA
+#     allow 192.168.0.0/24;
+#     deny  all;
+#
+#     auth_basic           "Administrator’s Area";
+#     auth_basic_user_file "{{ htpasswd_credentials_path }}/.monitoring-passwdfile";
+
+
+nginx_logformat:
+  json_combined:
+    format: |
+      '{'
+        '"time_local": "$time_local",'
+        '"remote_addr": "$remote_addr",'
+        '"remote_user": "$remote_user",'
+        '"request": "$request",'
+        '"status": "$status",'
+        '"body_bytes_sent": "$body_bytes_sent",'
+        '"request_time": "$request_time",'
+        '"http_referrer": "$http_referer",'
+        '"http_user_agent": "$http_user_agent"'
+      '}';
+    # escape: json
+
+
+nginx_vhosts:
+  # HTTP
+  # ssl: false
+  # LE: false
+  - name: default
+    # Set to True if you want to redirect http to https
+    ssl:
+      enabled: false
+
+  - name: nginx-status
+    filename: 00-status
+    state: present  # default: present
+    enabled: true   # default: true
+    # domain(s)
+    domains:
+      - localhost
+    # listen
+    listen: 127.0.0.1:8088
+    # locations
+    locations:
+      "/nginx_status":
+        options: |
+          stub_status on;
+          access_log off;
+          allow 127.0.0.1;
+          deny all;
+
+  - name: 10-monitoring.molecule.lan
+    state: present
+    enabled: true
+
+    domains:
+      - monitoring.molecule.lan
+
+    listen: 80
+
+    root:  /var/www/monitoring.molecule.lan
+
+    logfiles:
+      access:
+        file: /var/log/nginx/monitoring.molecule.lan/access.log
+        loglevel: 'json_combined'
+      error:
+        file: /var/log/nginx/monitoring.molecule.lan/error.log
+        loglevel: notice
+
+  # HTTP
+  # enabled
+  # present
+  - name: 10-bar.molecule.lan
+    state: absent
+    enabled: false
+
+    domains:
+      - bar.molecule.lan
+
+    # Specify which port you want to listen to with clear HTTP, or leave undefined for 80
+    listen:
+      - "9000"
+      - "[::]:9000 ipv6only=on"
+
+    root:  /var/www/bar.molecule.lan
+
+    logfiles:
+      access:
+        file: /var/log/nginx/bar.molecule.lan/access.log
+        loglevel: 'json_combined'
+      error:
+        file: /var/log/nginx/bar.molecule.lan/error.log
+        loglevel: notice
+
+  # HTTPS
+  # enabled
+  # absent
+  # no letsencrypt
+  # > 15-foo.molecule.lan.conf
+  - name: 15-foo.molecule.lan
+    state: present
+    enabled: true
+
+    filename: 15-foo.molecule.lan.conf
+
+    domains:
+      - foo.molecule.lan
+
+    # Specify which port you want to listen to with clear HTTP, or leave undefined for 80
+    listen: 9443
+
+    # enable ssl
+    ssl:
+      enabled: true
+      certificate: /etc/ssl/certs/ssl-cert-snakeoil.pem
+      certificate_key: /etc/ssl/private/ssl-cert-snakeoil.key
+      dhparam: /etc/letsencrypt/ssl-dhparams.pem
+
+  # HTTPS
+  # enabled
+  # present
+  - name: 20-bar.molecule.lan
+    state: present
+    enabled: true
+
+    domains:
+      - bar.molecule.lan
+      - ruf.molecule.lan
+      - slo.molecule.lan
+      - zup.molecule.lan
+
+    # creates also an HTTP vhost only for redirect to HTTPS
+    redirect:
+      from_port: 80
+
+    # https://nginx.org/en/docs/http/ngx_http_core_module.html#listen
+    listen:
+      - 8443 reuseport
+      - 443 ssl http2
+
+    # enable ssl
+    ssl:
+      enabled: true
+      certificate:     /etc/letsencrypt/live/bar.molecule.lan/fullchain.pem
+      certificate_key: /etc/letsencrypt/live/bar.molecule.lan/privkey.pem
+
+...

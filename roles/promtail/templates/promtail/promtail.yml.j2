@@ -1,0 +1,91 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# {{ ansible_managed }}
+
+{% include('promtail.d/server.j2') %}
+{% include('promtail.d/clients.j2') %}
+{% include('promtail.d/positions.j2') %}
+{% include('promtail.d/target_config.j2') %}
+{% include('promtail.d/limits_config.j2') %}
+{% include('promtail.d/tracing.j2') %}
+{% include('promtail.d/scrape_configs.j2') %}
+{#
+# promtail -print-config-stderr
+
+server:
+  http_listen_network: tcp
+  http_listen_address: ""
+  http_listen_port: 80
+  http_listen_conn_limit: 0
+  http_tls_config:
+    cert_file: ""
+    key_file: ""
+    client_auth_type: ""
+    client_ca_file: ""
+  http_server_read_timeout: 30s
+  http_server_write_timeout: 30s
+  http_server_idle_timeout: 2m0s
+
+  grpc_listen_network: tcp
+  grpc_listen_address: ""
+  grpc_listen_port: 9095
+  grpc_listen_conn_limit: 0
+  grpc_tls_config:
+    cert_file: ""
+    key_file: ""
+    client_auth_type: ""
+    client_ca_file: ""
+  grpc_server_max_recv_msg_size: 4194304
+  grpc_server_max_send_msg_size: 4194304
+  grpc_server_max_concurrent_streams: 100
+  grpc_server_max_connection_idle: 2562047h47m16.854775807s
+  grpc_server_max_connection_age: 2562047h47m16.854775807s
+  grpc_server_max_connection_age_grace: 2562047h47m16.854775807s
+  grpc_server_keepalive_time: 2h0m0s
+  grpc_server_keepalive_timeout: 20s
+  grpc_server_min_time_between_pings: 5m0s
+  grpc_server_ping_without_stream_allowed: false
+
+  tls_cipher_suites: ""
+  tls_min_version: ""
+  register_instrumentation: true
+  graceful_shutdown_timeout: 30s
+  log_format: logfmt
+  log_level: info
+  log_source_ips_enabled: false
+  log_source_ips_header: ""
+  log_source_ips_regex: ""
+  log_request_at_info_level_enabled: false
+  http_path_prefix: ""
+  external_url: ""
+  health_check_target: null
+  disable: false
+  enable_runtime_reload: false
+client:
+  url: ""
+  batchwait: 1s
+  batchsize: 1048576
+  follow_redirects: false
+  enable_http2: false
+  backoff_config:
+    min_period: 500ms
+    max_period: 5m0s
+    max_retries: 10
+  timeout: 10s
+  tenant_id: ""
+  stream_lag_labels: ""
+positions:
+  sync_period: 10s
+  filename: /var/log/positions.yaml
+  ignore_invalid_yaml: false
+target_config:
+  sync_period: 10s
+  stdin: false
+limits_config:
+  readline_rate: 10000
+  readline_burst: 10000
+  readline_rate_drop: true
+  max_streams: 0
+tracing:
+  enabled: true
+
+#}

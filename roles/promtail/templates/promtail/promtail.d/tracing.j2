@@ -1,0 +1,12 @@
+{% if promtail_version is version_compare('2.7', '>=' ) %}
+  {% if promtail_tracing is defined and
+        promtail_tracing | length > 0 %}
+    {% set _data = promtail_tracing %}
+
+tracing:
+    {% if _data.enabled is defined and
+          _data.enabled | string | length > 0 %}
+  enabled: {{ _data.enabled | bool | ternary('true', 'false') }}
+    {% endif %}
+  {% endif %}
+{% endif %}

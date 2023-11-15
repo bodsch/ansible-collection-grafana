@@ -1,0 +1,39 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# {{ ansible_managed }}
+
+[Unit]
+Description           = Promtail is an agent which tails log files and pushes them to Loki.
+After                 = network-online.target
+StartLimitIntervalSec = 300
+StartLimitBurst       = 5
+
+[Service]
+Type                  = simple
+Environment           = "GOMAXPROCS={{ ansible_processor_vcpus | default(ansible_processor_count) }}"
+EnvironmentFile       = {{ promtail_defaults_directory }}/promtail
+
+User                  = {{ promtail_system_user }}
+Group                 = {{ promtail_system_group }}
+WorkingDirectory      = {{ promtail_storage_dir }}
+
+ExecReload            = /bin/kill -HUP $MAINPID
+
+ExecStartPre          = /bin/chown --recursive {{ promtail_system_user }}:{{ promtail_system_group }} {{ promtail_storage_dir }}
+{% if promtail_version is version_compare('2.7', '>=' ) %}
+ExecStartPre          = /usr/bin/promtail -config.file {{ promtail_config_dir }}/promtail.yml -check-syntax -log.level debug
+{% endif %}
+ExecStart             = /usr/bin/promtail $OPTIONS
+
+LimitNOFILE           = 65000
+SyslogIdentifier      = promtail
+Restart               = always
+RestartSec            = 1m
+{% if promtail_systemd.restart is defined and
+      promtail_systemd.restart | string | length > 0 and
+      promtail_systemd.restart %}
+{# restart every ... #}
+RuntimeMaxSec         = {{ promtail_systemd.max_runtime | default('7d') }}
+{% endif %}
+
+[Install]
+WantedBy              = multi-user.target

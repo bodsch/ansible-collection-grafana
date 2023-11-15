@@ -1,0 +1,132 @@
+---
+
+- name: detect extracted binary file for promtail on '{{ promtail_delegate_to }}'
+  become: false
+  delegate_to: "{{ promtail_delegate_to }}"
+  run_once: "{{ 'false' if promtail_direct_download else 'true' }}"
+  ansible.builtin.stat:
+    path: "{{ promtail_local_tmp_directory }}/promtail-linux-amd64"
+  register: stat_file_binary
+
+- name: fail when extracted binary are missing
+  ansible.builtin.fail:
+    msg: "missing extracted binary on ansible controller"
+  when:
+    - not stat_file_binary.stat.exists
+
+- name: detect installed promtail binary
+  ansible.builtin.stat:
+    path: "{{ promtail_install_path }}/promtail"
+  register: stat_promtail_binary
+
+- name: detect activated promtail binary
+  ansible.builtin.stat:
+    path: /usr/bin/promtail
+  register: stat_promtail_activated
+
+- name: install and activate promtail
+  when:
+    - stat_promtail_binary.stat is defined
+    - not stat_promtail_binary.stat.exists | default('false')
+    - stat_promtail_activated.stat is defined
+    - not stat_promtail_activated.stat.exists | default('false')
+  block:
+    - name: propagate promtail binaries
+      ansible.builtin.copy:
+        src: "{{ promtail_local_tmp_directory }}/promtail-linux-amd64"
+        dest: "{{ promtail_install_path }}/promtail"
+        mode: 0755
+        owner: "{{ promtail_system_user }}"
+        group: "{{ promtail_system_group }}"
+        remote_src: "{{ 'true' if promtail_direct_download else 'false' }}"
+      when:
+        - stat_file_binary.stat.exists
+
+    - name: make files executable
+      ansible.builtin.file:
+        path: "{{ promtail_install_path }}/promtail"
+        mode: 0755
+        owner: "{{ promtail_system_user }}"
+        group: "{{ promtail_system_group }}"
+
+    - name: create link to binary
+      ansible.builtin.file:
+        src: "{{ promtail_install_path }}/promtail"
+        dest: /usr/bin/promtail
+        state: link
+        force: true
+      notify:
+        - restart promtail
+
+  rescue:
+    - name: delete install directory
+      ansible.builtin.file:
+        path: "{{ promtail_install_path }}"
+        state: absent
+
+    - name: exit with fail
+      ansible.builtin.fail:
+        msg: A serious error occurred during the installation of the binary.
+
+- name: create promtail data directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ promtail_system_user }}"
+    group: "{{ promtail_system_group }}"
+    mode: 0755
+  loop:
+    - "{{ promtail_storage_dir }}"
+
+- name: systemd
+  when:
+    - ansible_service_mgr | lower == "systemd"
+  block:
+    - name: create promtail run configuration
+      ansible.builtin.template:
+        src: "promtail.j2"
+        dest: "{{ promtail_defaults_directory }}/promtail"
+        force: true
+        owner: root
+        group: "{{ promtail_system_group }}"
+        mode: 0640
+      notify:
+        - reload promtail
+
+    - name: create systemd service unit
+      ansible.builtin.template:
+        src: "init/systemd/promtail.service.j2"
+        dest: "{{ systemd_lib_directory }}/promtail.service"
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - daemon-reload
+
+- name: openrc
+  when:
+    - ansible_service_mgr | lower == "openrc"
+  block:
+    - name: create openrc service configuration
+      ansible.builtin.template:
+        src: "init/openrc/conf.d/promtail.j2"
+        dest: "/etc/conf.d/promtail"
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: create openrc init configuration
+      ansible.builtin.template:
+        src: "init/openrc/init.d/promtail.j2"
+        dest: "/etc/init.d/promtail"
+        owner: root
+        group: root
+        mode: 0750
+
+- name: create custom fact file
+  bodsch.core.facts:
+    name: promtail
+    facts:
+      version: "{{ promtail_version }}"
+
+...
