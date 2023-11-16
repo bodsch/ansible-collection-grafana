@@ -1,7 +1,7 @@
 ---
 
 namespace: bodsch
-name: galaxy
+name: grafana
 
 version: 0.9.0
 
