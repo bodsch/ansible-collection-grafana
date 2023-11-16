@@ -14,6 +14,27 @@ import dirsync
 
 from ansible.module_utils.basic import AnsibleModule
 
+# ---------------------------------------------------------------------------------------
+
+DOCUMENTATION = """
+module: sync_dashboards
+version_added: 1.0.0
+author: "Bodo Schulz (@bodsch) <bodo@boone-schulz.de>"
+
+short_description: TBD
+
+description:
+    - TBD
+"""
+
+EXAMPLES = """
+"""
+
+RETURN = """
+"""
+
+# ---------------------------------------------------------------------------------------
+
 
 class TailLogHandler(logging.Handler):
 

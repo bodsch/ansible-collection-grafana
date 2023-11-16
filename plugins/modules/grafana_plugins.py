@@ -8,6 +8,27 @@ from ansible.module_utils.basic import AnsibleModule
 
 import re
 
+# ---------------------------------------------------------------------------------------
+
+DOCUMENTATION = """
+module: grafana_plugins
+version_added: 1.0.0
+author: "Bodo Schulz (@bodsch) <bodo@boone-schulz.de>"
+
+short_description: TBD
+
+description:
+    - TBD
+"""
+
+EXAMPLES = """
+"""
+
+RETURN = """
+"""
+
+# ---------------------------------------------------------------------------------------
+
 
 class GrafanaCLI(object):
     """

@@ -10,7 +10,6 @@ display = Display()
 
 class FilterModule(object):
     """
-      ansible filter
     """
 
     def filters(self):
@@ -26,8 +25,6 @@ class FilterModule(object):
     def compare_list(self, data_list, compare_to_list):
         """
         """
-        # display.v(f"compare_list({data_list}, {compare_to_list})")
-
         result = []
 
         for i in data_list:
@@ -39,10 +36,8 @@ class FilterModule(object):
 
     def validate_attachment_hash(self, data, compare_to_list):
         """
-
         """
-        display.v(f"validate_attachment_hash({data}, {compare_to_list})")
-
+        # display.v(f"validate_attachment_hash({data}, {compare_to_list})")
         if ':' in data:
             for i in compare_to_list:
                 if i[:-1] in data:
@@ -138,9 +133,9 @@ class FilterModule(object):
     def non_existing_api(self, data, existing_api_keys):
         """
         """
-        display.v(f"non_existing_api({data}, {existing_api_keys})")
-        display.v(f"  - {type(data)}")
-        display.v(f"  - {type(existing_api_keys)}")
+        # display.v(f"non_existing_api({data}, {existing_api_keys})")
+        # display.v(f"  - {type(data)}")
+        # display.v(f"  - {type(existing_api_keys)}")
 
         if len(existing_api_keys) == 0:
             """

@@ -12,6 +12,27 @@ import json
 import requests
 from pathlib import Path
 
+# ---------------------------------------------------------------------------------------
+
+DOCUMENTATION = """
+module: grafana_api_keys
+version_added: 1.0.0
+author: "Bodo Schulz (@bodsch) <bodo@boone-schulz.de>"
+
+short_description: TBD
+
+description:
+    - TBD
+"""
+
+EXAMPLES = """
+"""
+
+RETURN = """
+"""
+
+# ---------------------------------------------------------------------------------------
+
 
 class GrafanaAPIKeys(object):
     """

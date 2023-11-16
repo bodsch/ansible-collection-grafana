@@ -10,7 +10,6 @@ display = Display()
 
 class FilterModule(object):
     """
-        Ansible file jinja2 tests
     """
 
     def filters(self):
@@ -22,7 +21,6 @@ class FilterModule(object):
     def file_list(self, data):
         """
         """
-        # display.v(f"file_list(self, {data})")
         result = []
         if isinstance(data, list):
             result = [x.get("path") for x in data if x.get("path")]
@@ -32,7 +30,6 @@ class FilterModule(object):
     def content_security_policy(self, data):
         """
         """
-        # display.v(f"content_security_policy(self, {data})")
         def _string(s):
             """
             """
@@ -56,11 +53,9 @@ class FilterModule(object):
                 form-action 'self';
             """
             for key, value in data.items():
-                # display.v(f"  - '{key}' '{value}'")
                 _v = []
                 for str in value:
                     _value = _string(str)
-                    # display.v(f"    - '{_value}'")
                     _v.append(_value)
 
                 values = " ".join(_v)

@@ -13,6 +13,27 @@ import requests
 from requests.exceptions import ConnectionError
 from pathlib import Path
 
+# ---------------------------------------------------------------------------------------
+
+DOCUMENTATION = """
+module: grafana_service_accounts
+version_added: 1.0.0
+author: "Bodo Schulz (@bodsch) <bodo@boone-schulz.de>"
+
+short_description: TBD
+
+description:
+    - TBD
+"""
+
+EXAMPLES = """
+"""
+
+RETURN = """
+"""
+
+# ---------------------------------------------------------------------------------------
+
 
 class GrafanaServiceAccount(object):
     """
