@@ -90,7 +90,7 @@
       delegate_to: "{{ promtail_delegate_to }}"
       run_once: "{{ 'false' if promtail_direct_download else 'true' }}"
       ansible.builtin.get_url:
-        url: "{{ promtail_release_download_url }}/download/v{{ promtail_version }}/{{ promtail_release.file }}"
+        url: "{{ promtail_release.download_url }}/download/v{{ promtail_version }}/{{ promtail_release.file }}"
         dest: "{{ promtail_local_tmp_directory }}/{{ promtail_release.file }}"
         checksum: "{{ __promtail_checksum | default(omit) }}"
         mode: 0644

@@ -187,7 +187,7 @@ promtail_must_be_install_or_activate: false
 promtail_defaults_directory: /etc/default
 
 promtail_defaults_release:
-  github_url: https://github.com/grafana/loki/releases
+  download_url: https://github.com/grafana/loki/releases
   api_url: https://api.github.com/repos/grafana/loki/releases
   file: "promtail-{{ ansible_facts.system | lower }}-{{ system_architecture }}.zip"
   binary: promtail
