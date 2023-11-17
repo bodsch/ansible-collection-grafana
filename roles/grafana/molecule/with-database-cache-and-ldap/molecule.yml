@@ -47,7 +47,7 @@ platforms:
         ipv4_address: "10.13.0.10"
 
   - name: influxdb
-    image: "bodsch/ansible-debian:12"
+    image: "bodsch/ansible-debian:11"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
     privileged: true

@@ -1,7 +1,8 @@
 ---
 
 grafana_provisioning:
-  # Should we use the provisioning capability when possible (provisioning require grafana >= 5.0)
+  # Should we use the provisioning capability when possible
+  # (provisioning require grafana >= 5.0)
   enabled: false
 
 grafana_api: {}
@@ -50,7 +51,7 @@ grafana_datasources:
   loki:
     datasource:
       type: "loki"
-      url: "http://loki.cmsops.arri.com"
+      url: "http://loki.mydomain"
     editable: true
 
 ...

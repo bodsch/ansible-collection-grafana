@@ -69,7 +69,7 @@ x_xss_protection                = {{ grafana_config_security.x_xss_protection | 
 content_security_policy         = {{ grafana_config_security.content_security_policy | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
     {% if grafana_config_security.content_security_policy_template is defined and
           grafana_config_security.content_security_policy_template | count > 0 %}
-      {% set policy = grafana_config_security.content_security_policy_template | content_security_policy() %}
+      {% set policy = grafana_config_security.content_security_policy_template | bodsch.grafana.content_security_policy() %}
 content_security_policy_template = """{{ policy }}"""
     {% endif %}
   {% endif %}
