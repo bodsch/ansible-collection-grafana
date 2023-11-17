@@ -241,7 +241,6 @@ loki_defaults_config_ruler:
 loki_defaults_config_tracing:
   enabled: false
 
-
 # ----------------------------------------------------------------------------------------
 
 loki_upgrade: false

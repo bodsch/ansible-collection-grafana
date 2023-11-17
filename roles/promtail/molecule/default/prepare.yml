@@ -1,7 +1,7 @@
 ---
 
 - name: information
-  hosts: instance
+  hosts: all
   gather_facts: true
 
   pre_tasks:
@@ -24,6 +24,11 @@
           when:
             - ansible_os_family | lower == 'artix linux'
 
+    - name: update package cache
+      become: true
+      ansible.builtin.package:
+        update_cache: true
+
     - name: environment
       ansible.builtin.debug:
         msg:
@@ -31,7 +36,6 @@
           - "distribution version : {{ ansible_distribution_major_version }}"
           - "ansible version      : {{ ansible_version.full }}"
           - "python version       : {{ ansible_python.version.major }}.{{ ansible_python.version.minor }}"
-
 
 - name: prepare container
   hosts: instance

@@ -60,7 +60,7 @@
 - name: install and activate loki
   when:
     - (stat_loki_binary.stat is defined and not stat_loki_binary.stat.exists | default('false')) or
-      not stat_loki_activated.stat | bodsch.prometheus.linked_version(loki_install_path, loki_version)
+      not stat_loki_activated.stat | bodsch.core.linked_version(loki_install_path, loki_version)
   block:
     - name: propagate binaries
       ansible.builtin.copy:

@@ -179,7 +179,18 @@ promtail_defaults_limits:
 promtail_defaults_tracing:
   enabled: false
 
+# ----------------------------------------------------------------------------------------
+
+promtail_upgrade: false
+promtail_must_be_install_or_activate: false
+
 promtail_defaults_directory: /etc/default
+
+promtail_defaults_release:
+  github_url: https://github.com/grafana/loki/releases
+  api_url: https://api.github.com/repos/grafana/loki/releases
+  file: "promtail-{{ ansible_facts.system | lower }}-{{ system_architecture }}.zip"
+  binary: promtail
 
 go_arch_map:
   x86_64: 'amd64'
@@ -187,8 +198,22 @@ go_arch_map:
   armv7l: 'armv7'
   armv6l: 'armv6'
 
-go_arch: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+system_architecture: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
 
 systemd_lib_directory: /lib/systemd/system
 
 ...
+
+# promtail_defaults_directory: /etc/default
+#
+# go_arch_map:
+#   x86_64: 'amd64'
+#   aarch64: 'arm64'
+#   armv7l: 'armv7'
+#   armv6l: 'armv6'
+#
+# go_arch: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+#
+# systemd_lib_directory: /lib/systemd/system
+#
+# ...

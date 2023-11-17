@@ -1,5 +1,47 @@
 ---
 
+- name: user and group handling
+  when:
+    - promtail_system_user != "root" or promtail_system_group != "root"
+  block:
+    - name: create promtail group
+      ansible.builtin.group:
+        name: "{{ promtail_system_group }}"
+        state: present
+        system: true
+      when:
+        - promtail_system_group != "root"
+
+    - name: create promtail user
+      ansible.builtin.user:
+        name: "{{ promtail_system_user }}"
+        groups: "{{ promtail_system_group }}"
+        append: true
+        shell: /usr/sbin/nologin
+        system: true
+        createhome: false
+        home: /nonexistent
+      when:
+        - promtail_system_user != "root"
+
+    - name: add user {{ promtail_system_user }} to additional groups
+      ansible.builtin.user:
+        name: "{{ promtail_system_user }}"
+        groups: "{{ item }}"
+        append: true
+        state: present
+      loop: "{{ promtail_additional_groups }}"
+      loop_control:
+        label: "add {{ promtail_system_user }} to group {{ item }}"
+
+- name: create install directory
+  ansible.builtin.file:
+    path: "{{ promtail_install_path }}"
+    state: directory
+    owner: "{{ promtail_system_user }}"
+    group: "{{ promtail_system_group }}"
+    mode: 0755
+
 - name: detect extracted binary file for promtail on '{{ promtail_delegate_to }}'
   become: false
   delegate_to: "{{ promtail_delegate_to }}"
@@ -26,10 +68,8 @@
 
 - name: install and activate promtail
   when:
-    - stat_promtail_binary.stat is defined
-    - not stat_promtail_binary.stat.exists | default('false')
-    - stat_promtail_activated.stat is defined
-    - not stat_promtail_activated.stat.exists | default('false')
+    - (stat_promtail_binary.stat is defined and not stat_promtail_binary.stat.exists | default('false')) or
+      not stat_promtail_activated.stat | bodsch.core.linked_version(promtail_install_path, promtail_version)
   block:
     - name: propagate promtail binaries
       ansible.builtin.copy:
@@ -91,7 +131,7 @@
         group: "{{ promtail_system_group }}"
         mode: 0640
       notify:
-        - reload promtail
+        - restart promtail
 
     - name: create systemd service unit
       ansible.builtin.template:
@@ -102,6 +142,7 @@
         mode: 0644
       notify:
         - daemon-reload
+        - restart promtail
 
 - name: openrc
   when:

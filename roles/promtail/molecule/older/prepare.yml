@@ -1,7 +1,7 @@
 ---
 
 - name: information
-  hosts: instance
+  hosts: all
   gather_facts: true
 
   pre_tasks:
@@ -23,6 +23,11 @@
               true
           when:
             - ansible_os_family | lower == 'artix linux'
+
+    - name: update package cache
+      become: true
+      ansible.builtin.package:
+        update_cache: true
 
     - name: environment
       ansible.builtin.debug:

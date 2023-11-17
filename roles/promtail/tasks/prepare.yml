@@ -18,129 +18,43 @@
         - default.yaml
       skip: true
 
-- name: update package cache
-  ansible.builtin.package:
-    update_cache: true
-
-- name: define delegate instance for download handling
-  ansible.builtin.set_fact:
-    promtail_delegate_to: "{{ ansible_host }}"
-    promtail_local_tmp_directory: "{{
-        lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
-        default('/var/cache/ansible/promtail', true) }}/{{ promtail_version }}"
-  when:
-    - promtail_direct_download
-
 - name: install dependency
   ansible.builtin.package:
     name: "{{ promtail_requirements }}"
     state: present
 
-- name: get latest release
-  delegate_to: localhost
-  become: false
-  run_once: true
-  when:
-    - promtail_version == "latest"
-  block:
-    - name: get latest release
-      delegate_to: localhost
-      become: false
-      run_once: true
-      bodsch.scm.github_latest:
-        project: grafana
-        repository: loki
-        user: "{{ lookup('env', 'GH_USER') | default(omit) }}"
-        password: "{{ lookup('env', 'GH_TOKEN') | default(omit) }}"
-      register: _latest_release
-
-    - name: re-define promtail_version
-      ansible.builtin.set_fact:
-        promtail_version: "{{ _latest_release.latest_release }}"
-
-- name: detect our installation path
-  ansible.builtin.stat:
-    path: "{{ promtail_install_path | dirname }}"
-    get_checksum: false
-  register: stat_promtail_path
-  ignore_errors: true
-
-- name: old installation
-  when:
-    - stat_promtail_path is defined
-    - stat_promtail_path.stat is defined
-    - stat_promtail_path.stat.isdir is defined
-    - not stat_promtail_path.stat.isdir
-  block:
-    - name: stop old service
-      ansible.builtin.service:
-        name: promtail
-        state: stopped
-        enabled: false
-
-    - name: remove installed systemd unit
-      ansible.builtin.file:
-        state: absent
-        path: /etc/systemd/system/promtail.service
-
-    - name: remove installed promtail
-      ansible.builtin.file:
-        state: absent
-        path: "{{ stat_promtail_path.stat.path }}"
-
-- name: flush handlers
-  ansible.builtin.meta: flush_handlers
-
-- name: user and group handling
-  when:
-    - promtail_system_user != "root" or promtail_system_group != "root"
-  block:
-    - name: create promtail group
-      ansible.builtin.group:
-        name: "{{ promtail_system_group }}"
-        state: present
-        system: true
-      when:
-        - promtail_system_group != "root"
-
-    - name: create promtail user
-      ansible.builtin.user:
-        name: "{{ promtail_system_user }}"
-        groups: "{{ promtail_system_group }}"
-        append: true
-        shell: /usr/sbin/nologin
-        system: true
-        createhome: false
-        home: /nonexistent
-      when:
-        - promtail_system_user != "root"
-
-    - name: add user {{ promtail_system_user }} to additional groups
-      ansible.builtin.user:
-        name: "{{ promtail_system_user }}"
-        groups: "{{ item }}"
-        append: true
-        state: present
-      loop: "{{ promtail_additional_groups }}"
-      loop_control:
-        label: "add {{ promtail_system_user }} to group {{ item }}"
-
-- name: create install directory
-  ansible.builtin.file:
-    path: "{{ promtail_install_path }}"
-    state: directory
-    owner: "{{ promtail_system_user }}"
-    group: "{{ promtail_system_group }}"
-    mode: 0755
-
-# - name: fix directory rights for {{ promtail_install_path | dirname }}
-#   ansible.builtin.file:
+# - name: detect our installation path
+#   ansible.builtin.stat:
 #     path: "{{ promtail_install_path | dirname }}"
-#     state: directory
-#     owner: "{{ promtail_system_user }}"
-#     group: "{{ promtail_system_group }}"
-#     mode: 0755
-#     recurse: true
+#     get_checksum: false
+#   register: stat_promtail_path
+#   ignore_errors: true
+#
+# - name: old installation
+#   when:
+#     - stat_promtail_path is defined
+#     - stat_promtail_path.stat is defined
+#     - stat_promtail_path.stat.isdir is defined
+#     - not stat_promtail_path.stat.isdir
+#   block:
+#     - name: stop old service
+#       ansible.builtin.service:
+#         name: promtail
+#         state: stopped
+#         enabled: false
+#
+#     - name: remove installed systemd unit
+#       ansible.builtin.file:
+#         state: absent
+#         path: /etc/systemd/system/promtail.service
+#
+#     - name: remove installed promtail
+#       ansible.builtin.file:
+#         state: absent
+#         path: "{{ stat_promtail_path.stat.path }}"
+#
+# - name: flush handlers
+#   ansible.builtin.meta: flush_handlers
 
 - name: merge promtail configuration between defaults and custom
   ansible.builtin.set_fact:

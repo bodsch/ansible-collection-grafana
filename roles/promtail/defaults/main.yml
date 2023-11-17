@@ -1,7 +1,10 @@
 ---
 
 promtail_version: "2.7.2"
-promtail_release_download_url: https://github.com/grafana/loki/releases
+
+promtail_release: {}
+
+# promtail_release_download_url: https://github.com/grafana/loki/releases
 
 promtail_system_user: promtail
 promtail_system_group: promtail
