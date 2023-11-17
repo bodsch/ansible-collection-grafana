@@ -40,8 +40,5 @@
     delay: 2              # No wait before first check (sec)
     timeout: 120          # Stop checking after timeout (sec)
     msg: timeout for start service
-  #ignore_errors: true
-  #retries: 10
-  #delay: 10
 
 ...

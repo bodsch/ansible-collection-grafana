@@ -241,7 +241,18 @@ loki_defaults_config_ruler:
 loki_defaults_config_tracing:
   enabled: false
 
+
+# ----------------------------------------------------------------------------------------
+
+loki_upgrade: false
+loki_must_be_install_or_activate: false
+
 loki_defaults_directory: /etc/default
+
+loki_defaults_release:
+  github_url: https://github.com/grafana/loki/releases
+  api_url: https://api.github.com/repos/grafana/loki/releases
+  file: "-{{ loki_version }}.{{ ansible_facts.system | lower }}-{{ system_architecture }}.zip"
 
 go_arch_map:
   x86_64: 'amd64'
@@ -249,7 +260,7 @@ go_arch_map:
   armv7l: 'armv7'
   armv6l: 'armv6'
 
-go_arch: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+system_architecture: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
 
 systemd_lib_directory: /lib/systemd/system
 

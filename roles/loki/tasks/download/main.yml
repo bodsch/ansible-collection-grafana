@@ -1,0 +1,73 @@
+---
+
+- name: define latest version
+  delegate_to: localhost
+  become: false
+  run_once: true
+  when:
+    - loki_version == "latest"
+  block:
+    - name: get latest release
+      delegate_to: localhost
+      become: false
+      run_once: true
+      bodsch.scm.github_latest:
+        project: grafana
+        repository: loki
+        user: "{{ lookup('env', 'GH_USER') | default(omit) }}"
+        password: "{{ lookup('env', 'GH_TOKEN') | default(omit) }}"
+        github_tags: "{{ loki_scm.use_tags | default('false') }}"
+        without_beta: "{{ loki_scm.without_beta | default('false') }}"
+        filter_elements: "{{ loki_scm.version_filter | default([]) }}"
+      register: _latest_release
+
+    - name: re-define loki_version
+      ansible.builtin.set_fact:
+        loki_version: "{{ _latest_release.latest_release }}"
+
+- name: define download information
+  ansible.builtin.set_fact:
+    loki_release: "{{ loki_defaults_release | combine(loki_release, recursive=True) }}"
+
+- name: define delegate instance for download handling
+  ansible.builtin.set_fact:
+    loki_delegate_to: "{{ ansible_host }}"
+    loki_local_tmp_directory: "{{
+        lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
+        default('/var/cache/ansible/loki', true) }}/{{ loki_version }}"
+  when:
+    - loki_direct_download
+
+- name: create download directory
+  become: false
+  delegate_to: "{{ loki_delegate_to }}"
+  ansible.builtin.file:
+    path: "{{ loki_local_tmp_directory }}"
+    state: directory
+    mode: 0750
+
+- name: checksum
+  become: false
+  delegate_to: localhost
+  run_once: true
+  block:
+    - name: get checksum list
+      bodsch.scm.github_checksum:
+        project: grafana
+        repository: loki
+        checksum_file: SHA256SUMS
+        user: "{{ lookup('env', 'GH_USER') | default(omit) }}"
+        password: "{{ lookup('env', 'GH_TOKEN') | default(omit) }}"
+        architecture: "{{ ansible_architecture }}"
+        system: "{{ ansible_facts.system }}"
+        version: "v{{ loki_version }}"
+      register: _latest_checksum
+
+- name: download archives
+  ansible.builtin.include_tasks: download/download.yml
+  loop: "{{ loki_packages }}"
+  loop_control:
+    index_var: index
+    label: "{{ item }}"
+
+...

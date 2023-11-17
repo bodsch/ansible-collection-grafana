@@ -23,7 +23,4 @@
     - restart loki
     - wait for running service
 
-#- name: restart loki if needed
-#  ansible.builtin.meta: flush_handlers
-
 ...

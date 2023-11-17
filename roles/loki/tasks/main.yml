@@ -4,13 +4,10 @@
   ansible.builtin.include_tasks: prepare.yml
 
 - name: download archives
-  ansible.builtin.include_tasks: download.yml
-  loop: "{{ loki_packages }}"
-  loop_control:
-    index_var: index
-    label: "{{ item }}"
-  when:
-    - not stat_loki_binary.stat.exists
+  ansible.builtin.include_tasks: download/main.yml
+
+- name: external installation
+  ansible.builtin.import_tasks: external_installation.yml
 
 - name: install
   ansible.builtin.include_tasks: install.yml

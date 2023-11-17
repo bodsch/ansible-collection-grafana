@@ -1,7 +1,20 @@
 ---
 
 loki_version: "2.7.2"
-loki_release_download_url: https://github.com/grafana/loki/releases
+
+loki_scm:
+  use_tags: true
+  without_beta: false
+  version_filter:
+    - ".*test*"
+    - ".*preview"
+    - ".*beta"
+    - ".*rc"
+
+loki_release: {}
+  # github_url: https://github.com/grafana/loki/releases
+  # api_url: https://api.github.com/repos/grafana/loki/releases
+  # file: "-{{ loki_version }}.{{ ansible_facts.system | lower }}-{{ system_architecture }}.zip"
 
 loki_system_user: loki
 loki_system_group: loki
