@@ -6,4 +6,4 @@
   become: false
 
   roles:
-    - role: ansible-loki
+    - role: bodsch.grafana.loki

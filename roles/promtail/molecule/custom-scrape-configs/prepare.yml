@@ -38,5 +38,5 @@
   gather_facts: true
 
   roles:
-    - role: loki
+    - role: bodsch.grafana.loki
     - role: nginx

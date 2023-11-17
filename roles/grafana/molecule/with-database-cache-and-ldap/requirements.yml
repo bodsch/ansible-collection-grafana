@@ -19,7 +19,7 @@
 - name: nginx
   src: https://github.com/bodsch/ansible-nginx
   scm: git
-  version: 0.25.0
+  version: 0.25.1
 
 - name: redis
   src: https://github.com/bodsch/ansible-redis

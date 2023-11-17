@@ -6,4 +6,4 @@
   become: false
 
   roles:
-    - role: ansible-grafana
+    - role: bodsch.grafana.grafana

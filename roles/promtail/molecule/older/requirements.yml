@@ -1,7 +1,0 @@
----
-
-- name: loki
-  src: bodsch.loki
-  version: 2.1.0
-
-...
