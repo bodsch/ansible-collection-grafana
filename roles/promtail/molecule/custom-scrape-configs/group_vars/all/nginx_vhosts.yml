@@ -3,7 +3,7 @@
 nginx_vhosts: "{{
   nginx_vhosts_default |
   union(nginx_vhosts_redirects) |
-  union(nginx_vhosts_base | defult([])) }}"
+  union(nginx_vhosts_base | default([])) }}"
 
 
 nginx_vhosts_default:
