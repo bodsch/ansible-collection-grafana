@@ -1,0 +1,498 @@
+---
+
+nginx_vhosts: "{{
+  nginx_vhosts_default |
+  union(nginx_vhosts_redirects) |
+  union(nginx_vhosts_base) }}"
+
+
+nginx_vhosts_default:
+
+  - name: default
+    enabled: false
+    description: |
+      simply a default vhost
+    ssl:
+      enabled: false
+
+  - name: nginx-status
+    filename: 00-status.conf
+    state: present  # default: present
+    enabled: true   # default: true
+    template: vhost_status.j2
+    # domain(s)
+    domains:
+      - localhost
+    # listen
+    listen:
+      - 127.0.0.1:8088
+
+    root_directory: /var/www/
+
+    # locations
+    locations:
+      "/nginx_status":
+        options: |
+          stub_status on;
+          access_log off;
+          allow 127.0.0.1;
+          deny all;
+
+nginx_vhosts_redirects:
+
+  - name: 01.docker.local
+    filename: 10-01.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 01.docker.local
+
+    root_directory: /var/www/01.docker.local
+    root_directory_create: True
+
+    logfiles: {}
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/01.html;
+
+  - name: 02.docker.local
+    filename: 10-02.docker.local.conf
+    state: present
+    enabled: false
+
+    listen: 80
+    domains:
+      - 02.docker.local
+
+    root_directory: /var/www/02.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/02.html;
+
+  - name: 03.docker.local
+    filename: 10-03.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 03.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/03.html;
+
+  - name: 04.docker.local
+    filename: 10-04.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 04.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/04.html;
+
+  - name: 05.docker.local
+    filename: 10-05.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 05.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/05.html;
+
+  - name: 06.docker.local
+    filename: 10-06.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 06.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/06.html;
+  - name: 07.docker.local
+    filename: 10-07.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 07.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/07.html;
+
+  - name: 08.docker.local
+    filename: 10-08.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 08.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/08.html;
+
+  - name: 09.docker.local
+    filename: 10-09.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 09.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/09.html;
+
+  - name: 10.docker.local
+    filename: 10-10.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 10.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/10.html;
+
+  - name: 11.docker.local
+    filename: 10-11.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 11.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/11.html;
+
+  - name: 12.docker.local
+    filename: 10-12.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 12.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/12.html;
+
+  - name: 13.docker.local
+    filename: 10-13.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 13.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/13.html;
+
+  - name: 14.docker.local
+    filename: 10-14.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 14.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/14.html;
+
+  - name: 15.docker.local
+    filename: 10-15.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 15.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/15.html;
+
+  - name: 16.docker.local
+    filename: 10-16.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 16.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/16.html;
+
+  - name: 17.docker.local
+    filename: 10-17.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 17.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/17.html;
+
+  - name: 18.docker.local
+    filename: 10-18.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 18.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/18.html;
+
+  - name: 19.docker.local
+    filename: 10-19.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 19.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/19.html;
+
+  - name: 20.docker.local
+    filename: 10-20.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 20.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/20.html;
+
+  - name: 21.docker.local
+    filename: 10-21.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 21.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/21.html;
+
+  - name: 22.docker.local
+    filename: 10-22.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 22.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/22.html;
+
+  - name: 23.docker.local
+    filename: 10-23.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 23.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/23.html;
+
+  - name: 24.docker.local
+    filename: 10-24.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 24.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/24.html;
+
+  - name: 25.docker.local
+    filename: 10-25.docker.local.conf
+    state: present
+    enabled: true
+
+    listen: 80
+    domains:
+      - 25.docker.local
+
+    locations:
+      "^~ /":
+        options: |
+          return 301 https://molecule.docker.local/25.html;
+
+nginx_vhosts_base:
+
+  - name: 20-molecule.docker.local
+    state: present
+    enabled: true
+
+    domains:
+      - molecule.docker.local
+      - docker.local
+
+    root_directory: /var/www/docker.local
+    root_directory_create: true
+
+    # creates also an HTTP vhost only for redirect to HTTPS
+    redirect:
+      from_port: 80
+
+    listen:
+      - 443 ssl http2
+      - 8443 reuseport
+
+    logfiles:
+      access:
+        file: /var/log/nginx/molecule.docker.local/access.log
+        loglevel: 'json_combined'
+      error:
+        file: /var/log/nginx/molecule.docker.local/error.log
+        loglevel: warn
+
+    # enable ssl
+    ssl:
+      enabled: true
+      ciphers: default
+      certificate:     /etc/snakeoil/docker.local/docker.local.pem
+      certificate_key: /etc/snakeoil/docker.local/docker.local.key
+      dhparam: /etc/snakeoil/docker.local/dh.pem
+
+  - name: 20-foo.docker.local
+    filename: 20-foo.docker.local.conf
+    state: absent
+    enabled: true
+
+    domains:
+      - foo.docker.local
+
+    listen: 80
+
+    root:  /var/www/foo.docker.local
+
+    logfiles:
+      access:
+        file: /var/log/nginx/foo.docker.local/access.log
+        # loglevel: 'json_analytics'
+      error:
+        file: /var/log/nginx/foo.docker.local/error.log
+        loglevel: notice
+
+    # list of upstream servers
+    upstreams:
+      - name: paperless
+        servers:
+          - 127.0.0.1:8080   max_fails=3 fail_timeout=30s
+        # strategy: 'ip_hash'
+        keepalive: 32
+      - name: unifi
+        servers:
+          - 127.0.0.1:8090   max_fails=3 fail_timeout=30s
+        # strategy: 'ip_hash'
+        keepalive: 32
+
+    locations:
+      "^~ /":
+        options: |
+          add_header X-Backend "bar";
+
+          proxy_pass         http://paperless/;
+          proxy_set_header   Host              $host;
+          proxy_set_header   X-Real-IP         $remote_addr;
+          proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+          proxy_set_header   X-Forwarded-Proto $scheme;
+
+  - name: 40-foo.docker.local
+    filename: 40-foo.docker.local.conf
+    state: present
+    enabled: false
+
+    domains:
+      - foo.docker.local
+
+    listen:
+      - 443 ssl http2
+
+    # enable ssl
+    ssl:
+      enabled: true
+      ciphers: default
+      certificate:     /etc/snakeoil/docker.local/docker.local.pem
+      certificate_key: /etc/snakeoil/docker.local/docker.local.pem
+
+...

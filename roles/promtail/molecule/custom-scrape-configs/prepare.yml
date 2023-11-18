@@ -42,5 +42,6 @@
   gather_facts: true
 
   roles:
+    - role: snakeoil
     - role: bodsch.grafana.loki
     - role: nginx

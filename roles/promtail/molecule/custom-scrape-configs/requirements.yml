@@ -4,4 +4,12 @@
   src: bodsch.nginx
   version: 0.25.1
 
+- name: htpasswd
+  src: bodsch.htpasswd
+  version: 1.1.5
+
+- name: snakeoil
+  src: bodsch.snakeoil
+  version: 1.5.0
+
 ...
