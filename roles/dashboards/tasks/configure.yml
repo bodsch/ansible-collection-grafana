@@ -28,7 +28,7 @@
 
 - name: syncronize changed dashboards
   become: true
-  sync_dashboards:
+  bodsch.grafana.sync_dashboards:
     source_directory: "{{ grafana_dashboards_remote_tmp_directory }}/"
     destination_directory: "{{ grafana_data_dir }}/dashboards/"
     include_pattern:
