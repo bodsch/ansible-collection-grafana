@@ -32,7 +32,7 @@ jobs:
         scenario:
           - latest
           - custom-scrape-configs
-          - updates
+          - with-updates
         collection_role:
           - promtail
 
