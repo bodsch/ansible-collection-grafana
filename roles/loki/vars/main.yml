@@ -117,13 +117,13 @@ loki_defaults_config_common:
       chunks_directory: "{{ loki_storage_dir }}/chunks"
 
 loki_defaults_config_querier:
-  query_timeout: 0s
+  query_timeout: "0s"
   multi_tenant_queries_enabled: false
   query_ingester_only: false
   query_store_only: false
   max_concurrent: 10
   engine:
-    max_look_back_period: 30s
+    max_look_back_period: "30s"
     timeout: 5m
   query_ingesters_within: 3h
   tail_max_duration: 1h
@@ -191,18 +191,19 @@ loki_defaults_config_chunk_store: {}
 loki_defaults_config_schema:
   configs:
     - from: "2020-10-24"
-      store: boltdb
+      store: boltdb                                             # tsdb #
       object_store: filesystem
-      schema: v11
+      schema: v11                                               # v13 #
       index:
         prefix: index_
-        period: 168h
+        period: 168h                                            # 24h #
       chunks:
         prefix: index_
         period: 168h
       row_shards: 16
 
 loki_defaults_config_limits:
+  allow_structured_metadata: true
   enforce_metric_name: false
   ingestion_burst_size_mb: 32
   ingestion_rate_mb: 16

@@ -185,7 +185,18 @@ storage_config:
   {% endif %}
   {% if loki_config_storage.boltdb_shipper is defined and
         loki_config_storage.boltdb_shipper | count > 0 %}
-    {% set valid_keys = ["active_index_directory","shared_store","cache_location","cache_ttl","resync_interval","query_ready_num_days"] %}
+    {% set valid_keys = [
+      "active_index_directory",
+      "shared_store",
+      "cache_location",
+      "cache_ttl",
+      "resync_interval",
+      "query_ready_num_days"
+      ] -%}
+    {% if loki_main_version is version_compare("3.0", operator='>=') %}
+      {% set indx = valid_keys.index('shared_store') %}
+      {% set _ = valid_keys.pop(indx) %}
+    {% endif %}
   boltdb_shipper:
     {% for key, v in loki_config_storage.boltdb_shipper.items() %}
       {% if key in valid_keys %}

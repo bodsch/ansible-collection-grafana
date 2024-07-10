@@ -16,7 +16,7 @@ env:
   ANSIBLE_FORCE_COLOR: '1'
 
 jobs:
-  deb:
+  debian:
     name: "${{ matrix.image }} / ${{ matrix.scenario }} / ${{ matrix.ansible-version }} / ${{ matrix.python_version }}"
     runs-on: ubuntu-20.04
     if: ${{ github.event_name == 'schedule' || github.event.workflow_run.conclusion == 'success' }}

@@ -8,7 +8,10 @@
     "query_timeout",
     "query_store_only",
     "tail_max_duration"] -%}
-
+  {% if loki_main_version is version_compare("3.0", operator='>=') %}
+    {% set indx = valid_keys.index('query_timeout') %}
+    {% set _ = valid_keys.pop(indx) %}
+  {% endif %}
 querier:
   {% for key, v in loki_config_querier.items() %}
     {% if key in valid_keys %}
@@ -27,7 +30,7 @@ querier:
     {% endif %}
     {% if loki_config_querier.engine.timeout is defined and
           loki_config_querier.engine.timeout | string | length > 0 %}
-    timeout: {{ loki_config_querier.engine.timeout }}
+    # timeout: {{ loki_config_querier.engine.timeout }}
     {% endif %}
   {% endif %}
 {% endif %}

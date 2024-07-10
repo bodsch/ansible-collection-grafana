@@ -1,8 +1,6 @@
 {# https://grafana.com/docs/loki/latest/configuration/#compactor #}
 {% if loki_config_compactor | default({}) | count > 0 %}
   {% import 'jinja_macros.j2' as tpl with context %}
-
-compactor:
   {% set valid_keys = [
     "working_directory","shared_store","shared_store_key_prefix",
     "compaction_interval","upload_parallelism",
@@ -11,6 +9,12 @@ compactor:
     "retention_table_timeout","max_compaction_parallelism","deletion_mode",
     "tables_to_compact","skip_latest_n_tables"
   ] %}
+  {% if loki_main_version is version_compare("3.0", operator='>=') %}
+    {% set indx = valid_keys.index('shared_store') %}
+    {% set _ = valid_keys.pop(indx) %}
+  {% endif %}
+
+compactor:
   {% for key, v in loki_config_compactor.items() %}
     {% if key in valid_keys %}
       {% set value = v | bodsch.grafana.loki_value %}

@@ -11,8 +11,10 @@ OPTIONS=" \
            loki_config_service.validation.create_grace_period | string | length > 0 %}
   -validation.create-grace-period {{ loki_config_service.validation.create_grace_period }} \
       {% endif %}
-      {% if loki_config_service.validation.enforce_metric_name is defined %}
+      {% if loki_main_version is version_compare("3.0", operator='<') %}
+        {% if loki_config_service.validation.enforce_metric_name is defined %}
   -validation.enforce-metric-name {{ loki_config_service.validation.enforce_metric_name | default('true') | bool | bodsch.core.config_bool(true_as='true', false_as='false') }} \
+        {% endif %}
       {% endif %}
       {% if loki_config_service.validation.increment_duplicate_timestamps is defined %}
   -validation.increment-duplicate-timestamps {{ loki_config_service.validation.increment_duplicate_timestamps | default('true') | bool | bodsch.core.config_bool(true_as='true', false_as='false') }} \

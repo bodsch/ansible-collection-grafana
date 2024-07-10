@@ -1,11 +1,11 @@
 #jinja2: trim_blocks: True, lstrip_blocks: True
 # {{ ansible_managed }}
+# {{ loki_main_version }} / {{ loki_version }}
 
 target: {{ loki_targets | join(',') }}
 auth_enabled: {{ loki_auth_enabled | default('false') | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
 
 # ballast_bytes: <int> | default = 0]
-
 {% include('loki.d/server.j2') -%}
 {% include('loki.d/distributor.j2') -%}
 {% include('loki.d/querier.j2') -%}
@@ -23,9 +23,12 @@ auth_enabled: {{ loki_auth_enabled | default('false') | bool | bodsch.core.confi
 {% include('loki.d/limits_config.j2') -%}
 {% include('loki.d/frontend_worker.j2') -%}
 {% include('loki.d/table_manager.j2') -%}
+
 {# TODO #}
 {# include('loki.d/runtime_config.j2') #}
+{#
 {% include('loki.d/tracing.j2') -%}
 {% include('loki.d/common.j2') -%}
 {% include('loki.d/analytics.j2') -%}
 {% include('loki.d/memberlist.j2') -%}
+#}
