@@ -28,7 +28,7 @@
 - name: assert loki version 3.x
   ansible.builtin.assert:
     that:
-      - loki_version is version_compare("3", "==")
+      - loki_version is not version_compare("3.0", ">=")
     msg: Loki version 3 is currently not supported!
     quiet: true
 
