@@ -1,13 +1,5 @@
 ---
 
-- name: snakeoil
-  src: https://github.com/bodsch/ansible-snakeoil
-  version: 1.5.0
-
-- name: syslog-ng
-  src: https://github.com/bodsch/ansible-syslog-ng
-  version: 1.6.0
-
 - name: glauth
   src: https://github.com/bodsch/ansible-glauth
   version: 1.6.0

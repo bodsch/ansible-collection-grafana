@@ -1,0 +1,68 @@
+---
+
+promtail_version: "2.9.8"
+
+promtail_service:
+  log:
+    level: debug
+
+promtail_server:
+  http:
+    listen:
+      address: "127.0.0.1"
+      port: 9080
+
+promtail_clients:
+  - url: "http://127.0.0.1:3100/loki/api/v1/push"
+    batchwait: 1s
+    batchsize: 1048576
+    follow_redirects: false
+    enable_http2: false
+    backoff_config:
+      min_period: 500ms
+      max_period: 5m0s
+      max_retries: 10
+    timeout: 10s
+    tenant_id: ""
+    stream_lag_labels: ""
+
+promtail_scrape_configs:
+  # file_sd
+  - job_name: file_sd
+    file_sd_configs:
+      - files:
+          - "{{ promtail_config_dir }}/file_sd/*.yml"
+          - "{{ promtail_config_dir }}/file_sd/*.yaml"
+          - "{{ promtail_config_dir }}/file_sd/*.json"
+  # example static config
+  - job_name: system
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: varlogs
+          host: "{{ ansible_fqdn }}"
+          agent: promtail
+          __path__: /var/log/*.log
+  # example journald config
+  - job_name: journal
+    journal:
+      max_age: 2h
+      labels:
+        job: systemd-journal
+    relabel_configs:
+      - source_labels:
+          - __journal__systemd_unit
+        target_label: 'unit'
+  # example syslog config
+  - job_name: syslog
+    syslog:
+      listen_address: 0.0.0.0:1514
+      labels:
+        job: "syslog"
+    relabel_configs:
+      - source_labels:
+          - __syslog_message_hostname
+        target_label: 'host'
+
+...

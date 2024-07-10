@@ -12,6 +12,8 @@ on:
 env:
   COLLECTION_NAMESPACE: bodsch
   COLLECTION_NAME: grafana
+  PY_COLORS: '1'
+  ANSIBLE_FORCE_COLOR: '1'
 
 jobs:
   deb:
@@ -26,7 +28,7 @@ jobs:
         ansible-version:
           - '6.7'
         python_version:
-          - "3.11.3"
+          - "3.11"
         scenario:
           - configured
           - latest
@@ -52,6 +54,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r test-requirements.txt
 
+      - name: force reinstall of community.docker
+        run: |
+          mkdir -p /home/runner/.ansible/collections
+          ansible-galaxy collection install community.docker --force
+
       - name: Install collection
         run: |
           make \
@@ -65,7 +72,3 @@ jobs:
               -e DISTRIBUTION="${{ matrix.image }}" \
               -e COLLECTION_ROLE="${{ matrix.collection_role }}" \
               -e COLLECTION_SCENARIO="${{ matrix.scenario }}"
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-          DISTRIBUTION: ${{ matrix.image }}

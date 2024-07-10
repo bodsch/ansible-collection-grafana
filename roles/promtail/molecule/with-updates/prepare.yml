@@ -49,18 +49,11 @@
           - "python version       : {{ ansible_python.version.major }}.{{ ansible_python.version.minor }}"
 
 - name: prepare container
-  hosts: all
+  hosts: instance
   gather_facts: true
 
-  environment:
-    NETRC: ''
-
-  vars:
-    grafana_security:
-      admin_user: admin
-      admin_password: sUp3R
-
   roles:
-    - role: ca_grafana
-
-...
+    - role: bodsch.grafana.loki
+    - role: bodsch.grafana.promtail
+      vars:
+        promtail_version: "2.7.2"

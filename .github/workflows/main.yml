@@ -29,23 +29,23 @@ on:
 env:
   COLLECTION_NAMESPACE: bodsch
   COLLECTION_NAME: grafana
+  PY_COLORS: '1'
+  ANSIBLE_FORCE_COLOR: '1'
 
 jobs:
   arch:
     name: "${{ matrix.image }}: ${{ matrix.collection_role }} (ansible ${{ matrix.ansible-version }}, python ${{ matrix.python_version }})"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
         image:
           - archlinux:latest
         ansible-version:
-          - '6.7'
-          #- '7.5'
-          #- '8.5'
+          - '8.5'
         python_version:
-          - "3.10.11"
-          - "3.11.3"
+          - "3.10"
+          - "3.11"
         scenario:
           - default
         collection_role:
@@ -69,6 +69,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r test-requirements.txt
 
+      - name: force reinstall of community.docker
+        run: |
+          mkdir -p /home/runner/.ansible/collections
+          ansible-galaxy collection install community.docker --force
+
       - name: Install collection
         run: |
           make \
@@ -82,10 +87,6 @@ jobs:
               -e DISTRIBUTION="${{ matrix.image }}" \
               -e COLLECTION_ROLE="${{ matrix.collection_role }}" \
               -e COLLECTION_SCENARIO="${{ matrix.scenario }}"
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-          DISTRIBUTION: ${{ matrix.image }}
 
   debian:
     name: "${{ matrix.image }}: ${{ matrix.collection_role }} (ansible ${{ matrix.ansible-version }}, python ${{ matrix.python_version }})"
@@ -101,8 +102,8 @@ jobs:
           #- '7.5'
           #- '8.5'
         python_version:
-          - "3.10.11"
-          - "3.11.3"
+          - "3.10"
+          - "3.11"
         scenario:
           - default
         collection_role:
@@ -126,6 +127,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r test-requirements.txt
 
+      - name: force reinstall of community.docker
+        run: |
+          mkdir -p /home/runner/.ansible/collections
+          ansible-galaxy collection install community.docker --force
+
       - name: Install collection
         run: |
           make \
@@ -139,10 +145,6 @@ jobs:
               -e DISTRIBUTION="${{ matrix.image }}" \
               -e COLLECTION_ROLE="${{ matrix.collection_role }}" \
               -e COLLECTION_SCENARIO="${{ matrix.scenario }}"
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-          DISTRIBUTION: ${{ matrix.image }}
 
   ubuntu:
     name: "${{ matrix.image }}: ${{ matrix.collection_role }} (ansible ${{ matrix.ansible-version }}, python ${{ matrix.python_version }})"
@@ -158,8 +160,8 @@ jobs:
           #- '7.5'
           #- '8.5'
         python_version:
-          - "3.10.11"
-          - "3.11.3"
+          - "3.10"
+          - "3.11"
         scenario:
           - default
         collection_role:
@@ -183,6 +185,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r test-requirements.txt
 
+      - name: force reinstall of community.docker
+        run: |
+          mkdir -p /home/runner/.ansible/collections
+          ansible-galaxy collection install community.docker --force
+
       - name: Install collection
         run: |
           make \
@@ -196,7 +203,3 @@ jobs:
               -e DISTRIBUTION="${{ matrix.image }}" \
               -e COLLECTION_ROLE="${{ matrix.collection_role }}" \
               -e COLLECTION_SCENARIO="${{ matrix.scenario }}"
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-          DISTRIBUTION: ${{ matrix.image }}
