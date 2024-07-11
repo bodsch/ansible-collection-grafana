@@ -170,20 +170,47 @@ loki_defaults_config_index_gateway: {}
 loki_defaults_config_frontend: {}
 
 loki_defaults_config_storage:
-  index_cache_validity: 5m
-  disable_broad_index_queries: false
-  max_chunk_batch_size: 50
-  index_queries_cache_config: {}
+  alibabacloud: {}
+  azure: {}
+  bos: {}
+  # Deprecated
+  bigtable: {}
+  gcs: {}
+  cassandra: {}
+  # Deprecated
+  boltdb:
+    directory: "{{ loki_storage_dir }}/index"
   boltdb_shipper:
     active_index_directory: "{{ loki_storage_dir }}/boltdb-shipper-active"
     cache_location: "{{ loki_storage_dir }}/boltdb-shipper-cache"
     # Can be increased for faster performance over longer query periods, uses more disk space
     cache_ttl: 24h
+    resync_interval: 5m
+    query_ready_num_days: 0
     shared_store: filesystem
-  boltdb:
-    directory: "{{ loki_storage_dir }}/index"
+    index_gateway_client:
+      grpc_client_config: ""
+      server_address: ""
+      log_gateway_requests: ""
+    ingestername: ""
+    mode: ""
+    ingesterdbretainperiod: ""
+    build_per_tenant_index: ""
   filesystem:
     directory: "{{ loki_storage_dir }}/chunks"
+  swift: {}
+  # Deprecated
+  grpc_store: {}
+  hedging: {}
+  named_stores: {}
+  cos: {}
+  index_cache_validity: 5m
+  disable_broad_index_queries: false
+  max_chunk_batch_size: 50
+  index_queries_cache_config: {}
+  congestion_control: {}
+  tsdb_shipper: {}
+  bloom_shipper: {}
 
 loki_defaults_config_chunk_store: {}
 #  max_look_back_period: 672h
