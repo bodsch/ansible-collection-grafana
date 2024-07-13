@@ -2,16 +2,16 @@
 
 - name: snapd
   src: https://github.com/bodsch/ansible-snapd
-  version: 1.3.0
+  version: 1.3.1
 
-- name: apparmor
-  src: https://github.com/bodsch/ansible-apparmor
-  version: 2.0.0
+# - name: apparmor
+  # src: https://github.com/bodsch/ansible-apparmor
+  # version: 2.0.0
 
 - name: nginx
   src: https://github.com/bodsch/ansible-nginx
   scm: git
-  version: 0.25.1
+  version: 0.27.0
 
 - name: redis
   src: https://github.com/bodsch/ansible-redis
@@ -19,11 +19,11 @@
 
 - name: mariadb
   src: https://github.com/bodsch/ansible-mariadb
-  version: 2.4.1
+  version: 2.4.3
 
 - name: influx2
   src: https://github.com/bodsch/ansible-influxdb
-  version: 1.2.0
+  version: 1.3.0
 
 - name: influxdb
   src: mkayontour.influxdb
@@ -32,6 +32,6 @@
 
 - name: glauth
   src: https://github.com/bodsch/ansible-glauth
-  version: 1.6.0
+  version: 1.6.1
 
 ...

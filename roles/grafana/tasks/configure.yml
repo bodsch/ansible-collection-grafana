@@ -6,7 +6,7 @@
     path: "{{ grafana_config_dir }}"
     owner: root
     group: "{{ grafana_system_group }}"
-    mode: 0755
+    mode: "0755"
 
 - name: create grafana.ini
   ansible.builtin.template:
@@ -15,7 +15,8 @@
     force: true
     owner: root
     group: "{{ grafana_system_group }}"
-    mode: 0640
+    mode: "0640"
+  no_log: true
   notify:
     - validate config
     - restart grafana
@@ -27,7 +28,8 @@
     force: true
     owner: root
     group: "{{ grafana_system_group }}"
-    mode: 0640
+    mode: "0640"
+  no_log: true
   when:
     - grafana_config_auth is defined
     - grafana_config_auth.ldap is defined

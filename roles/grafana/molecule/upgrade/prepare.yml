@@ -59,6 +59,7 @@
     grafana_security:
       admin_user: admin
       admin_password: sUp3R
+    grafana_alerting: {}
 
   roles:
     - role: ca_grafana

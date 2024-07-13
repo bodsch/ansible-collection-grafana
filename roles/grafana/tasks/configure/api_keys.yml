@@ -10,7 +10,7 @@
   ansible.builtin.file:
     path: "{{ grafana_api.store_directory }}/{{ inventory_hostname }}"
     state: directory
-    mode: 0750
+    mode: "0750"
 
 - name: manage api keys
   grafana_api_keys:
@@ -33,7 +33,7 @@
     dest: "{{ grafana_api.store_directory }}/{{ inventory_hostname }}/{{ item.value.result.key_file | basename }}"
     flat: true
     validate_checksum: false
-    mode: 0644
+    mode: "0644"
   no_log: true
   loop: "{{ manage_api_keys['result'] | dict2items }}"
   loop_control:

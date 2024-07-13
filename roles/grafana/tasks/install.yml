@@ -26,14 +26,14 @@
     state: directory
     owner: "{{ grafana_system_user }}"
     group: "{{ grafana_system_group }}"
-    mode: 0755
+    mode: "0755"
 
 - name: create config directory
   ansible.builtin.file:
     state: directory
     path: /etc/grafana
     group: "{{ grafana_system_group }}"
-    mode: 0755
+    mode: "0755"
 
 - name: create grafana lib directory
   ansible.builtin.file:
@@ -55,7 +55,7 @@
   ansible.builtin.file:
     state: directory
     path: "{{ grafana_log_dir }}"
-    mode: 0755
+    mode: "0755"
 
 - name: detect installed grafana binary
   ansible.builtin.stat:
@@ -84,7 +84,7 @@
           ansible.builtin.file:
             path: "{{ grafana_remote_tmp_directory }}"
             state: directory
-            mode: 0755
+            mode: "0755"
           when:
             - not grafana_direct_download
 
@@ -92,7 +92,7 @@
           ansible.builtin.copy:
             src: "{{ grafana_local_tmp_directory }}/{{ grafana_release.file }}"
             dest: "{{ grafana_remote_tmp_directory }}"
-            mode: 0755
+            mode: "0755"
             owner: "{{ grafana_system_user }}"
             group: "{{ grafana_system_group }}"
             remote_src: "{{ 'true' if grafana_direct_download else 'false' }}"
@@ -160,7 +160,7 @@
     dest: /etc/grafana/
     owner: root
     group: "{{ grafana_system_group }}"
-    mode: 0755
+    mode: "0755"
     force: true
     remote_src: true
   notify:
@@ -181,7 +181,7 @@
         force: true
         owner: root
         group: "{{ grafana_system_group }}"
-        mode: 0644
+        mode: "0644"
       notify:
         - validate config
         - reload grafana
@@ -192,7 +192,7 @@
         dest: "{{ systemd_lib_directory }}/grafana-server.service"
         owner: root
         group: root
-        mode: 0644
+        mode: "0644"
       notify:
         - daemon-reload
         - restart grafana
@@ -207,7 +207,7 @@
         dest: "/etc/conf.d/grafana-server"
         owner: root
         group: root
-        mode: 0644
+        mode: "0644"
 
     - name: create openrc init configuration
       ansible.builtin.template:
@@ -215,7 +215,7 @@
         dest: "/etc/init.d/grafana-server"
         owner: root
         group: root
-        mode: 0750
+        mode: "0750"
 
 - name: create custom fact file
   bodsch.core.facts:
