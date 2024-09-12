@@ -2,9 +2,12 @@
 
 # mariadb_debian_repo: "https://ftp.nluug.nl/db/mariadb/repo"
 
-mariadb_root_password: Y5FZfKXzCeOWGf4kBOiFSp6Il
-
-mariadb_root_password_update: true
+mariadb_system_users:
+  - username: root
+    password: ""
+    home: /root
+    update: true
+    ignore: false
 
 mariadb_databases:
   - name: grafana

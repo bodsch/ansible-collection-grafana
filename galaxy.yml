@@ -3,7 +3,7 @@
 namespace: bodsch
 name: grafana
 
-version: 1.0.1
+version: 1.0.2
 readme: README.md
 
 authors:
@@ -24,6 +24,7 @@ tags:
 dependencies:
   bodsch.core: ">=2.2.1"
   bodsch.scm: "*"
+  community.grafana: "*"
 
 repository: https://github.com/bodsch/ansible-collection-grafana
 documentation: https://github.com/bodsch/ansible-collection-grafana/README.md

@@ -1,6 +1,10 @@
 ---
 
 collections:
-  - name: bodsch.core
-    version: "=>2.2.1"
-  - name: bodsch.scm
+  # - name: bodsch.core
+  #   version: ">2.2.1"
+  # - name: bodsch.scm
+  - name: community.mysql
+  - name: community.crypto
+  - name: ansible.utils
+  # - name: community.grafana

@@ -2,6 +2,6 @@
 
 - name: glauth
   src: https://github.com/bodsch/ansible-glauth
-  version: 1.6.0
+  version: 1.6.2
 
 ...
