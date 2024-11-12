@@ -94,7 +94,7 @@ class GrafanaServiceAccount(object):
             self.module.log(msg=f" account       : {self.grafana_service_accounts}")
 
             present_keys = [v for v in self.grafana_service_accounts if v.get('state', "present") == "present"]
-            absent_keys  = [v for v in self.grafana_service_accounts if v.get('state', "present") == "absent"]
+            absent_keys = [v for v in self.grafana_service_accounts if v.get('state', "present") == "absent"]
             # disabled_keys = [v for v in self.grafana_service_accounts if v.get('state', "present") == "disabled"]
 
             # self.module.log(msg=f" must present  : {present_keys}")

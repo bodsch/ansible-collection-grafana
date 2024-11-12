@@ -93,10 +93,10 @@ class LokiVerifyConfig(object):
             msg = err
 
         result = dict(
-            failed = _failed,
-            changed = False,
+            failed=_failed,
+            changed=False,
             cmd=" ".join(args),
-            msg = msg
+            msg=msg
         )
 
         return result

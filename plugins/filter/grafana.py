@@ -99,7 +99,6 @@ class FilterModule(object):
 
         return result
 
-
     def content_security_policy(self, data):
         """
         """

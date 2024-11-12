@@ -106,8 +106,8 @@ class FilterModule(object):
             )
 
         return dict(
-            valid = True,
-            msg = "All datasources are valid."
+            valid=True,
+            msg="All datasources are valid."
         )
 
     def absent_datasources(self, data):
@@ -121,8 +121,8 @@ class FilterModule(object):
             # res = {}
             if values.get("state", "present") == "absent":
                 res = dict(
-                    name = datasource,
-                    orgId = values.get("org_id", 1)
+                    name=datasource,
+                    orgId=values.get("org_id", 1)
                 )
                 result.append(res)
 

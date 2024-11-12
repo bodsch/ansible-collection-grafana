@@ -98,9 +98,9 @@ class GrafanaCLI(object):
             _failed = False
 
         return dict(
-            failed = _failed,
-            changed = _changed,
-            installed = plugin_list
+            failed=_failed,
+            changed=_changed,
+            installed=plugin_list
         )
 
     def _list_remote(self):
@@ -162,9 +162,9 @@ class GrafanaCLI(object):
 
         if len(self.plugins) == 0:
             return dict(
-                failed = True,
-                changed =False,
-                msg = "Missing a list of Plugins to install."
+                failed=True,
+                changed=False,
+                msg="Missing a list of Plugins to install."
             )
 
         plugin_list = self._list()
@@ -196,8 +196,8 @@ class GrafanaCLI(object):
 
                 res = {}
                 res[p] = dict(
-                    failed = False,
-                    changed = False,
+                    failed=False,
+                    changed=False,
                     state=f"already in version {plugin_version} installed."
                 )
                 result_state.append(res)
@@ -217,8 +217,8 @@ class GrafanaCLI(object):
 
                     res = {}
                     res[p] = dict(
-                        failed = False,
-                        changed = True,
+                        failed=False,
+                        changed=True,
                         state=f"version {version_string} successfuly installed."
                     )
                     result_state.append(res)
@@ -249,9 +249,9 @@ class GrafanaCLI(object):
         # self.module.log(msg=f"  result_msg   : '{result_msg}'")
 
         return dict(
-            failed = failed,
-            changed = changed,
-            msg = result_msg
+            failed=failed,
+            changed=changed,
+            msg=result_msg
         )
 
     def _uninstall(self):
