@@ -77,20 +77,28 @@ class LokiVerifyConfig(object):
 
         rc, out, err = self.__exec(args, check_rc=False)
 
+        err = err.strip()
+        # self.module.log(msg=f"  -> '{err}' ({type(err)})")
+
         if rc == 0:
             _failed = False
 
-        if isinstance(err, str):
-            err = json.loads(err)
+        if rc != 0 and len(err) > 0:
+            if isinstance(err, str):
+                err = json.loads(err)
 
-        if isinstance(err, dict):
-            error_msg = err.get("err", None)
-            msg = err.get("msg", None)
-
-            if rc != 0 and error_msg:
-                msg = error_msg.split("\n")
+            if isinstance(err, dict):
+                # log_level = err.get("level", "info")
+                error_msg = err.get("err", None)
+                msg = err.get("msg", None)
+                # if log_level == "warn":
+                #     msg = error_msg = err.get("msg", None)
+                if rc != 0 and error_msg:
+                    msg = error_msg.split("\n")
+            else:
+                msg = err
         else:
-            msg = err
+            msg = "unknow config error."
 
         result = dict(
             failed=_failed,

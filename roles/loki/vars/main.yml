@@ -224,16 +224,16 @@ loki_defaults_config_chunk_store: {}
 
 loki_defaults_config_schema:
   configs:
-    - from: "2020-10-24"
-      store: boltdb                                             # tsdb #
+    - from: "2024-01-01"
+      store: tsdb                                               # tsdb #
       object_store: filesystem
-      schema: v11                                               # v13 #
+      schema: v13                                               # v13 #
       index:
         prefix: index_
-        period: 168h                                            # 24h #
+        period: 24h                                             # 24h #
       chunks:
         prefix: index_
-        period: 168h
+        period: 24h
       row_shards: 16
 
 loki_defaults_config_limits:
