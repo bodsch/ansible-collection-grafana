@@ -193,6 +193,9 @@ storage_config:
       "resync_interval",
       "query_ready_num_days"
       ] -%}
+    {#
+      remove configurations for loki version >= 3
+    #}
     {% if loki_main_version is version_compare("3.0", operator='>=') %}
       {% set indx = valid_keys.index('shared_store') %}
       {% set _ = valid_keys.pop(indx) %}
@@ -228,6 +231,58 @@ storage_config:
             loki_config_storage.boltdb_shipper.index_gateway_client.grpc_client_config | count > 0 %}
       grpc_client_config:
         {{ tpl.makro_grpc_client_config(loki_config_storage.boltdb_shipper.index_gateway_client.grpc_client_config) | indent(8, False) }}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+  {% if loki_config_storage.tsdb_shipper is defined and
+        loki_config_storage.tsdb_shipper | count > 0 %}
+    {% set valid_keys = [
+      "active_index_directory",
+      "cache_location",
+      "cache_ttl",
+      "resync_interval",
+      "query_ready_num_days"
+      ] -%}
+  {#
+    {% if loki_main_version is version_compare("3.0", operator='>=') %}
+      {% set indx = valid_keys.index('shared_store') %}
+      {% set _ = valid_keys.pop(indx) %}
+    {% endif %}
+  #}
+  tsdb_shipper:
+    {% for key, v in loki_config_storage.tsdb_shipper.items() %}
+      {% if key in valid_keys %}
+        {% set value = v | bodsch.grafana.loki_value %}
+        {% if value %}
+    {{ key }}: {{ value }}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    {% if loki_config_storage.tsdb_shipper.index_gateway_client is defined and
+          loki_config_storage.tsdb_shipper.index_gateway_client | count > 0 %}
+      {% set valid_keys = [
+        "grpc_client_config",
+        "server_address",
+        "log_gateway_requests"] %}
+      {#
+      {% if loki_main_version is version_compare("2.5", operator='>') %}
+        {% set indx = valid_keys.index('log_gateway_requests') %}
+        {% set _ = valid_keys.pop(indx) %}
+      {% endif %}
+      #}
+    index_gateway_client:
+      {% for key, v in loki_config_querier.items() %}
+        {% if key in valid_keys %}
+          {% set value = v | bodsch.grafana.loki_value %}
+          {% if value %}
+      {{ key }}: {{ value }}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {% if loki_config_storage.tsdb_shipper.index_gateway_client.grpc_client_config is defined and
+            loki_config_storage.tsdb_shipper.index_gateway_client.grpc_client_config | count > 0 %}
+      grpc_client_config:
+        {{ tpl.makro_grpc_client_config(loki_config_storage.tsdb_shipper.index_gateway_client.grpc_client_config) | indent(8, False) }}
       {% endif %}
     {% endif %}
   {% endif %}

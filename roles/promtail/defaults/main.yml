@@ -1,6 +1,6 @@
 ---
 
-promtail_version: "2.7.2"
+promtail_version: "3.2.1"
 
 promtail_release: {}
 
