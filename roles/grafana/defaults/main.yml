@@ -1,6 +1,6 @@
 ---
 
-grafana_version: 9.4.7
+grafana_version: 11.3.0
 
 grafana_scm:
   use_tags: true

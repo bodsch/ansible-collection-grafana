@@ -25,12 +25,12 @@
       ansible.builtin.set_fact:
         loki_version: "{{ _latest_release.latest_release }}"
 
-- name: assert loki version 3.x
-  ansible.builtin.assert:
-    that:
-      - loki_version is not version_compare("3.0", ">=")
-    msg: Loki version 3 is currently not supported!
-    quiet: true
+# - name: assert loki version 3.x
+#   ansible.builtin.assert:
+#     that:
+#       - loki_version is not version_compare("3.0", ">=")
+#     msg: Loki version 3 is currently not supported!
+#     quiet: true
 
 - name: define download information
   ansible.builtin.set_fact:

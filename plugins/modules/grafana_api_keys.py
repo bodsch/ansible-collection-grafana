@@ -92,7 +92,7 @@ class GrafanaAPIKeys(object):
             self.module.log(msg=f" all      : {self.grafana_api_keys} / {type(self.grafana_api_keys)}")
 
             present_keys = [v for v in self.grafana_api_keys if v.get('state', "present") == "present"]
-            absent_keys  = [v for v in self.grafana_api_keys if v.get('state', "present") == "absent"]
+            absent_keys = [v for v in self.grafana_api_keys if v.get('state', "present") == "absent"]
             # disabled_keys = [v for v in self.grafana_api_keys if v.get('state', "present") == "disabled"]
 
             # self.module.log(msg=f" present  : {present_keys}")

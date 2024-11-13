@@ -3,6 +3,12 @@
 - name: restart loki if needed
   ansible.builtin.meta: flush_handlers
 
+- name: verify config
+  become: true
+  bodsch.grafana.loki_verify_config:
+    log_level: debug
+    config_file: "{{ loki_config_dir }}/loki.yml"
+
 - name: ensure loki is enabled on boot
   become: true
   ansible.builtin.service:

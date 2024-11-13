@@ -8,13 +8,19 @@
   when:
     - ansible_service_mgr | lower == "systemd"
 
-- name: verify config  # noqa no-changed-when
+- name: verify config
   become: true
-  ansible.builtin.command: |
-    loki \
-      -verify-config \
-      -log.level debug \
-      -config.file {{ loki_config_dir }}/loki.yml
+  bodsch.grafana.loki_verify_config:
+    log_level: debug
+    config_file: "{{ loki_config_dir }}/loki.yml"
+
+# - name: verify config  # noqa no-changed-when
+#   become: true
+#   ansible.builtin.command: |
+#     loki \
+#       -verify-config \
+#       -log.level debug \
+#       -config.file {{ loki_config_dir }}/loki.yml
 
 - name: restart loki
   become: true

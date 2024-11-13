@@ -1,8 +1,0 @@
----
-
-promtail_requirements:
-  - iproute
-
-systemd_lib_directory: /usr/lib/systemd/system
-
-...

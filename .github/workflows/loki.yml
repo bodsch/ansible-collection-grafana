@@ -170,6 +170,8 @@ jobs:
           - with-updates
           - "2.5"
           - "2.6"
+          - "2.7"
+          - "3.2"
         collection_role:
           - loki
 

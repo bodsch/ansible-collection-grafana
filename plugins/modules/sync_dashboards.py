@@ -190,7 +190,7 @@ def main():
     """
     """
     args = dict(
-        source_directory = dict(
+        source_directory=dict(
             required=True,
             type='str'
         ),

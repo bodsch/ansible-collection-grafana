@@ -170,6 +170,7 @@ loki_defaults_config_index_gateway: {}
 loki_defaults_config_frontend: {}
 
 loki_defaults_config_storage:
+  # https://grafana.com/docs/loki/latest/configure/#storage_config
   alibabacloud: {}
   azure: {}
   bos: {}
@@ -209,7 +210,13 @@ loki_defaults_config_storage:
   max_chunk_batch_size: 50
   index_queries_cache_config: {}
   congestion_control: {}
-  tsdb_shipper: {}
+  tsdb_shipper:
+    active_index_directory: "{{ loki_storage_dir }}/tsdb-index"
+    cache_location: "{{ loki_storage_dir }}/tsdb-cache"
+    cache_ttl: ""
+    resync_interval: ""
+    query_ready_num_days: ""
+    index_gateway_client: {}
   bloom_shipper: {}
 
 loki_defaults_config_chunk_store: {}
@@ -217,16 +224,16 @@ loki_defaults_config_chunk_store: {}
 
 loki_defaults_config_schema:
   configs:
-    - from: "2020-10-24"
-      store: boltdb                                             # tsdb #
+    - from: "2024-01-01"
+      store: tsdb                                               # tsdb #
       object_store: filesystem
-      schema: v11                                               # v13 #
+      schema: v13                                               # v13 #
       index:
         prefix: index_
-        period: 168h                                            # 24h #
+        period: 24h                                             # 24h #
       chunks:
         prefix: index_
-        period: 168h
+        period: 24h
       row_shards: 16
 
 loki_defaults_config_limits:
