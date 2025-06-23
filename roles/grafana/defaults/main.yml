@@ -6,10 +6,10 @@ grafana_scm:
   use_tags: true
   without_beta: false
   version_filter:
-    - ".*test*"
-    - ".*preview"
-    - ".*beta"
-    - ".*rc"
+    - "test"
+    - "preview"
+    - "beta"
+    - "rc"
 
 # enterprise or oss
 grafana_edition: oss
