@@ -234,6 +234,9 @@ storage_config:
       {% endif %}
     {% endif %}
   {% endif %}
+  {# ------------------------------------------------ #}
+  {% if loki_main_version is version_compare("2.6", operator='>=') %}
+
   {% if loki_config_storage.tsdb_shipper is defined and
         loki_config_storage.tsdb_shipper | count > 0 %}
     {% set valid_keys = [
@@ -286,6 +289,8 @@ storage_config:
       {% endif %}
     {% endif %}
   {% endif %}
+  {% endif %}
+  {# ------------------------------------------------ #}
   {% if loki_config_storage.filesystem is defined and
         loki_config_storage.filesystem | count > 0 %}
   filesystem:

@@ -20,7 +20,7 @@ loki_config_schema:
         period: 24h
       row_shards: 16
 
-limits_config:
+loki_config_limits:
   allow_structured_metadata: false
 
 ...

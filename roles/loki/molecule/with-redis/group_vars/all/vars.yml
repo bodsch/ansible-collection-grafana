@@ -1,5 +1,7 @@
 ---
 
+loki_version: "3.2.1"
+
 #default redis config
 cache_config_defaults: &CACHE_DEFAULTS
   background:
@@ -31,7 +33,7 @@ loki_config_distributor:
 
 loki_config_compactor:
   compaction_interval: 10m
-  retention_enabled: true
+  # retention_enabled: true
   retention_delete_delay: 2h
   retention_delete_worker_count: 150
   compactor_ring:
@@ -41,7 +43,7 @@ loki_config_compactor:
 loki_config_querier:
   engine:
     timeout: 5m
-    max_look_back_period: 30s
+    # max_look_back_period: 30s                         # OBSOLETE
   query_timeout: 30m
   query_ingesters_within: 10m
   max_concurrent: 20
@@ -94,25 +96,22 @@ loki_config_storage:
 
 loki_config_chunk_store:
   # store for 1 year
-  max_look_back_period: 8760h
+  # max_look_back_period: 8760h                                     # OBSOLETE
   chunk_cache_config:
     <<: *CACHE_DEFAULTS
 
 loki_config_schema:
   configs:
-    - from: "2020-10-24"
-      store: boltdb
+    - from: "2024-01-01"
+      store: tsdb                                             # tsdb #
       object_store: filesystem
-      schema: v11
+      schema: v13                                             # v13 #
       index:
         prefix: index_
-        period: 168h
-        tags:
-          foo: bar
-          year: 2020
+        period: 24h                                           # 24h #
       chunks:
         prefix: index_
-        period: 168h
+        period: 24h
       row_shards: 16
 
 loki_config_common:
@@ -138,7 +137,7 @@ loki_config_frontend:
   # tail_proxy_url: "http://{{ ansible_hostname }}:3100"
 
 loki_config_frontend_worker:
-  parallelism: 4
+  # parallelism: 4                                                    # OBSOLETE
   grpc_client_config:
     # 16GiB
     max_send_msg_size: 17179869184

@@ -6,4 +6,12 @@ loki_config_server:
   http_listen_address: "127.0.0.1"
   http_listen_port: 3100
 
+loki_defaults_storage:
+  tsdb_shipper:
+    active_index_directory: "{{ loki_storage_dir }}/tsdb-index"
+    cache_location: "{{ loki_storage_dir }}/tsdb-cache"
+    cache_ttl: 10m
+    resync_interval: 5m
+    query_ready_num_days: ""
+
 ...

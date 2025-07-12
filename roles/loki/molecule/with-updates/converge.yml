@@ -9,10 +9,36 @@
     - role: bodsch.grafana.loki
       vars:
         loki_version: "2.5.0"
+        loki_config_schema:
+          configs:
+            - from: "2020-10-24"
+              store: boltdb                                             # tsdb #
+              object_store: filesystem
+              schema: v11                                               # v13 #
+              index:
+                prefix: index_
+                period: 168h                                            # 24h #
+              chunks:
+                prefix: index_
+                period: 168h
+              row_shards: 16
 
     - role: bodsch.grafana.loki
       vars:
         loki_version: "2.6.1"
+        loki_config_schema:
+          configs:
+            - from: "2020-10-24"
+              store: boltdb                                             # tsdb #
+              object_store: filesystem
+              schema: v11                                               # v13 #
+              index:
+                prefix: index_
+                period: 168h                                            # 24h #
+              chunks:
+                prefix: index_
+                period: 168h
+              row_shards: 16
 
     - role: bodsch.grafana.loki
       vars:

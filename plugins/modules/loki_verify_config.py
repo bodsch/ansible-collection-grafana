@@ -78,10 +78,20 @@ class LokiVerifyConfig(object):
         rc, out, err = self.__exec(args, check_rc=False)
 
         err = err.strip()
-        # self.module.log(msg=f"  -> '{err}' ({type(err)})")
 
         if rc == 0:
-            _failed = False
+            return dict(
+                failed=False,
+                cmd=" ".join(args),
+                msg="config is valid"
+            )
+
+        if "failed parsing config" in err:
+            return dict(
+                failed=True,
+                cmd=" ".join(args),
+                msg=err
+            )
 
         if rc != 0 and len(err) > 0:
             if isinstance(err, str):
