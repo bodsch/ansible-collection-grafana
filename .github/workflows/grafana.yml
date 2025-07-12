@@ -79,6 +79,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r test-requirements.txt
 
+      - name: Install system packages
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y python3-dateutil
+
       - name: force reinstall of community.docker
         run: |
           mkdir -p /home/runner/.ansible/collections
@@ -130,6 +135,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r test-requirements.txt
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y python3-dateutil
 
       - name: force reinstall of community.docker
         run: |
@@ -188,6 +198,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r test-requirements.txt
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y python3-dateutil
 
       - name: force reinstall of community.docker
         run: |
