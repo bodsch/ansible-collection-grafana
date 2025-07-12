@@ -23,7 +23,7 @@ tags:
 
 dependencies:
   bodsch.core: ">=2.2.1"
-  # bodsch.scm: "*"
+  bodsch.scm: "*"
   community.grafana: "*"
 
 repository: https://github.com/bodsch/ansible-collection-grafana
