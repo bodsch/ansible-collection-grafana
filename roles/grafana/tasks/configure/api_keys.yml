@@ -13,14 +13,14 @@
     mode: "0750"
 
 - name: manage api keys
-  grafana_api_keys:
+  bodsch.grafana.grafana_api_keys:
     state: manage
     grafana_url: "http://127.0.0.1:3000"
     grafana_admin:
       username: "{{ grafana_config_security.admin_user }}"
       password: "{{ grafana_config_security.admin_password }}"
     api_keys: "{{ grafana_api['keys'] }}"
-  no_log: true
+  # no_log: true
   register: manage_api_keys
   when:
     - grafana_api['keys'] is defined

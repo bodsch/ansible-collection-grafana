@@ -5,7 +5,17 @@ grafana_provisioning:
   # (provisioning require grafana >= 5.0)
   enabled: false
 
-grafana_api: {}
+grafana_api:
+  # API keys to configure
+  keys:
+    - name: foo
+      state: present
+      # Can be one of the following values: Viewer, Editor or Admin.
+      role: Viewer
+      # not implemented yet
+      # expiration: '3200'
+  # The location where the keys should be stored.
+  store_directory: "{{ lookup('env', 'HOME') }}/grafana/api_keys"
 
 grafana_service_accounts:
   accounts:

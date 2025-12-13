@@ -57,9 +57,9 @@ jobs:
         image:
           - archlinux:latest
         ansible-version:
-          - '8.5'
+          - '9.5'
         python_version:
-          - "3.11"
+          - '3.12'
         scenario:
           - default
         collection_role:
@@ -107,11 +107,11 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - debian:12
+          - debian:13
         ansible-version:
-          - '8.5'
+          - '9.5'
         python_version:
-          - "3.11"
+          - '3.12'
         scenario:
           - default
         collection_role:
