@@ -2,6 +2,7 @@
 
 - name: user and group handling
   when:
+    - not running_in_check_mode
     - grafana_system_user != "root"
   block:
     - name: create grafana group
@@ -21,27 +22,33 @@
         home: /nonexistent
 
 - name: create install directory
+  when:
+    - not running_in_check_mode
   ansible.builtin.file:
-    path: "{{ grafana_install_path }}"
     state: directory
+    path: "{{ grafana_install_path }}"
     owner: "{{ grafana_system_user }}"
     group: "{{ grafana_system_group }}"
     mode: "0755"
 
 - name: create config directory
+  when:
+    - not running_in_check_mode
   ansible.builtin.file:
     state: directory
     path: /etc/grafana
     group: "{{ grafana_system_group }}"
     mode: "0755"
 
-- name: create grafana lib directory
+- name: create grafana lib directory tree
+  when:
+    - not running_in_check_mode
   ansible.builtin.file:
     state: directory
     path: "{{ grafana_data_dir }}/{{ item }}"
     owner: "{{ grafana_system_user }}"
     group: "{{ grafana_system_group }}"
-    mode: 0775
+    mode: "0775"
   loop:
     - alerting
     - csv
@@ -52,9 +59,12 @@
     - storage
 
 - name: create grafana log directory
+  when:
+    - not running_in_check_mode
   ansible.builtin.file:
     state: directory
     path: "{{ grafana_log_dir }}"
+    owner: "{{ grafana_system_user }}"
     mode: "0755"
 
 - name: detect installed grafana binary
@@ -76,6 +86,7 @@
 
 - name: install and activate grafana
   when:
+    - not running_in_check_mode
     - grafana_must_be_install_or_activate | default('true')
   block:
     - name: propagate files
@@ -155,6 +166,11 @@
   ignore_errors: true
 
 - name: copy sample provisioning configurations
+  when:
+    - not running_in_check_mode
+    - _grafana_provisioning_dir is defined
+    - _grafana_provisioning_dir.stat is defined
+    - not _grafana_provisioning_dir.stat.exists | default('false')
   ansible.builtin.copy:
     src: "{{ grafana_install_path }}/conf/provisioning"
     dest: /etc/grafana/
@@ -165,14 +181,11 @@
     remote_src: true
   notify:
     - reload grafana
-  when:
-    - _grafana_provisioning_dir is defined
-    - _grafana_provisioning_dir.stat is defined
-    - not _grafana_provisioning_dir.stat.exists | default('false')
 
 - name: systemd
-  when:
-    - ansible_service_mgr | lower == "systemd"
+    when:
+    - not running_in_check_mode
+    - ansible_facts.service_mgr | lower == "systemd"
   block:
     - name: create grafana run configuration
       ansible.builtin.template:
@@ -199,7 +212,8 @@
 
 - name: openrc
   when:
-    - ansible_service_mgr | lower == "openrc"
+    - not running_in_check_mode
+    - ansible_facts.service_mgr | lower == "openrc"
   block:
     - name: create openrc service configuration
       ansible.builtin.template:
@@ -218,6 +232,8 @@
         mode: "0750"
 
 - name: create custom fact file
+  when:
+    - not running_in_check_mode
   bodsch.core.facts:
     name: grafana
     facts:
@@ -226,6 +242,7 @@
 
 - name: python support
   when:
+    - not running_in_check_mode
     - grafana_python_packages is defined
     - grafana_python_packages | length > 0
   block:
@@ -245,7 +262,7 @@
       ansible.builtin.pip:
         state: present
         requirements: "{{ pip_requirements.requirements_file }}"
-        extra_args: "{{ grafana_python_extra_args | default([]) | bodsch.core.python_extra_args(python_version=ansible_python.version) | default(omit) }}"
+        extra_args: "{{ grafana_python_extra_args | default([]) | bodsch.core.python_extra_args(python_version=ansible_facts.python.version) | default(omit) }}"
       register: pip_install
       ignore_errors: false
       no_log: true

@@ -1,22 +1,62 @@
 ---
 
-influxdb_admin_username: admin
-influxdb_admin_password: admin
+influxdb_version: "3.0.0"
 
-influxdb_config_retention:
-  enabled: true
-  check-interval: "30m0s"
+influxdb_cli_version: "2.10.3"
 
-influxdb_databases:
-  - name: molecule
-    state: present
+influxdb_service:
+  # supported log levels are debug, info, and error (default info)
+  log:
+    level: info
+
+influxdb_organizations:
+  main-org:
+    state: create
+    description: Main organization
+  molecule-org:
+    state: create
 
 influxdb_users:
-  - name: molecule
-    admin: no
-    password: "{{ vault__influxdb.molecule }}"
-    grants:
-      - database: 'molecule'
-        privilege: 'WRITE'
+  admin:
+    state: create
+    operator: false
+    organization:
+      name: main-org
+      admin: true
+    password: LA9NMTb6WZ285zPGPgyUJEucuJUjr6W7
+
+  molecule:
+    state: create
+    organization:
+      name: molecule-org
+    password: secretPassword
+    # permissions: []
+
+influxdb_buckets:
+  molecule:
+    state: create
+    description: molecule bucket
+    organization:
+      name: molecule-org
+    retention: 1d
+
+# influxdb_admin_username: admin
+# influxdb_admin_password: admin
+#
+# influxdb_config_retention:
+#   enabled: true
+#   check-interval: "30m0s"
+#
+# influxdb_databases:
+#   - name: molecule
+#     state: present
+#
+# influxdb_users:
+#   - name: molecule
+#     admin: no
+#     password: "{{ vault__influxdb.molecule }}"
+#     grants:
+#       - database: 'molecule'
+#         privilege: 'WRITE'
 
 ...

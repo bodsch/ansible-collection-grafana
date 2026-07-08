@@ -4,11 +4,13 @@
 # (c) 2022, Bodo Schulz <bodo@boone-schulz.de>
 
 from __future__ import absolute_import, division, print_function
-from ansible.module_utils.basic import AnsibleModule
 
 # import os
 # from requests.exceptions import ConnectionError
 import json
+
+from ansible.module_utils.basic import AnsibleModule
+
 # import requests
 # from pathlib import Path
 
@@ -37,8 +39,7 @@ RETURN = """
 class LokiVerifyConfig(object):
 
     def __init__(self, module):
-        """
-        """
+        """ """
         self.module = module
 
         self.log_level = module.params.get("log_level")
@@ -48,14 +49,9 @@ class LokiVerifyConfig(object):
 
     def run(self):
         """
-            /usr/bin/loki -verify-config -log.format json -log.level debug -config.file /etc/loki/loki.yml
+        /usr/bin/loki -verify-config -log.format json -log.level debug -config.file /etc/loki/loki.yml
         """
-        result = dict(
-            rc=0,
-            failed=False,
-            changed=False,
-            msg="Loki verify config ..."
-        )
+        result = dict(rc=0, failed=False, changed=False, msg="Loki verify config ...")
 
         _failed = True
 
@@ -80,18 +76,10 @@ class LokiVerifyConfig(object):
         err = err.strip()
 
         if rc == 0:
-            return dict(
-                failed=False,
-                cmd=" ".join(args),
-                msg="config is valid"
-            )
+            return dict(failed=False, cmd=" ".join(args), msg="config is valid")
 
         if "failed parsing config" in err:
-            return dict(
-                failed=True,
-                cmd=" ".join(args),
-                msg=err
-            )
+            return dict(failed=True, cmd=" ".join(args), msg=err)
 
         if rc != 0 and len(err) > 0:
             if isinstance(err, str):
@@ -110,18 +98,12 @@ class LokiVerifyConfig(object):
         else:
             msg = "unknow config error."
 
-        result = dict(
-            failed=_failed,
-            changed=False,
-            cmd=" ".join(args),
-            msg=msg
-        )
+        result = dict(failed=_failed, changed=False, cmd=" ".join(args), msg=msg)
 
         return result
 
     def __exec(self, commands, check_rc=True):
-        """
-        """
+        """ """
         rc, out, err = self.module.run_command(commands, check_rc=check_rc)
         # self.module.log(msg=f"  rc : '{rc}'")
         # self.module.log(msg=f"  out: '{out}'")
@@ -130,13 +112,9 @@ class LokiVerifyConfig(object):
 
 
 def main():
-    """
-    """
+    """ """
     specs = dict(
-        log_level=dict(
-            default="info",
-            choices=["debug", "info", "warn", "error"]
-        ),
+        log_level=dict(default="info", choices=["debug", "info", "warn", "error"]),
         config_file=dict(
             default="/etc/loki/loki.yml",
             type="str",
@@ -156,5 +134,5 @@ def main():
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

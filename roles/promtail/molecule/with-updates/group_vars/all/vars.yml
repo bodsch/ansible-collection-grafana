@@ -41,7 +41,7 @@ promtail_scrape_configs:
           - localhost
         labels:
           job: varlogs
-          host: "{{ ansible_fqdn }}"
+          host: "{{ ansible_facts.fqdn }}"
           agent: promtail
           __path__: /var/log/*.log
   # example journald config

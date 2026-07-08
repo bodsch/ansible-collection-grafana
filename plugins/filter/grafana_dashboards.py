@@ -1,6 +1,7 @@
 # python 3 headers, required if submitting to Ansible
 
-from __future__ import (absolute_import, print_function)
+from __future__ import absolute_import, print_function
+
 __metaclass__ = type
 
 from ansible.utils.display import Display
@@ -9,18 +10,16 @@ display = Display()
 
 
 class FilterModule(object):
-    """
-    """
+    """ """
 
     def filters(self):
         return {
-            'sub_directories': self.reduce_path,
-            'dashboard_hash': self.hash,
+            "sub_directories": self.reduce_path,
+            "dashboard_hash": self.hash,
         }
 
     def reduce_path(self, data, path_reduce, uniq=True):
-        """
-        """
+        """ """
         file_list = []
 
         if isinstance(data, dict):
@@ -29,7 +28,7 @@ class FilterModule(object):
             if isinstance(files, list):
                 for f in files:
                     file_list.append(
-                        f.get("path", None).replace(f"{path_reduce}/", '').split('/')[0]
+                        f.get("path", None).replace(f"{path_reduce}/", "").split("/")[0]
                     )
 
         if uniq:
@@ -48,10 +47,10 @@ class FilterModule(object):
         return file_list
 
     def hash(self, data, path):
-        """
-        """
+        """ """
         string = f"{data}/{path}"
         import hashlib
-        _bytes = string.encode('utf-8')
+
+        _bytes = string.encode("utf-8")
         hash = hashlib.sha256(_bytes)
         return hash.hexdigest()

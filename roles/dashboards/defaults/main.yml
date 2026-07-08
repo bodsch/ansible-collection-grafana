@@ -4,7 +4,7 @@ grafana_dashboards_upgrade: false
 
 grafana_dashboards_direct_download: false
 
-grafana_dashboards_servername: "{{ ansible_fqdn }}"
+grafana_dashboards_servername: "{{ ansible_facts.fqdn }}"
 
 grafana_dashboards_git:
   update: true

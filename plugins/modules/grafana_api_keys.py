@@ -4,16 +4,18 @@
 # (c) 2022, Bodo Schulz <bodo@boone-schulz.de>
 
 from __future__ import absolute_import, division, print_function
-from ansible.module_utils.basic import AnsibleModule
 
-from ansible_collections.bodsch.core.plugins.module_utils.directory import create_directory
-from ansible_collections.bodsch.grafana.plugins.module_utils.grafana import Grafana
-
-import os
-from requests.exceptions import ConnectionError
 import json
-import requests
+import os
 from pathlib import Path
+
+import requests
+from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.bodsch.core.plugins.module_utils.directory import (
+    create_directory,
+)
+from ansible_collections.bodsch.grafana.plugins.module_utils.grafana import Grafana
+from requests.exceptions import ConnectionError
 
 # ---------------------------------------------------------------------------------------
 
@@ -38,14 +40,14 @@ RETURN = """
 
 
 class GrafanaAPIKeys(object):
-    """
-    """
+    """ """
 
     def __init__(self, module):
         """
-          Initialize all needed Variables
+        Initialize all needed Variables
         """
         self.module = module
+        self.module.log("GrafanaAPIKeys::__init__()")
 
         self.state = module.params.get("state")
         self.grafana_url = module.params.get("grafana_url")
@@ -59,56 +61,53 @@ class GrafanaAPIKeys(object):
 
     def run(self):
         """
-          runner
+        runner
         """
-        result = dict(
-            rc=0,
-            failed=False,
-            changed=False,
-            msg="Grafana API keys ..."
-        )
+        self.module.log("GrafanaAPIKeys::run()")
+
+        result = dict(rc=0, failed=False, changed=False, msg="Grafana API keys ...")
 
         create_directory(self.apikey_directory)
 
         gr_authentication = dict(
             token=None,
             username=self.grafana_admin_user,
-            password=self.grafana_admin_pass
+            password=self.grafana_admin_pass,
         )
 
-        gr = Grafana(
-            self.module,
-            server=self.grafana_url,
-            auth=gr_authentication
-        )
-
+        gr = Grafana(self.module, server=self.grafana_url, auth=gr_authentication)
 
         if self.state == "list":
             status_code, error, msg = gr.list_api_keys()
 
             if error:
-                result = dict(
-                    failed=True,
-                    changed=False,
-                    msg=msg
-                )
+                result = dict(failed=True, changed=False, msg=msg)
             else:
                 result = dict(
                     rc=0,
                     failed=False,
                     changed=False,
                     msg="Existing API Keys",
-                    api_keys=msg
+                    api_keys=msg,
                 )
 
         if self.state == "manage":
-            """
-            """
+            """ """
             res = {}
-            self.module.log(msg=f" all      : {self.grafana_api_keys} / {type(self.grafana_api_keys)}")
+            self.module.log(
+                msg=f" all      : {self.grafana_api_keys} / {type(self.grafana_api_keys)}"
+            )
 
-            present_keys = [v for v in self.grafana_api_keys if v.get('state', "present") == "present"]
-            absent_keys = [v for v in self.grafana_api_keys if v.get('state', "present") == "absent"]
+            present_keys = [
+                v
+                for v in self.grafana_api_keys
+                if v.get("state", "present") == "present"
+            ]
+            absent_keys = [
+                v
+                for v in self.grafana_api_keys
+                if v.get("state", "present") == "absent"
+            ]
             # disabled_keys = [v for v in self.grafana_api_keys if v.get('state', "present") == "disabled"]
 
             # self.module.log(msg=f" present  : {present_keys}")
@@ -118,14 +117,10 @@ class GrafanaAPIKeys(object):
             status_code, error, existing_api_keys = gr.list_api_keys()
 
             if error:
-                return dict(
-                    failed=True,
-                    changed=False,
-                    result=existing_api_keys
-                )
+                return dict(failed=True, changed=False, result=existing_api_keys)
 
-            existing_key_names = [d['name'] for d in existing_api_keys]
-            existing_key_names_with_id = {d['name']: d['id'] for d in existing_api_keys}
+            existing_key_names = [d["name"] for d in existing_api_keys]
+            existing_key_names_with_id = {d["name"]: d["id"] for d in existing_api_keys}
 
             # self.module.log(msg=f" - {existing_key_names}")
 
@@ -136,17 +131,14 @@ class GrafanaAPIKeys(object):
 
                     error, msg = gr.remove_api_key(_id)
                     res[_name] = dict(
-                        msg=msg,
-                        state="absent",
-                        failed=error,
-                        changed=True
+                        msg=msg, state="absent", failed=error, changed=True
                     )
                 else:
                     res[_name] = dict(
                         msg=f"api key for {_name} not exists.",
                         state="absent",
                         failed=False,
-                        changed=False
+                        changed=False,
                     )
 
             for p in present_keys:
@@ -157,29 +149,21 @@ class GrafanaAPIKeys(object):
                         msg=f"api key for {_name} already created.",
                         state="present",
                         failed=False,
-                        changed=False
+                        changed=False,
                     )
                 else:
                     error, msg = gr.create_api_key(p)
-                    res[_name] = dict(
-                        result=msg,
-                        state="present",
-                        failed=error
-                    )
+                    res[_name] = dict(result=msg, state="present", failed=error)
 
             self.module.log(msg=f" = {res}")
 
-            changed = (len({k: v for k, v in res.items() if v.get('changed')}) > 0)
-            failed = (len({k: v for k, v in res.items() if v.get('failed')}) > 0)
+            changed = len({k: v for k, v in res.items() if v.get("changed")}) > 0
+            failed = len({k: v for k, v in res.items() if v.get("failed")}) > 0
 
             self.module.log(msg=f" changed:  {changed}")
             self.module.log(msg=f" failed :  {failed}")
 
-            result = dict(
-                failed=failed,
-                changed=changed,
-                result=res
-            )
+            result = dict(failed=failed, changed=changed, result=res)
 
         return result
 
@@ -352,8 +336,10 @@ class GrafanaAPIKeys(object):
 
     def save_keyfile(self, data):
         """
-            {'id': 1, 'name': 'foo', 'key': 'eyJrIjoiOUtZd29iazRTQ3hsQ0RnbDFSZVpVY2FpZUI4ZEhsZHkiLCJuIjoiZm9vIiwiaWQiOjF9'}
+        {'id': 1, 'name': 'foo', 'key': 'eyJrIjoiOUtZd29iazRTQ3hsQ0RnbDFSZVpVY2FpZUI4ZEhsZHkiLCJuIjoiZm9vIiwiaWQiOjF9'}
         """
+        self.module.log(f"GrafanaAPIKeys::save_keyfile(data: {data})")
+
         name = data.get("name", None)
         key = data.get("key", None)
 
@@ -374,28 +360,16 @@ class GrafanaAPIKeys(object):
 
 
 def main():
-    """
-    """
+    """ """
+    specs = dict(
+        state=dict(default="list", choices=["list", "manage"]),
+        grafana_url=dict(required=False, type="str", default="http://127.0.0.1:3000"),
+        grafana_admin=dict(required=True, type="dict"),
+        api_keys=dict(required=False, type="list"),
+    )
+
     module = AnsibleModule(
-        argument_spec=dict(
-            state=dict(
-                default="list",
-                choices=["list", "manage"]
-            ),
-            grafana_url=dict(
-                required=False,
-                type="str",
-                default="http://127.0.0.1:3000"
-            ),
-            grafana_admin=dict(
-                required=True,
-                type="dict"
-            ),
-            api_keys=dict(
-                required=False,
-                type="list"
-            ),
-        ),
+        argument_spec=specs,
         supports_check_mode=False,
     )
 
@@ -408,5 +382,5 @@ def main():
 
 
 # import module snippets
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

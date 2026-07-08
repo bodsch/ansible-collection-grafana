@@ -26,7 +26,7 @@ promtail_scrape_configs:
           - localhost
         labels:
           job: nginx
-          host: "{{ ansible_fqdn }}"
+          host: "{{ ansible_facts.fqdn }}"
           log_level: nginx_access
           agent: promtail
           env: molecule
@@ -44,7 +44,7 @@ promtail_scrape_configs:
           - localhost
         labels:
           job: nginx
-          host: "{{ ansible_fqdn }}"
+          host: "{{ ansible_facts.fqdn }}"
           log_level: nginx_error
           agent: promtail
           env: molecule

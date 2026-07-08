@@ -45,7 +45,7 @@
       ansible.builtin.pip:
         requirements: "{{ pip_requirements.requirements_file }}"
         state: present
-        extra_args: "{{ grafana_dashboards_python_extra_args | default([]) | bodsch.core.python_extra_args(python_version=ansible_python.version) | default(omit) }}"
+        extra_args: "{{ grafana_dashboards_python_extra_args | default([]) | bodsch.core.python_extra_args(python_version=ansible_facts.python.version) | default(omit) }}"
       when:
         - pip_requirements.requirements_file is defined
         - pip_requirements.changed

@@ -8,7 +8,7 @@ snakeoil_life_time: 10
 
 snakeoil_dhparam: 2048
 
-snakeoil_force: true
+# snakeoil_force: true
 
 snakeoil_alt_names:
   - dns:

@@ -9,7 +9,7 @@ After                   = postgresql.service mariadb.service mysql.service
 
 [Service]
 Type                    = simple
-Environment             = "GOMAXPROCS={{ ansible_processor_vcpus | default(ansible_processor_count) }}"
+Environment             = "GOMAXPROCS={{ ansible_facts.processor_vcpus | default(ansible_facts.processor_count) }}"
 EnvironmentFile         = {{ grafana_defaults_directory }}/grafana-server
 
 User                    = {{ grafana_system_user }}

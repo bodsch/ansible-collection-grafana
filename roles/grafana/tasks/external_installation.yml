@@ -1,6 +1,8 @@
 ---
 
 - name: detect our installation path '{{ grafana_install_path | dirname }}'
+  when:
+    - not running_in_check_mode
   ansible.builtin.stat:
     path: "{{ grafana_install_path | dirname }}"
     get_checksum: false
@@ -8,6 +10,8 @@
   ignore_errors: true
 
 - name: detect old installation
+  when:
+    - not running_in_check_mode
   ansible.builtin.stat:
     path: /usr/sbin/grafana-server
     get_checksum: false
@@ -15,11 +19,14 @@
   ignore_errors: true
 
 - name: detect if this an upgrade
+  when:
+    - not running_in_check_mode
   ansible.builtin.set_fact:
     grafana_upgrade: "{{ stat_grafana_path | bodsch.grafana.upgrade(stat_old_grafana_path) }}"
 
 - name: old installation
   when:
+    - not running_in_check_mode
     - grafana_upgrade
   block:
     - name: stop old service
@@ -52,12 +59,13 @@
         - stat_grafana_path.stat.path | string | length > 0
 
 - name: remove grafana apt repository
+  when:
+    - not running_in_check_mode
+    - ansible_facts.pkg_mgr == "apt"
   ansible.builtin.apt_repository:
     repo: deb https://packages.grafana.com/oss/deb stable main
     state: absent
     update_cache: true
-  when:
-    - ansible_pkg_mgr == "apt"
 
 - name: flush handlers
   ansible.builtin.meta: flush_handlers

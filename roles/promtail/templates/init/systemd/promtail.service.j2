@@ -9,7 +9,7 @@ StartLimitBurst       = 5
 
 [Service]
 Type                  = simple
-Environment           = "GOMAXPROCS={{ ansible_processor_vcpus | default(ansible_processor_count) }}"
+Environment           = "GOMAXPROCS={{ ansible_facts.processor_vcpus | default(ansible_facts.processor_count) }}"
 EnvironmentFile       = {{ promtail_defaults_directory }}/promtail
 
 User                  = {{ promtail_system_user }}

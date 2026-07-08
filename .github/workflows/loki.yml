@@ -70,7 +70,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🐍 set up python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: "${{ matrix.python_version }}"
 
@@ -128,7 +128,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🐍 set up python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: "${{ matrix.python_version }}"
 
@@ -193,7 +193,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: 🐍 set up python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: "${{ matrix.python_version }}"
 

@@ -4,14 +4,17 @@
 # (c) 2022, Bodo Schulz <bodo@boone-schulz.de>
 
 from __future__ import absolute_import, division, print_function
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.bodsch.core.plugins.module_utils.directory import create_directory
 
-import os
 import json
-import requests
-from requests.exceptions import ConnectionError
+import os
 from pathlib import Path
+
+import requests
+from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.bodsch.core.plugins.module_utils.directory import (
+    create_directory,
+)
+from requests.exceptions import ConnectionError
 
 # ---------------------------------------------------------------------------------------
 
@@ -37,12 +40,11 @@ RETURN = """
 
 class GrafanaServiceAccount(object):
     """
-        https://grafana.com/docs/grafana/latest/developers/http_api/serviceaccount/
+    https://grafana.com/docs/grafana/latest/developers/http_api/serviceaccount/
     """
 
     def __init__(self, module):
-        """
-        """
+        """ """
         self.module = module
 
         self.state = module.params.get("state")
@@ -58,13 +60,9 @@ class GrafanaServiceAccount(object):
         self.apikey_directory = f"{Path.home()}/.ansible/cache/grafana"
 
     def run(self):
-        """
-        """
+        """ """
         result = dict(
-            rc=0,
-            failed=False,
-            changed=False,
-            msg="Grafana service accounts  ..."
+            rc=0, failed=False, changed=False, msg="Grafana service accounts  ..."
         )
 
         create_directory(directory=self.apikey_directory, mode="0750")
@@ -73,28 +71,31 @@ class GrafanaServiceAccount(object):
             error, msg = self.list_service_accounts()
 
             if error:
-                result = dict(
-                    failed=True,
-                    changed=False,
-                    msg=msg
-                )
+                result = dict(failed=True, changed=False, msg=msg)
             else:
                 result = dict(
                     rc=0,
                     failed=False,
                     changed=False,
                     msg="Existing Service Accounts",
-                    service_accounts=msg
+                    service_accounts=msg,
                 )
 
         if self.state == "manage":
-            """
-            """
+            """ """
             res = {}
             self.module.log(msg=f" account       : {self.grafana_service_accounts}")
 
-            present_keys = [v for v in self.grafana_service_accounts if v.get('state', "present") == "present"]
-            absent_keys = [v for v in self.grafana_service_accounts if v.get('state', "present") == "absent"]
+            present_keys = [
+                v
+                for v in self.grafana_service_accounts
+                if v.get("state", "present") == "present"
+            ]
+            absent_keys = [
+                v
+                for v in self.grafana_service_accounts
+                if v.get("state", "present") == "absent"
+            ]
             # disabled_keys = [v for v in self.grafana_service_accounts if v.get('state', "present") == "disabled"]
 
             # self.module.log(msg=f" must present  : {present_keys}")
@@ -105,9 +106,7 @@ class GrafanaServiceAccount(object):
 
             if error:
                 return dict(
-                    failed=True,
-                    changed=False,
-                    result=existing_service_accounts
+                    failed=True, changed=False, result=existing_service_accounts
                 )
 
             """
@@ -123,10 +122,14 @@ class GrafanaServiceAccount(object):
                 }
             """
 
-            existing_service_accounts = existing_service_accounts.get("service_accounts", [])
+            existing_service_accounts = existing_service_accounts.get(
+                "service_accounts", []
+            )
 
-            existing_key_names = [d['name'] for d in existing_service_accounts]
-            existing_key_names_with_id = {d['name']: d['id'] for d in existing_service_accounts}
+            existing_key_names = [d["name"] for d in existing_service_accounts]
+            existing_key_names_with_id = {
+                d["name"]: d["id"] for d in existing_service_accounts
+            }
 
             # self.module.log(msg=f" -  existing #1 {existing_key_names}")
             self.module.log(msg=f" -  existing #2 {existing_key_names_with_id}")
@@ -142,17 +145,14 @@ class GrafanaServiceAccount(object):
 
                     error, msg = self.remove_service_account(_id)
                     res[_name] = dict(
-                        msg=msg,
-                        state="absent",
-                        failed=error,
-                        changed=True
+                        msg=msg, state="absent", failed=error, changed=True
                     )
                 else:
                     res[_name] = dict(
                         msg=f"service account for {_name} not exists.",
                         state="absent",
                         failed=False,
-                        changed=False
+                        changed=False,
                     )
 
             for p in present_keys:
@@ -164,7 +164,7 @@ class GrafanaServiceAccount(object):
                         key_file=os.path.join(self.apikey_directory, f"{_name}.key"),
                         state="present",
                         failed=False,
-                        changed=False
+                        changed=False,
                     )
                 else:
                     error, msg = self.create_service_account(p)
@@ -174,37 +174,25 @@ class GrafanaServiceAccount(object):
                     if not error:
                         error, msg = self.create_token(msg)
 
-                        res[_name] = dict(
-                            token=msg,
-                            state="present",
-                            failed=error
-                        )
+                        res[_name] = dict(token=msg, state="present", failed=error)
                     else:
-                        res[_name] = dict(
-                            result=msg,
-                            state="present",
-                            failed=error
-                        )
+                        res[_name] = dict(result=msg, state="present", failed=error)
 
             self.module.log(msg=f" = {res}")
 
-            changed = (len({k: v for k, v in res.items() if v.get('changed')}) > 0)
-            failed = (len({k: v for k, v in res.items() if v.get('failed')}) > 0)
+            changed = len({k: v for k, v in res.items() if v.get("changed")}) > 0
+            failed = len({k: v for k, v in res.items() if v.get("failed")}) > 0
 
             # self.module.log(msg=f" changed:  {changed}")
             # self.module.log(msg=f" failed :  {failed}")
 
-            result = dict(
-                failed=failed,
-                changed=changed,
-                result=res
-            )
+            result = dict(failed=failed, changed=changed, result=res)
 
         return result
 
     def list_service_accounts(self):
         """
-            http://127.0.0.1:3000/api/serviceaccounts
+        http://127.0.0.1:3000/api/serviceaccounts
         """
         error = True
         output = None
@@ -218,10 +206,7 @@ class GrafanaServiceAccount(object):
             total_count = output.get("totalCount", 0)
             service_accounts = output.get("serviceAccounts", [])
 
-        output = dict(
-            count=total_count,
-            service_accounts=service_accounts
-        )
+        output = dict(count=total_count, service_accounts=service_accounts)
 
         self.module.log(msg=f" - error   {error}")
         self.module.log(msg=f" - output  {output}")
@@ -229,8 +214,7 @@ class GrafanaServiceAccount(object):
         return error, output
 
     def service_tokens(self, present_keys={}):
-        """
-        """
+        """ """
         # self.module.log(msg=f"service_tokens(self, {present_keys})")
         error = True
         output = None
@@ -247,17 +231,17 @@ class GrafanaServiceAccount(object):
 
     def create_token(self, data):
         """
-            {
-                'id': 7,
-                'name': 'sa-export-dashboards',
-                'login': 'sa-sa-export-dashboards',
-                'orgId': 1,
-                'isDisabled': False,
-                'role': 'Viewer',
-                'tokens': 0,
-                'avatarUrl': '',
-                'key_file': None
-            }
+        {
+            'id': 7,
+            'name': 'sa-export-dashboards',
+            'login': 'sa-sa-export-dashboards',
+            'orgId': 1,
+            'isDisabled': False,
+            'role': 'Viewer',
+            'tokens': 0,
+            'avatarUrl': '',
+            'key_file': None
+        }
         """
         # self.module.log(msg=f"create_token(self, {data})")
         text = {}
@@ -267,11 +251,11 @@ class GrafanaServiceAccount(object):
 
         if service_account_id and service_account_name:
 
-            payload = dict(
-                name=service_account_name
-            )
+            payload = dict(name=service_account_name)
 
-            status_code, text = self.__call_url(method="POST", data=payload, key_id=f"{service_account_id}/tokens")
+            status_code, text = self.__call_url(
+                method="POST", data=payload, key_id=f"{service_account_id}/tokens"
+            )
 
             if status_code == 200:
                 token = text.get("key", None)
@@ -285,8 +269,7 @@ class GrafanaServiceAccount(object):
         return True, text
 
     def create_service_account(self, data):
-        """
-        """
+        """ """
         # self.module.log(msg=f"create_service_account(self, {data})")
 
         service_account_name = data.get("name", None)
@@ -301,10 +284,7 @@ class GrafanaServiceAccount(object):
             msg = f"wrong Service Account role '{service_account_role}'. Can be one of the following values: Viewer, Editor or Admin."
             return True, msg
 
-        payload = dict(
-            name=service_account_name,
-            role=service_account_role
-        )
+        payload = dict(name=service_account_name, role=service_account_role)
 
         if service_account_disabled:
             payload.update({"isDisabled": service_account_disabled})
@@ -326,8 +306,7 @@ class GrafanaServiceAccount(object):
         pass
 
     def remove_service_account(self, id):
-        """
-        """
+        """ """
         # self.module.log(msg=f"remove_service_account(self, {id})")
 
         status_code, text = self.__call_url(method="DELETE", key_id=id)
@@ -337,17 +316,13 @@ class GrafanaServiceAccount(object):
         else:
             return True, text
 
-    def __call_url(self, method='GET', data=None, key_id=None):
-        """
-        """
+    def __call_url(self, method="GET", data=None, key_id=None):
+        """ """
         # self.module.log(msg=f"__call_url(self, {method}, {data}, {key_id})")
 
         response = None
 
-        headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        }
+        headers = {"Accept": "application/json", "Content-Type": "application/json"}
 
         basic_authentication = None
         if self.grafana_service_account_token:
@@ -369,25 +344,19 @@ class GrafanaServiceAccount(object):
 
         try:
 
-            if method == 'POST':
+            if method == "POST":
                 response = requests.post(
                     uri,
                     data=json.dumps(data),
                     headers=headers,
-                    auth=basic_authentication
+                    auth=basic_authentication,
                 )
             elif method == "GET":
-                response = requests.get(
-                    uri,
-                    headers=headers,
-                    auth=basic_authentication
-                )
+                response = requests.get(uri, headers=headers, auth=basic_authentication)
             elif method == "DELETE":
                 if key_id:
                     response = requests.delete(
-                        uri,
-                        headers=headers,
-                        auth=basic_authentication
+                        uri, headers=headers, auth=basic_authentication
                     )
 
             else:
@@ -418,10 +387,14 @@ class GrafanaServiceAccount(object):
             return status_code, status_message
 
         except ConnectionError as e:
-            error_text = f"{type(e).__name__} {(str(e) if len(e.args) == 0 else str(e.args[0]))}"
+            error_text = (
+                f"{type(e).__name__} {(str(e) if len(e.args) == 0 else str(e.args[0]))}"
+            )
             self.module.log(msg=f"ERROR   : {error_text}")
 
-            self.module.log(msg="------------------------------------------------------------------")
+            self.module.log(
+                msg="------------------------------------------------------------------"
+            )
             return 500, error_text
 
         except Exception as e:
@@ -436,7 +409,7 @@ class GrafanaServiceAccount(object):
 
     def save_keyfile(self, data):
         """
-            {'id': 1, 'name': 'foo', 'key': 'eyJrIjoiOUtZd29iazRTQ3hsQ0RnbDFSZVpVY2FpZUI4ZEhsZHkiLCJuIjoiZm9vIiwiaWQiOjF9'}
+        {'id': 1, 'name': 'foo', 'key': 'eyJrIjoiOUtZd29iazRTQ3hsQ0RnbDFSZVpVY2FpZUI4ZEhsZHkiLCJuIjoiZm9vIiwiaWQiOjF9'}
         """
         self.module.log(msg=f"save_keyfile(self, {data})")
 
@@ -460,36 +433,21 @@ class GrafanaServiceAccount(object):
 
 
 def main():
-    """
-    """
+    """ """
     module = AnsibleModule(
         argument_spec=dict(
-            state=dict(
-                default="list",
-                choices=["list", "manage"]
-            ),
+            state=dict(default="list", choices=["list", "manage"]),
             grafana_url=dict(
-                required=False,
-                type="str",
-                default="http://127.0.0.1:3000"
+                required=False, type="str", default="http://127.0.0.1:3000"
             ),
-            grafana_admin=dict(
-                required=True,
-                type="dict"
-            ),
-            service_account_token=dict(
-                required=False,
-                type="str"
-            ),
+            grafana_admin=dict(required=True, type="dict"),
+            service_account_token=dict(required=False, type="str"),
             org_id=dict(
                 required=False,
                 type="int",
                 default=1,
             ),
-            service_accounts=dict(
-                required=True,
-                type="list"
-            )
+            service_accounts=dict(required=True, type="list"),
         ),
         supports_check_mode=False,
     )
@@ -503,7 +461,7 @@ def main():
 
 
 # import module snippets
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 
 

@@ -2,4 +2,5 @@
 
 collections:
   - name: bodsch.prometheus
-  - name: bodsch.certs
+  # - name: bodsch.certs
+  - name: bodsch.database

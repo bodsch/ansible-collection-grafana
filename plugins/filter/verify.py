@@ -1,6 +1,7 @@
 # python 3 headers, required if submitting to Ansible
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 from ansible.utils.display import Display
@@ -9,22 +10,20 @@ display = Display()
 
 
 class FilterModule(object):
-    """
-    """
+    """ """
 
     def filters(self):
         return {
-            'compare_list': self.compare_list,
-            'validate_attachment_hash': self.validate_attachment_hash,
-            'validate_datasource_type': self.validate_datasource_type,
-            'absent_datasources': self.absent_datasources,
-            'non_existing_api': self.non_existing_api,
-            'upgrade': self.upgrade,
+            "compare_list": self.compare_list,
+            "validate_attachment_hash": self.validate_attachment_hash,
+            "validate_datasource_type": self.validate_datasource_type,
+            "absent_datasources": self.absent_datasources,
+            "non_existing_api": self.non_existing_api,
+            "upgrade": self.upgrade,
         }
 
     def compare_list(self, data_list, compare_to_list):
-        """
-        """
+        """ """
         result = []
 
         for i in data_list:
@@ -35,10 +34,9 @@ class FilterModule(object):
         return result
 
     def validate_attachment_hash(self, data, compare_to_list):
-        """
-        """
+        """ """
         # display.v(f"validate_attachment_hash({data}, {compare_to_list})")
-        if ':' in data:
+        if ":" in data:
             for i in compare_to_list:
                 if i[:-1] in data:
                     return True
@@ -49,8 +47,7 @@ class FilterModule(object):
         return False
 
     def validate_datasource_type(self, data):
-        """
-        """
+        """ """
         not_supported = []
         ds_error = []
 
@@ -100,19 +97,12 @@ class FilterModule(object):
             ds_error.append(f"The datasources '{not_supported}' are not supported!")
 
         if len(ds_error) > 0:
-            return dict(
-                valid=False,
-                msg="\n".join(ds_error)
-            )
+            return dict(valid=False, msg="\n".join(ds_error))
 
-        return dict(
-            valid=True,
-            msg="All datasources are valid."
-        )
+        return dict(valid=True, msg="All datasources are valid.")
 
     def absent_datasources(self, data):
-        """
-        """
+        """ """
         result = []
 
         _data = data.copy()
@@ -120,10 +110,7 @@ class FilterModule(object):
         for datasource, values in _data.items():
             # res = {}
             if values.get("state", "present") == "absent":
-                res = dict(
-                    name=datasource,
-                    orgId=values.get("org_id", 1)
-                )
+                res = dict(name=datasource, orgId=values.get("org_id", 1))
                 result.append(res)
 
                 _ = data.pop(datasource)
@@ -131,15 +118,14 @@ class FilterModule(object):
         return data, result
 
     def non_existing_api(self, data, existing_api_keys):
-        """
-        """
+        """ """
         # display.v(f"non_existing_api({data}, {existing_api_keys})")
         # display.v(f"  - {type(data)}")
         # display.v(f"  - {type(existing_api_keys)}")
 
         if len(existing_api_keys) == 0:
             """
-              no present API data
+            no present API data
             """
             return data
 
@@ -165,8 +151,7 @@ class FilterModule(object):
         return result
 
     def upgrade(self, install_path, bin_path):
-        """
-        """
+        """ """
         directory = None
         link_to_bin = None
 

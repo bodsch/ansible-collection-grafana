@@ -23,7 +23,7 @@ tags:
   - observability
 
 dependencies:
-  bodsch.core: ">=2.2.1"
+  bodsch.core: ">=2.9.0"
   bodsch.scm: "*"
   community.grafana: "*"
 

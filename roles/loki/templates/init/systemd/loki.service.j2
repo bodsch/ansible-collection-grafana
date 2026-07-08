@@ -9,7 +9,7 @@ StartLimitBurst       = 5
 
 [Service]
 Type                  = simple
-Environment           = "GOMAXPROCS={{ ansible_processor_vcpus | default(ansible_processor_count) }}"
+Environment           = "GOMAXPROCS={{ ansible_facts.processor_vcpus | default(ansible_facts.processor_count) }}"
 EnvironmentFile       = {{ loki_defaults_directory }}/loki
 
 User                  = {{ loki_system_user }}

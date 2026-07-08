@@ -1,11 +1,12 @@
 ---
 
 - name: get latest release
+  when:
+    - not running_in_check_mode
+    - grafana_version == "latest"
   delegate_to: localhost
   become: false
   run_once: true
-  when:
-    - grafana_version == "latest"
   block:
     - name: get latest release
       delegate_to: localhost
@@ -26,19 +27,24 @@
         grafana_version: "{{ _latest_release.latest_release }}"
 
 - name: define download information
+  when:
+    - not running_in_check_mode
   ansible.builtin.set_fact:
     grafana_release: "{{ grafana_defaults_release | combine(grafana_release, recursive=True) }}"
 
 - name: define delegate instance for download handling
+  when:
+    - not running_in_check_mode
+    - grafana_direct_download
   ansible.builtin.set_fact:
-    grafana_delegate_to: "{{ ansible_host }}"
+    grafana_delegate_to: "{{ ansible_facts.host }}"
     grafana_local_tmp_directory: "{{
         lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
         default('/var/cache/ansible/grafana', true) }}/{{ grafana_version }}"
-  when:
-    - grafana_direct_download
 
 - name: create download directory
+  when:
+    - not running_in_check_mode
   become: false
   delegate_to: "{{ grafana_delegate_to }}"
   run_once: "{{ 'false' if grafana_direct_download else 'true' }}"
@@ -48,6 +54,8 @@
     mode: "0750"
 
 - name: detect the downloaded grafana archive
+  when:
+    - not running_in_check_mode
   become: false
   delegate_to: "{{ grafana_delegate_to }}"
   run_once: "{{ 'false' if grafana_direct_download else 'true' }}"
@@ -57,6 +65,7 @@
 
 - name: download
   when:
+    - not running_in_check_mode
     - stat_grafana_archive.stat is defined
     - not stat_grafana_archive.stat.exists | default('false')
   block:

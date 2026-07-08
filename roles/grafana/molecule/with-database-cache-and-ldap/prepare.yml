@@ -7,8 +7,8 @@
   pre_tasks:
     - name: arch- / artixlinux
       when:
-        - ansible_distribution | lower == 'archlinux' or
-          ansible_os_family | lower == 'artix linux'
+        - ansible_facts.distribution | lower == 'archlinux' or
+          ansible_facts.os_family | lower == 'artix linux'
       block:
         - name: update pacman system
           ansible.builtin.command: |
@@ -25,7 +25,7 @@
               #!/usr/bin/openrc-run
               true
           when:
-            - ansible_os_family | lower == 'artix linux'
+            - ansible_facts.os_family | lower == 'artix linux'
 
     - name: make sure python3-apt is installed (only debian based)
       ansible.builtin.package:
@@ -33,7 +33,7 @@
           - python3-apt
         state: present
       when:
-        - ansible_os_family | lower == 'debian'
+        - ansible_facts.os_family | lower == 'debian'
 
     - name: update package cache
       become: true
@@ -43,18 +43,17 @@
     - name: environment
       ansible.builtin.debug:
         msg:
-          - "os family            : {{ ansible_distribution }} ({{ ansible_os_family }})"
-          - "distribution version : {{ ansible_distribution_major_version }}"
+          - "os family            : {{ ansible_facts.distribution }} ({{ ansible_facts.os_family }})"
+          - "distribution version : {{ ansible_facts.distribution_major_version }}"
           - "ansible version      : {{ ansible_version.full }}"
-          - "python version       : {{ ansible_python.version.major }}.{{ ansible_python.version.minor }}"
+          - "python version       : {{ ansible_facts.python.version.major }}.{{ ansible_facts.python.version.minor }}"
 
 - name: prepare all
   hosts: all
   gather_facts: true
 
   roles:
-    # - role: apparmor
-    - role: snapd
+    - role: bodsch.snapd
 
 - name: prepare nginx
   hosts: nginx
@@ -68,7 +67,7 @@
 
   roles:
     - role: bodsch.certs.snakeoil
-    - role: nginx
+    - role: bodsch.nginx
 
 - name: prepare influxdb
   hosts: influxdb
@@ -81,17 +80,17 @@
           - python3-pip
         state: present
 
-    # to fix https://github.com/mkayontour/ansible-influxdb/issues/9
-    - name: add influxdata-archive_compat.key
-      ansible.builtin.shell:
-        cd /tmp/ ;
-        curl https://repos.influxdata.com/influxdata-archive_compat.key > /tmp/influxdata-archive_compat.key &&
-        echo '393e8779c89ac8d958f81f942f9ad7fb82a25e133faddaf92e15b16e6ac9ce4c /tmp/influxdata-archive_compat.key' | sha256sum -c && cat /tmp/influxdata-archive_compat.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg
-      when:
-        - ansible_distribution | lower == 'debian'
+    # # to fix https://github.com/mkayontour/ansible-influxdb/issues/9
+    # - name: add influxdata-archive_compat.key
+    #   ansible.builtin.shell:
+    #     cd /tmp/ ;
+    #     curl https://repos.influxdata.com/influxdata-archive_compat.key > /tmp/influxdata-archive_compat.key &&
+    #     echo '393e8779c89ac8d958f81f942f9ad7fb82a25e133faddaf92e15b16e6ac9ce4c /tmp/influxdata-archive_compat.key' | sha256sum -c && cat /tmp/influxdata-archive_compat.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg
+    #   when:
+    #     - ansible_facts.distribution | lower == 'debian'
 
   roles:
-    - role: influxdb
+    - role: bodsch.influxdb
 
 - name: prepare prometheus
   hosts: prometheus
@@ -104,15 +103,15 @@
   gather_facts: true
 
   roles:
-    - role: glauth
+    - role: bodsch.glauth
 
 - name: prepare database
   hosts: database
   gather_facts: true
 
   roles:
-    - role: bodsch.core.syslog_ng
-    - role: mariadb
-    - role: redis
+    # - role: bodsch.core.syslog_ng
+    - role: bodsch.database.mariadb
+    - role: bodsch.redis
 
 ...

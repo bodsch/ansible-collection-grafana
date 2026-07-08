@@ -44,7 +44,7 @@ grafana_defaults_service_accounts:
 
 grafana_defaults_config_general:
   app_mode: production
-  instance_name: "{{ ansible_hostname }}"
+  instance_name: "{{ ansible_facts.hostname }}"
   force_migration: false
 
 grafana_defaults_config_alerting:
@@ -828,7 +828,7 @@ go_arch_map:
   armv7l: 'armv7'
   armv6l: 'armv6'
 
-system_architecture: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+system_architecture: "{{ go_arch_map[ansible_facts.architecture] | default(ansible_facts.architecture) }}"
 
 systemd_lib_directory: /lib/systemd/system
 

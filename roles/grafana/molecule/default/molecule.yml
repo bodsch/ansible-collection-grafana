@@ -33,25 +33,22 @@ provisioner:
   name: ansible
   ansible_args:
     - --diff
-    - -v
+    - -vv
   config_options:
     defaults:
       deprecation_warnings: true
-      stdout_callback: yaml
-      callbacks_enabled: profile_tasks
+      callback_result_format: yaml
       gathering: smart
-      fact_caching: jsonfile
-      fact_caching_timeout: 8640
-      fact_caching_connection: ansible_facts
+      fact_caching_timeout: 320
 
 scenario:
   test_sequence:
     - destroy
     - dependency
-    - syntax
     - create
     - prepare
     - converge
+    - idempotence
     - verify
     - destroy
 
