@@ -26,7 +26,7 @@
     state: directory
     owner: "{{ loki_system_user }}"
     group: "{{ loki_system_group }}"
-    mode: 0755
+    mode: "0755"
 
 - name: create loki data directory
   ansible.builtin.file:
@@ -34,7 +34,7 @@
     state: directory
     owner: "{{ loki_system_user }}"
     group: "{{ loki_system_group }}"
-    mode: 0755
+    mode: "0755"
   loop:
     - "{{ loki_storage_dir }}"
     - "{{ loki_storage_dir }}/index"
@@ -66,7 +66,7 @@
       ansible.builtin.copy:
         src: "{{ loki_local_tmp_directory }}/{{ item }}-{{ ansible_facts.system | lower }}-{{ system_architecture }}"
         dest: "{{ loki_install_path }}/{{ item }}"
-        mode: 0755
+        mode: "0755"
         owner: "{{ loki_system_user }}"
         group: "{{ loki_system_group }}"
         remote_src: "{{ 'true' if loki_direct_download else 'false' }}"
@@ -109,7 +109,7 @@
         force: true
         owner: root
         group: "{{ loki_system_group }}"
-        mode: 0640
+        mode: "0640"
       notify:
         - verify config
         - reload loki
@@ -120,7 +120,7 @@
         dest: "{{ systemd_lib_directory }}/loki.service"
         owner: root
         group: root
-        mode: 0644
+        mode: "0644"
       notify:
         - daemon-reload
         - restart loki
@@ -135,7 +135,7 @@
         dest: "/etc/conf.d/loki"
         owner: root
         group: root
-        mode: 0644
+        mode: "0644"
 
     - name: create openrc init configuration
       ansible.builtin.template:
@@ -143,7 +143,7 @@
         dest: "/etc/init.d/loki"
         owner: root
         group: root
-        mode: 0750
+        mode: "0750"
 
 - name: create custom fact file
   bodsch.core.facts:

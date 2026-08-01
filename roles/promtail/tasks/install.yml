@@ -40,7 +40,7 @@
     state: directory
     owner: "{{ promtail_system_user }}"
     group: "{{ promtail_system_group }}"
-    mode: 0755
+    mode: "0755"
 
 - name: detect extracted binary file for promtail on '{{ promtail_delegate_to }}'
   become: false
@@ -75,7 +75,7 @@
       ansible.builtin.copy:
         src: "{{ promtail_local_tmp_directory }}/promtail-linux-amd64"
         dest: "{{ promtail_install_path }}/promtail"
-        mode: 0755
+        mode: "0755"
         owner: "{{ promtail_system_user }}"
         group: "{{ promtail_system_group }}"
         remote_src: "{{ 'true' if promtail_direct_download else 'false' }}"
@@ -85,7 +85,7 @@
     - name: make files executable
       ansible.builtin.file:
         path: "{{ promtail_install_path }}/promtail"
-        mode: 0755
+        mode: "0755"
         owner: "{{ promtail_system_user }}"
         group: "{{ promtail_system_group }}"
 
@@ -114,7 +114,7 @@
     state: directory
     owner: "{{ promtail_system_user }}"
     group: "{{ promtail_system_group }}"
-    mode: 0755
+    mode: "0755"
   loop:
     - "{{ promtail_storage_dir }}"
 
@@ -129,7 +129,7 @@
         force: true
         owner: root
         group: "{{ promtail_system_group }}"
-        mode: 0640
+        mode: "0640"
       notify:
         - restart promtail
 
@@ -139,7 +139,7 @@
         dest: "{{ systemd_lib_directory }}/promtail.service"
         owner: root
         group: root
-        mode: 0644
+        mode: "0644"
       notify:
         - daemon-reload
         - restart promtail
@@ -154,7 +154,7 @@
         dest: "/etc/conf.d/promtail"
         owner: root
         group: root
-        mode: 0644
+        mode: "0644"
 
     - name: create openrc init configuration
       ansible.builtin.template:
@@ -162,7 +162,7 @@
         dest: "/etc/init.d/promtail"
         owner: root
         group: root
-        mode: 0750
+        mode: "0750"
 
 - name: create custom fact file
   bodsch.core.facts:

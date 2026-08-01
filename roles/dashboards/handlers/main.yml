@@ -37,7 +37,7 @@
     recurse: true
     owner: grafana
     group: grafana
-    mode: 0755
+    mode: "0755"
   listen: "provisioned dashboards changed"
 
 - name: set privileges on provisioned dashboards directory
@@ -46,7 +46,7 @@
     path: "{{ grafana_data_dir }}/dashboards"
     state: directory
     recurse: false
-    mode: 0755
+    mode: "0755"
   listen: "provisioned dashboards changed"
 
 ...

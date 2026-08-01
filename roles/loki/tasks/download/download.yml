@@ -29,7 +29,7 @@
         url: "{{ loki_release.github_url }}/download/v{{ loki_version }}/{{ item }}-{{ ansible_facts.system | lower }}-{{ system_architecture }}.zip"
         dest: "{{ loki_local_tmp_directory }}/{{ item }}-{{ ansible_facts.system | lower }}-{{ system_architecture }}.zip"
         checksum: "{{ __loki_checksum | default(omit) }}"
-        mode: 0644
+        mode: "0644"
       register: _download_archive
       until: _download_archive is succeeded
       retries: 5

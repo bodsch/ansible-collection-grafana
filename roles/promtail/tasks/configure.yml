@@ -6,7 +6,7 @@
     state: directory
     owner: root
     group: "{{ promtail_system_group }}"
-    mode: 0770
+    mode: "0770"
   with_items:
     - "{{ promtail_config_dir }}"
     - "{{ promtail_config_dir }}/file_sd"
@@ -18,7 +18,7 @@
     force: true
     owner: root
     group: "{{ promtail_system_group }}"
-    mode: 0640
+    mode: "0640"
   notify:
     - restart promtail
 

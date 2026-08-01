@@ -45,7 +45,7 @@
   ansible.builtin.file:
     path: "{{ promtail_local_tmp_directory }}"
     state: directory
-    mode: 0750
+    mode: "0750"
 
 - name: detect the downloaded promtail archive
   become: false
@@ -93,7 +93,7 @@
         url: "{{ promtail_release.download_url }}/download/v{{ promtail_version }}/{{ promtail_release.file }}"
         dest: "{{ promtail_local_tmp_directory }}/{{ promtail_release.file }}"
         checksum: "{{ __promtail_checksum | default(omit) }}"
-        mode: 0644
+        mode: "0644"
       register: _download_archive
       until: _download_archive is succeeded
       retries: 5

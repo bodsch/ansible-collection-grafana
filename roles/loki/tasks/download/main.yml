@@ -51,7 +51,7 @@
   ansible.builtin.file:
     path: "{{ loki_local_tmp_directory }}"
     state: directory
-    mode: 0750
+    mode: "0750"
 
 - name: checksum
   become: false

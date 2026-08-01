@@ -39,7 +39,7 @@
   ansible.builtin.file:
     path: "{{ grafana_data_dir }}/dashboards/"
     group: grafana
-    mode: 0755
+    mode: "0755"
     recurse: true
   changed_when: false
 
@@ -50,7 +50,7 @@
     dest: "/etc/grafana/provisioning/dashboards/{{ item }}.yml"
     owner: root
     group: grafana
-    mode: 0644
+    mode: "0644"
   loop:
     "{{ sub_directories }}"
   notify:
