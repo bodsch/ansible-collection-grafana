@@ -57,7 +57,7 @@ jobs:
         image:
           - archlinux:latest
         ansible-version:
-          - '9.5'
+          - '13.0'
         python_version:
           - '3.12'
         scenario:
@@ -109,7 +109,7 @@ jobs:
         image:
           - debian:13
         ansible-version:
-          - '9.5'
+          - '13.0'
         python_version:
           - '3.12'
         scenario:

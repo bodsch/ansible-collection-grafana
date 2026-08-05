@@ -1,6 +1,8 @@
 ---
 
 - name: merge grafana configuration between defaults and custom
+  when:
+    - not running_in_check_mode
   ansible.builtin.set_fact:
     grafana_config_alerting: "{{ grafana_defaults_config_alerting | combine(grafana_config_alerting, recursive=True) }}"
     grafana_config_analytics: "{{ grafana_defaults_config_analytics | combine(grafana_config_analytics, recursive=True) }}"
@@ -46,16 +48,7 @@
     grafana_config_ldap: "{{ grafana_defaults_config_ldap | combine(grafana_config_ldap, recursive=True) }}"
     grafana_api: "{{ grafana_defaults_api | combine(grafana_api, recursive=True) }}"
     grafana_service_accounts: "{{ grafana_defaults_service_accounts | combine(grafana_service_accounts, recursive=True) }}"
-
-- name: ensure that {{ grafana_config_dir }} exists
-  when:
-    - not running_in_check_mode
-  ansible.builtin.file:
-    state: directory
-    path: "{{ grafana_config_dir }}"
-    owner: root
-    group: "{{ grafana_system_group }}"
-    mode: "0755"
+  no_log: true
 
 - name: create grafana.ini
   when:
@@ -91,6 +84,8 @@
     - restart grafana
 
 - name: flush ansible handlers to start grafana-server
+  when:
+    - not running_in_check_mode
   ansible.builtin.meta: flush_handlers
 
 - name: ensure grafana is started
