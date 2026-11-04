@@ -1,0 +1,9 @@
+---
+
+- name: prepare
+  ansible.builtin.import_tasks: prepare.yml
+
+- name: configure
+  ansible.builtin.import_tasks: configure/api_keys.yml
+
+...

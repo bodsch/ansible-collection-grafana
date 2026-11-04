@@ -1,0 +1,15 @@
+---
+
+grafana_main_version: "{{ grafana_version[0:3] }}"
+
+grafana_install_path: /opt/grafana/{{ grafana_version }}
+
+# ----------------------------------------------------------------------------------------
+
+grafana_defaults_api:
+  # API keys to configure
+  keys: []
+  # The location where the keys should be stored.
+  store_directory: "{{ lookup('env', 'HOME') }}/grafana/api_keys"
+
+...

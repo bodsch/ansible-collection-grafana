@@ -1,0 +1,12 @@
+---
+
+grafana_system_user: grafana
+grafana_system_group: grafana
+grafana_config_dir: /etc/grafana
+grafana_data_dir: "{{ grafana_config_paths.data }}"
+grafana_share_dir: /usr/share/grafana
+grafana_log_dir: "{{ grafana_config_paths.logs }}"
+
+grafana_api: {}
+
+...

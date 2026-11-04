@@ -1,0 +1,136 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+; {{ ansible_managed }}
+
+{% if grafana_config_general.app_mode is defined and
+      grafana_config_general.app_mode | string | length > 0 and
+      grafana_config_general.app_mode in ["production", "development"] %}
+app_mode                        = {{ grafana_config_general.app_mode }}
+{% endif %}
+{% if grafana_config_general.instance_name is defined and
+      grafana_config_general.instance_name | string | length > 0 %}
+instance_name                   = {{ grafana_config_general.instance_name }}
+{% endif %}
+{% if grafana_config_general.force_migration is defined %}
+force_migration                 = {{ grafana_config_general.force_migration | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+
+{% if grafana_config_alerting is defined  and grafana_config_alerting | count > 0 %}
+{% include('grafana.d/alerting.j2') %}
+{% endif %}
+{% if grafana_config_analytics is defined  and grafana_config_analytics | count > 0 %}
+{% include('grafana.d/analytics.j2') %}
+{% endif %}
+{% if grafana_config_annotations is defined  and grafana_config_annotations | count > 0 %}
+{% include('grafana.d/annotations.j2') %}
+{% endif %}
+{% if grafana_config_aws is defined  and grafana_config_aws | count > 0 %}
+{% include('grafana.d/aws.j2') %}
+{% endif %}
+{% if grafana_config_azure is defined and grafana_config_azure | count > 0 %}
+{% include('grafana.d/azure.j2') %}
+{% endif %}
+{% if grafana_config_dashboards is defined and grafana_config_dashboards | count > 0 %}
+{% include('grafana.d/dashboards.j2') %}
+{% endif %}
+{% if grafana_config_database is defined and grafana_config_database | count > 0 %}
+{% include('grafana.d/database.j2') %}
+{% endif %}
+{% if grafana_config_dataproxy is defined and grafana_config_dataproxy | count > 0 %}
+{% include('grafana.d/dataproxy.j2') %}
+{% endif %}
+{% if grafana_config_datasources is defined and grafana_config_datasources | count > 0 %}
+{% include('grafana.d/datasources.j2') %}
+{% endif %}
+{% if grafana_config_date_formats is defined and grafana_config_date_formats | count > 0 %}
+{% include('grafana.d/date_formats.j2') %}
+{% endif %}
+{% if grafana_edition == "enterprise" and grafana_config_enterprise is defined and grafana_config_enterprise | count > 0 %}
+{% include('grafana.d/enterprise.j2') %}
+{% endif %}
+{% if grafana_config_explore is defined and grafana_config_explore | count > 0 %}
+{% include('grafana.d/explore.j2') %}
+{% endif %}
+{% if grafana_config_expressions is defined and grafana_config_expressions | count > 0 %}
+{% include('grafana.d/expressions.j2') %}
+{% endif %}
+{% if grafana_config_external_image_storage is defined and grafana_config_external_image_storage | count > 0 %}
+{% include('grafana.d/external_image_storage.j2') %}
+{% endif %}
+{% if grafana_config_feature_toggles is defined and grafana_config_feature_toggles | count > 0 %}
+{% include('grafana.d/feature_toggles.j2') %}
+{% endif %}
+{% if grafana_config_geomap is defined and grafana_config_geomap | count > 0 %}
+{% include('grafana.d/geomap.j2') %}
+{% endif %}
+{% if grafana_config_grafana_com is defined and grafana_config_grafana_com | count > 0 %}
+{% include('grafana.d/grafana_com.j2') %}
+{% endif %}
+{% if grafana_config_help is defined and grafana_config_help | count > 0 %}
+{% include('grafana.d/help.j2') %}
+{% endif %}
+{% if grafana_config_live is defined and grafana_config_live | count > 0 %}
+{% include('grafana.d/live.j2') %}
+{% endif %}
+{% if grafana_config_log is defined and grafana_config_log | count > 0 %}
+{% include('grafana.d/log.j2') %}
+{% endif %}
+{% if grafana_config_metrics is defined and grafana_config_metrics | count > 0 %}
+{% include('grafana.d/metrics.j2') %}
+{% endif %}
+{% if grafana_config_panels is defined and grafana_config_panels | count > 0 %}
+{% include('grafana.d/panels.j2') %}
+{% endif %}
+{% if grafana_config_paths is defined and grafana_config_paths | count > 0 %}
+{% include('grafana.d/paths.j2') %}
+{% endif %}
+{% if grafana_config_plugin is defined and grafana_config_plugin | count > 0 %}
+{% include('grafana.d/plugin.j2') %}
+{% endif %}
+{% if grafana_config_plugins is defined and grafana_config_plugins | count > 0 %}
+{% include('grafana.d/plugins.j2') %}
+{% endif %}
+{% if grafana_config_profile is defined and grafana_config_profile | count > 0 %}
+{% include('grafana.d/profile.j2') %}
+{% endif %}
+{% if grafana_config_query_history is defined and grafana_config_query_history | count > 0 %}
+{% include('grafana.d/query_history.j2') %}
+{% endif %}
+{% if grafana_config_quota is defined and grafana_config_quota | count > 0 %}
+{% include('grafana.d/quota.j2') %}
+{% endif %}
+{% if grafana_config_rbac is defined and grafana_config_rbac | count > 0 %}
+{% include('grafana.d/rbac.j2') %}
+{% endif %}
+{% if grafana_config_remote_cache is defined and grafana_config_remote_cache | count > 0 %}
+{% include('grafana.d/remote_cache.j2') %}
+{% endif %}
+{% if grafana_config_rendering is defined and grafana_config_rendering | count > 0 %}
+{% include('grafana.d/rendering.j2') %}
+{% endif %}
+{% if grafana_config_security is defined and grafana_config_security | count > 0 %}
+{% include('grafana.d/security.j2') %}
+{% endif %}
+{% if grafana_config_server is defined and grafana_config_server | count > 0 %}
+{% include('grafana.d/server.j2') %}
+{% endif %}
+{% if grafana_config_smtp is defined and grafana_config_smtp | count > 0 %}
+{% include('grafana.d/smtp.j2') %}
+{% endif %}
+{% if grafana_config_emails is defined and grafana_config_emails | count > 0 %}
+{% include('grafana.d/emails.j2') %}
+{% endif %}
+{% if grafana_config_snapshots is defined and grafana_config_snapshots | count > 0 %}
+{% include('grafana.d/snapshots.j2') %}
+{% endif %}
+{% if grafana_config_tracing is defined and grafana_config_tracing | count > 0 %}
+{% include('grafana.d/tracing.j2') %}
+{% endif %}
+{% if grafana_config_unified_alerting is defined and grafana_config_unified_alerting | count > 0 %}
+{% include('grafana.d/unified_alerting.j2') %}
+{% endif %}
+{% if grafana_config_users is defined and grafana_config_users | count > 0 %}
+{% include('grafana.d/users.j2') %}
+{% endif %}
+{% if grafana_config_auth is defined  and grafana_config_auth | count > 0 %}
+{% include('grafana.d/auth.j2') %}
+{% endif %}

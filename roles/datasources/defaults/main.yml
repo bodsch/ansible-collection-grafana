@@ -1,0 +1,19 @@
+---
+
+grafana_system_user: grafana
+grafana_system_group: grafana
+grafana_config_dir: /etc/grafana
+grafana_data_dir: "{{ grafana_config_paths.data }}"
+grafana_share_dir: /usr/share/grafana
+grafana_log_dir: "{{ grafana_config_paths.logs }}"
+
+grafana_provisioning:
+  # Should we use the provisioning capability when possible (provisioning require grafana >= 5.0)
+  enabled: true
+  # Should the provisioning be kept synced.
+  # If true, previous provisioned objects will be removed if not referenced anymore.
+  keep_synced: false
+
+grafana_datasources: {}
+
+...

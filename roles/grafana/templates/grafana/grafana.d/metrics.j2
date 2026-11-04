@@ -7,7 +7,8 @@ enabled                         = true
         grafana_config_metrics.interval_seconds | string | length > 0 %}
 interval_seconds                = {{ grafana_config_metrics.interval_seconds }}
   {% endif %}
-  {% if grafana_config_metrics.disable_total_stats is defined %}
+  {% if grafana_config_metrics.disable_total_stats is defined and
+        rafana_config_metrics.disable_total_stats | string | length > 0 %}%}
 disable_total_stats             = {{ grafana_config_metrics.disable_total_stats | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
   {% if grafana_config_metrics.basic_auth is defined and

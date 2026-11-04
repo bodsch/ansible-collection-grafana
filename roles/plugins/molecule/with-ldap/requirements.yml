@@ -1,0 +1,7 @@
+---
+
+- name: glauth
+  src: https://github.com/bodsch/ansible-glauth
+  version: 1.8.0
+
+...

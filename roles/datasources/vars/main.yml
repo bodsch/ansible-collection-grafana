@@ -1,0 +1,33 @@
+---
+
+grafana_main_version: "{{ grafana_version[0:3] }}"
+
+grafana_install_path: /opt/grafana/{{ grafana_version }}
+
+# should be changed to 'grafana'
+grafana_binary: grafana-server
+
+grafana_delegate_to: localhost
+
+grafana_local_tmp_directory: "{{
+  lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
+  default(lookup('env', 'HOME') ~ '/.cache/ansible/grafana', true) }}/{{ grafana_version }}"
+
+grafana_cache_directory: /var/cache/ansible/grafana
+
+grafana_remote_tmp_directory: "{{ grafana_cache_directory }}/{{ grafana_version }}"
+
+grafana_requirements:
+  - iproute2
+  - gzip
+  - python3-pip
+  - python3-virtualenv
+  - python3-requests
+
+grafana_python_packages: []
+#  - name: grafana-client
+##     version: 2.0.3
+
+# ----------------------------------------------------------------------------------------
+
+...

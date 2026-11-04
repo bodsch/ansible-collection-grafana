@@ -1,0 +1,122 @@
+---
+
+grafana_config_server:
+  http_addr: "0.0.0.0"
+  domain: "matrix.lan"
+
+grafana_datasources:
+  prometheus:
+    state: absent
+    datasource:
+      type: "prometheus"
+      access: "proxy"
+      url: "http://prometheus.mydomain"
+    basic_auth:
+      username: "admin"
+      password: "password"
+    default: true
+    json_data:
+      tlsAuth: false
+      tlsAuthWithCACert: false
+      tlsSkipVerify: true
+
+  InfluxDB_v1:
+    state: present
+    editable: true
+    datasource:
+      type: "influxdb"
+      access: "proxy"
+      url: "http://influxdb:8086"
+    default: true
+    database: molecule
+    user: admin
+    json_data:
+      httpMode: GET
+    secure_json_data:
+      password: "{{ vault__influxdb.molecule }}"
+
+  # see: https://grafana.com/docs/grafana/latest/datasources/influxdb/provision-influxdb/
+  InfluxDB_v2_Flux:
+    state: absent
+    datasource:
+      type: influxdb
+      access: proxy
+      url: http://localhost:8086
+    json_data:
+      version: Flux
+      organization: organization
+      defaultBucket: bucket
+      tlsSkipVerify: true
+    secure_json_data:
+      token: token
+
+  InfluxDB_v2_InfluxQL:
+    state: absent
+    datasource:
+      type: influxdb
+      access: proxy
+      url: http://localhost:8086
+    # This database should be mapped to a bucket
+    database: site
+    json_data:
+      httpMode: GET
+      httpHeaderName1: 'Authorization'
+    secure_json_data:
+      httpHeaderValue1: 'Token <token>'
+
+grafana_plugins:
+  - grafana-clock-panel
+
+grafana_config_log:
+  level: info
+  filters:
+    - "ldap:debug"
+
+grafana_config_database:
+  type: mysql
+  host: database:3306
+  name: grafana
+  user: grafana
+  password: "{{ vault__database.grafana }}"
+
+grafana_config_remote_cache:
+  type: redis
+  connstr: addr=database:6379,pool_size=100,db=0,ssl=false
+
+grafana_config_auth:
+  ldap:
+    enabled: true
+    config_file: /etc/grafana/ldap.toml
+    allow_sign_up: true
+
+grafana_config_ldap:
+  servers:
+    - hosts:
+        - auth
+      port: 389
+      bind_dn: 'cn=admin,dc=molecule,dc=lan'
+      bind_password: "{{ vault__ldap.admin }}"
+      timeout: 10
+      search_filter: "(cn=%s)"
+      search_base_dns:
+        - 'dc=molecule,dc=lan'
+      # group_search_filter: "(&(objectClass=posixGroup)(memberUid=%s))"
+      # group_search_base_dns:
+      #   - "ou=groups,dc=molecule,dc=lan"
+      # group_search_filter_user_attribute: "uid"
+      attributes:
+        name: givenName
+        surname: sn
+        username: cn
+        member_of: memberOf
+        email: email
+      group_mappings:
+        - group_dn: 'ou=admins,ou=groups,dc=molecule,dc=lan'
+          org_role: Admin
+          # org_id = 1
+        - group_dn: 'ou=grafana,ou=groups,dc=molecule,dc=lan'
+          org_role: Editor
+        - group_dn: '*'
+          org_role: Viewer
+
+...

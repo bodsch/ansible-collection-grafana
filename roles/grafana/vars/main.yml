@@ -18,7 +18,6 @@ grafana_cache_directory: /var/cache/ansible/grafana
 grafana_remote_tmp_directory: "{{ grafana_cache_directory }}/{{ grafana_version }}"
 
 grafana_requirements:
-  - iproute2
   - gzip
   - python3-pip
   - python3-virtualenv
@@ -831,5 +830,14 @@ go_arch_map:
 system_architecture: "{{ go_arch_map[ansible_facts.architecture] | default(ansible_facts.architecture) }}"
 
 systemd_lib_directory: /lib/systemd/system
+
+_bind_exporter_gh_token: "{{ lookup('env', 'GH_TOKEN') }}"
+_bind_exporter_gh_user: "{{ lookup('env', 'GH_USER') }}"
+_bind_exporter_fj_token: "{{ lookup('env', 'FJ_TOKEN') }}"
+_bind_exporter_fj_user: "{{ lookup('env', 'FJ_USER') }}"
+
+# credentials matching the configured release provider (empty when unset)
+_bind_exporter_scm_token: "{{ _bind_exporter_fj_token if bind_exporter_release.provider == 'forgejo' else _bind_exporter_gh_token }}"
+_bind_exporter_scm_user: "{{ _bind_exporter_fj_user if bind_exporter_release.provider == 'forgejo' else _bind_exporter_gh_user }}"
 
 ...

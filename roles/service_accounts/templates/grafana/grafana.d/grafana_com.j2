@@ -1,0 +1,9 @@
+{% if grafana_config_grafana_com is defined and
+      grafana_config_grafana_com | count > 0 %}
+
+[grafana_com]
+  {% if grafana_config_grafana_com.url is defined and
+        grafana_config_grafana_com.url | string | length > 0 %}
+url                             = {{ grafana_config_grafana_com.url }}
+  {% endif %}
+{% endif %}

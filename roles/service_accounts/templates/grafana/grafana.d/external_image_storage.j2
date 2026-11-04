@@ -1,0 +1,94 @@
+{% if grafana_config_external_image_storage is defined and
+      grafana_config_external_image_storage | count > 0 %}
+  {% if grafana_config_external_image_storage.provider is defined and
+        grafana_config_external_image_storage.provider | string | length > 0 and
+        grafana_config_external_image_storage.provider in ["s3", "webdav", "gcs", "azure_blob", "local"] %}
+
+[external_image_storage]
+provider                        = {{ grafana_config_external_image_storage.provider }}
+
+    {% if grafana_config_external_image_storage.provider == "s3" %}
+[external_image_storage.s3]
+      {% if grafana_config_external_image_storage.s3.endpoint is defined and
+            grafana_config_external_image_storage.s3.endpoint | string | length > 0 %}
+endpoint                        = {{ grafana_config_external_image_storage.s3.endpoint }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.s3.path_style_access is defined and
+            grafana_config_external_image_storage.s3.path_style_access | string | length > 0 %}
+path_style_access               = {{ grafana_config_external_image_storage.s3.path_style_access }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.s3.bucket is defined and
+            grafana_config_external_image_storage.s3.bucket | string | length > 0 %}
+bucket                          = {{ grafana_config_external_image_storage.s3.bucket }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.s3.region is defined and
+            grafana_config_external_image_storage.s3.region | string | length > 0 %}
+region                          = {{ grafana_config_external_image_storage.s3.region }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.s3.path is defined and
+            grafana_config_external_image_storage.s3.path | string | length > 0 %}
+path                            = {{ grafana_config_external_image_storage.s3.path }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.s3.access_key is defined and
+            grafana_config_external_image_storage.s3.access_key | string | length > 0 %}
+access_key                      = {{ grafana_config_external_image_storage.s3.access_key }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.s3.secret_key is defined and
+            grafana_config_external_image_storage.s3.secret_key | string | length > 0 %}
+secret_key                      = {{ grafana_config_external_image_storage.s3.secret_key }}
+      {% endif %}
+    {% endif %}
+    {% if grafana_config_external_image_storage.provider == "webdav" %}
+[external_image_storage.webdav]
+      {% if grafana_config_external_image_storage.webdav.url is defined and
+            grafana_config_external_image_storage.webdav.url | string | length > 0 %}
+url                             = {{ grafana_config_external_image_storage.webdav.url }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.webdav.public_url is defined and
+            grafana_config_external_image_storage.webdav.public_url | string | length > 0 %}
+public_url                      = {{ grafana_config_external_image_storage.webdav.public_url }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.webdav.username is defined and
+            grafana_config_external_image_storage.webdav.username | string | length > 0 %}
+username                        = {{ grafana_config_external_image_storage.webdav.username }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.webdav.password is defined and
+            grafana_config_external_image_storage.webdav.password | string | length > 0 %}
+password                        = {{ grafana_config_external_image_storage.webdav.password }}
+      {% endif %}
+    {% endif %}
+    {% if grafana_config_external_image_storage.provider == "gcs" %}
+[external_image_storage.gcs]
+      {% if grafana_config_external_image_storage.gcs.key_file is defined and
+            grafana_config_external_image_storage.gcs.key_file | string | length > 0 %}v
+key_file                        = {{ grafana_config_external_image_storage.gcs.key_file }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.gcs.bucket is defined and
+            grafana_config_external_image_storage.gcs.bucket | string | length > 0 %}
+bucket                          = {{ grafana_config_external_image_storage.gcs.bucket }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.gcs.path is defined and
+            grafana_config_external_image_storage.gcs.path | string | length > 0 %}
+path                            = {{ grafana_config_external_image_storage.gcs.path }}
+      {% endif %}
+    {% endif %}
+    {% if grafana_config_external_image_storage.provider == "azure_blob" %}
+[external_image_storage.azure_blob]
+      {% if grafana_config_external_image_storage.azure_blob.account_name is defined and
+            grafana_config_external_image_storage.azure_blob.account_name | string | length > 0 %}
+account_name                    = {{ grafana_config_external_image_storage.azure_blob.account_name }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.azure_blob.account_key is defined and
+            grafana_config_external_image_storage.azure_blob.account_key | string | length > 0 %}
+account_key                     = {{ grafana_config_external_image_storage.azure_blob.account_key }}
+      {% endif %}
+      {% if grafana_config_external_image_storage.azure_blob.container_name is defined and
+            grafana_config_external_image_storage.azure_blob.container_name | string | length > 0 %}
+container_name                  = {{ grafana_config_external_image_storage.azure_blob.container_name }}
+      {% endif %}
+    {% endif %}
+    {% if grafana_config_external_image_storage.provider == "local" %}
+[external_image_storage.local]
+    {% endif %}
+  {% endif %}
+{% endif %}

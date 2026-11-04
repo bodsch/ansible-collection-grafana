@@ -1,0 +1,271 @@
+
+[auth]
+{% if grafana_config_auth.login_cookie_name is defined and
+      grafana_config_auth.login_cookie_name | string | length > 0 %}
+login_cookie_name               = {{ grafana_config_auth.login_cookie_name }}
+{% endif %}
+{% if grafana_config_auth.login_maximum_inactive_lifetime_duration is defined and
+      grafana_config_auth.login_maximum_inactive_lifetime_duration | string | length > 0 %}
+login_maximum_inactive_lifetime_duration = {{ grafana_config_auth.login_maximum_inactive_lifetime_duration }}
+{% endif %}
+{% if grafana_config_auth.login_maximum_lifetime_duration is defined and
+      grafana_config_auth.login_maximum_lifetime_duration | string | length > 0 %}
+login_maximum_lifetime_duration = {{ grafana_config_auth.login_maximum_lifetime_duration }}
+{% endif %}
+{% if grafana_config_auth.token_rotation_interval_minutes is defined and
+      grafana_config_auth.token_rotation_interval_minutes | string | length > 0 %}
+token_rotation_interval_minutes = {{ grafana_config_auth.token_rotation_interval_minutes }}
+{% endif %}
+{#
+  TODO
+#}
+{% if grafana_config_auth.disable_login_form is defined %}
+disable_login_form              = {{ grafana_config_auth.disable_login_form | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+{% if grafana_config_auth.disable_signout_menu is defined %}
+disable_signout_menu            = {{ grafana_config_auth.disable_signout_menu | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+{% if grafana_config_auth.signout_redirect_url is defined and
+      grafana_config_auth.signout_redirect_url | string | length > 0 %}
+signout_redirect_url            = {{ grafana_config_auth.signout_redirect_url }}
+{% endif %}
+{% if grafana_config_auth.oauth_auto_login is defined %}
+oauth_auto_login                = {{ grafana_config_auth.oauth_auto_login | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+{% if grafana_config_auth.oauth_state_cookie_max_age is defined and
+      grafana_config_auth.oauth_state_cookie_max_age | string | length > 0 %}
+oauth_state_cookie_max_age      = {{ grafana_config_auth.oauth_state_cookie_max_age }}
+{% endif %}
+{% if grafana_config_auth.oauth_skip_org_role_update_sync is defined %}
+oauth_skip_org_role_update_sync = {{ grafana_config_auth.oauth_skip_org_role_update_sync | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+{% if grafana_config_auth.api_key_max_seconds_to_live is defined and
+      grafana_config_auth.api_key_max_seconds_to_live | string | length > 0 %}
+api_key_max_seconds_to_live     = {{ grafana_config_auth.api_key_max_seconds_to_live }}
+{% endif %}
+{% if grafana_config_auth.sigv4_auth_enabled is defined %}
+sigv4_auth_enabled              = {{ grafana_config_auth.sigv4_auth_enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+{% if grafana_config_auth.sigv4_verbose_logging is defined %}
+sigv4_verbose_logging           = {{ grafana_config_auth.sigv4_verbose_logging | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+{% if grafana_config_auth.azure_auth_enabled is defined %}
+azure_auth_enabled              = {{ grafana_config_auth.azure_auth_enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+{% if grafana_config_auth.anonymous is defined and
+      grafana_config_auth.anonymous | count > 0 and
+      grafana_config_auth.anonymous.enabled | bool %}
+
+[auth.anonymous]
+enabled                         = {{ grafana_config_auth.anonymous.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if grafana_config_auth.anonymous.org_name is defined and
+        grafana_config_auth.anonymous.org_name | string | length > 0 %}
+org_name                        = {{ grafana_config_auth.anonymous.org_name }}
+  {% endif %}
+  {% if grafana_config_auth.anonymous.org_role is defined and
+        grafana_config_auth.anonymous.org_role | string | length > 0 %}
+org_role                        = {{ grafana_config_auth.anonymous.org_role }}
+  {% endif %}
+  {% if grafana_config_auth.anonymous.hide_version is defined %}
+hide_version                    = {{ grafana_config_auth.hide_version.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+{% endif %}
+{% if grafana_config_auth.github is defined and
+      grafana_config_auth.github | count > 0 and
+      grafana_config_auth.github.enabled %}
+
+[auth.github]
+enabled = {{ grafana_config_auth.github.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if grafana_config_auth.github.allow_sign_up is defined %}
+allow_sign_up                   = {{ grafana_config_auth.github.allow_sign_up | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_auth.github.client_id is defined and
+        grafana_config_auth.github.client_id | string | length > 0 %}
+client_id                       = {{ grafana_config_auth.github.client_id }}
+  {% endif %}
+  {% if grafana_config_auth.github.client_secret is defined and
+        grafana_config_auth.github.client_secret | string | length > 0 %}
+client_secret                   = {{ grafana_config_auth.github.client_secret }}
+  {% endif %}
+  {% if grafana_config_auth.github.scopes is defined and
+        grafana_config_auth.github.scopes | count > 0 %}
+scopes                          = {{ grafana_config_auth.github.scopes | join(', ') }}
+  {% endif %}
+  {% if grafana_config_auth.github.auth_url is defined and
+        grafana_config_auth.github.auth_url | string | length > 0 %}
+auth_url                        = {{ grafana_config_auth.github.auth_url }}
+  {% endif %}
+  {% if grafana_config_auth.github.token_url is defined and
+        grafana_config_auth.github.token_url | string | length > 0 %}
+token_url                       = {{ grafana_config_auth.github.token_url }}
+  {% endif %}
+  {% if grafana_config_auth.github.api_url is defined and
+        grafana_config_auth.github.api_url | string | length > 0 %}
+api_url                         = {{ grafana_config_auth.github.api_url }}
+  {% endif %}
+  {% if grafana_config_auth.github.allowed_domains is defined and
+        grafana_config_auth.github.allowed_domains | string | length > 0 %}
+allowed_domains                 = {{ grafana_config_auth.github.allowed_domains }}
+  {% endif %}
+  {% if grafana_config_auth.github.team_ids is defined and
+        grafana_config_auth.github.team_ids | string | length > 0 %}
+team_ids                        = {{ grafana_config_auth.github.team_ids }}
+  {% endif %}
+  {% if grafana_config_auth.github.team_ids is defined and
+        grafana_config_auth.github.team_ids | string | length > 0 %}
+team_ids                        = {{ grafana_config_auth.github.team_ids }}
+  {% endif %}
+{% endif %}
+{% if grafana_config_auth.gitlab.enabled %}
+
+[auth.gitlab]
+;enabled = {{ grafana_config_auth.gitlab.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+;allow_sign_up = true
+;client_id = some_id
+;client_secret = some_secret
+;scopes = api
+;auth_url = https://gitlab.com/oauth/authorize
+;token_url = https://gitlab.com/oauth/token
+;api_url = https://gitlab.com/api/v4
+;allowed_domains =
+;allowed_groups =
+{% endif %}
+{% if grafana_config_auth.google.enabled %}
+
+[auth.google]
+;enabled = {{ grafana_config_auth.google.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+;allow_sign_up = true
+;client_id = some_client_id
+;client_secret = some_client_secret
+;scopes = https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email
+;auth_url = https://accounts.google.com/o/oauth2/auth
+;token_url = https://accounts.google.com/o/oauth2/token
+;api_url = https://www.googleapis.com/oauth2/v1/userinfo
+;allowed_domains =
+;hosted_domain =
+{% endif %}
+{% if grafana_config_auth.grafana_com.enabled %}
+
+[auth.grafana_com]
+;enabled = {{ grafana_config_auth.grafana_com.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+;allow_sign_up = true
+;client_id = some_id
+;client_secret = some_secret
+;scopes = user:email
+;allowed_organizations =
+{% endif %}
+{% if grafana_config_auth.azuread.enabled %}
+
+[auth.azuread]
+;enabled = {{ grafana_config_auth.azuread.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+;name = Azure AD
+;allow_sign_up = true
+;client_id = some_client_id
+;client_secret = some_client_secret
+;scopes = openid email profile
+;auth_url = https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/authorize
+;token_url = https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token
+;allowed_domains =
+;allowed_groups =
+;role_attribute_strict = false
+{% endif %}
+{% if grafana_config_auth.okta.enabled %}
+
+[auth.okta]
+;name = {{ grafana_config_auth.okta.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+;enabled = false
+;allow_sign_up = true
+;client_id = some_id
+;client_secret = some_secret
+;scopes = openid profile email groups
+;auth_url = https://<tenant-id>.okta.com/oauth2/v1/authorize
+;token_url = https://<tenant-id>.okta.com/oauth2/v1/token
+;api_url = https://<tenant-id>.okta.com/oauth2/v1/userinfo
+;allowed_domains =
+;allowed_groups =
+;role_attribute_path =
+;role_attribute_strict = false
+{% endif %}
+{% if grafana_config_auth.generic_oauth.enabled %}
+
+[auth.generic_oauth]
+;enabled = {{ grafana_config_auth.generic_oauth.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+;name = OAuth
+;allow_sign_up = true
+;client_id = some_id
+;client_secret = some_secret
+;scopes = user:email,read:org
+;empty_scopes = false
+;email_attribute_name = email:primary
+;email_attribute_path =
+;login_attribute_path =
+;name_attribute_path =
+;id_token_attribute_name =
+;auth_url = https://foo.bar/login/oauth/authorize
+;token_url = https://foo.bar/login/oauth/access_token
+;api_url = https://foo.bar/user
+;teams_url =
+;allowed_domains =
+;team_ids =
+;allowed_organizations =
+;role_attribute_path =
+;role_attribute_strict = false
+;groups_attribute_path =
+;team_ids_attribute_path =
+;tls_skip_verify_insecure = false
+;tls_client_cert =
+;tls_client_key =
+;tls_client_ca =
+;use_pkce = false
+;auth_style =
+{% endif %}
+{% if grafana_config_auth.basic.enabled %}
+
+[auth.basic]
+enabled = {{ grafana_config_auth.basic.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+{% endif %}
+{% if grafana_config_auth.proxy.enabled %}
+  {# TODO #}
+[auth.proxy]
+;enabled = {{ grafana_config_auth.proxy.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+;header_name = X-WEBAUTH-USER
+;header_property = username
+;auto_sign_up = true
+;sync_ttl = 60
+;whitelist = 192.168.1.1, 192.168.2.1
+;headers = Email:X-User-Email, Name:X-User-Name
+;headers_encoded = false
+;enable_login_token = false
+{% endif %}
+{% if grafana_config_auth.jwt.enabled %}
+
+[auth.jwt]
+;enabled = {{ grafana_config_auth.jwt.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+;header_name = X-JWT-Assertion
+;email_claim = sub
+;username_claim = sub
+;jwk_set_url = https://foo.bar/.well-known/jwks.json
+;jwk_set_file = /path/to/jwks.json
+;cache_ttl = 60m
+;expected_claims = {"aud": ["foo", "bar"]}
+;key_file = /path/to/key/file
+;auto_sign_up = false
+{% endif %}
+{% if grafana_config_auth.ldap.enabled %}
+
+[auth.ldap]
+enabled                         = {{ grafana_config_auth.ldap.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+config_file                     = /etc/grafana/ldap.toml
+  {% if grafana_config_auth.ldap.allow_sign_up is defined %}
+allow_sign_up                   = {{ grafana_config_auth.ldap.allow_sign_up | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_edition == "enterprise" %}
+    {% if grafana_config_auth.ldap.sync_cron is defined and
+          grafana_config_auth.ldap.sync_cron | string | length > 0 %}
+sync_cron                       = {{ grafana_config_auth.ldap.sync_cron }}
+    {% endif %}
+    {% if grafana_config_auth.ldap.active_sync_enabled is defined %}
+active_sync_enabled             = {{ grafana_config_auth.ldap.active_sync_enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+  {% endif %}
+{% endif %}

@@ -1,0 +1,14 @@
+
+[dashboards]
+{% if grafana_config_dashboards.versions_to_keep is defined and
+      grafana_config_dashboards.versions_to_keep | string | length > 0 %}
+versions_to_keep                = {{ grafana_config_dashboards.versions_to_keep }}
+{% endif %}
+{% if grafana_config_dashboards.min_refresh_interval is defined and
+      grafana_config_dashboards.min_refresh_interval | string | length > 0 %}
+min_refresh_interval            = {{ grafana_config_dashboards.min_refresh_interval }}
+{% endif %}
+{% if grafana_config_dashboards.default_home_dashboard_path is defined and
+      grafana_config_dashboards.default_home_dashboard_path | string | length > 0 %}
+default_home_dashboard_path     = {{ grafana_config_dashboards.default_home_dashboard_path }}
+{% endif %}

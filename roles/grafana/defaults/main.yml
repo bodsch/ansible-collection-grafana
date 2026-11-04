@@ -1,6 +1,25 @@
 ---
 
-grafana_version: 12.0.0
+grafana_version: 12.3.8
+
+# alertmanager_state: installed
+
+grafana_system_user:
+  owner: grafana
+  group: grafana
+
+grafana_system_service:
+  state: started
+  enabled: true
+  service: grafana
+
+grafana_release:
+  provider: github
+  github_url: https://github.com/grafana/grafana/releases
+  download_url: https://dl.grafana.com/{{ grafana_edition }}/release
+  api_url: https://api.github.com/repos/grafana/grafana/releases
+  file: "grafana{{ '-enterprise' if grafana_edition == 'enterprise' else '' }}-{{ grafana_version }}.{{ ansible_facts.system | lower }}-{{ system_architecture }}.tar.gz"
+  binary: grafana
 
 grafana_scm:
   use_tags: true
@@ -14,10 +33,8 @@ grafana_scm:
 # enterprise or oss
 grafana_edition: oss
 
-grafana_release: {}
-
-grafana_system_user: grafana
-grafana_system_group: grafana
+# grafana_system_user: grafana
+# grafana_system_group: grafana
 grafana_config_dir: /etc/grafana
 grafana_data_dir: "{{ grafana_config_paths.data }}"
 grafana_share_dir: /usr/share/grafana

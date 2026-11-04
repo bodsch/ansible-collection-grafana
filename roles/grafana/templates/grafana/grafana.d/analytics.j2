@@ -3,7 +3,8 @@
       grafana_config_analytics.reporting_enabled | bool %}
 
 [analytics]
-  {% if grafana_config_analytics.reporting_enabled is defined %}
+  {% if grafana_config_analytics.reporting_enabled is defined and
+        grafana_config_analytics.reporting_enabled | string | length > 0 %}
 reporting_enabled               = {{ grafana_config_analytics.reporting_enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
   {% if grafana_config_analytics.reporting_distributor is defined and
@@ -11,10 +12,12 @@ reporting_enabled               = {{ grafana_config_analytics.reporting_enabled 
         grafana_config_analytics.reporting_distributor in ["hosted-grafana", "grafana-labs"] %}
 reporting_distributor           = {{ grafana_config_analytics.reporting_distributor }}
   {% endif %}
-  {% if grafana_config_analytics.check_for_updates is defined %}
+  {% if grafana_config_analytics.check_for_updates is defined and
+        grafana_config_analytics.check_for_updates | string | length > 0 %}
 check_for_updates               = {{ grafana_config_analytics.check_for_updates | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
-  {% if grafana_config_analytics.check_for_plugin_updates is defined %}
+  {% if grafana_config_analytics.check_for_plugin_updates is defined and
+        grafana_config_analytics.check_for_plugin_updates | string | length > 0 %}
 check_for_plugin_updates        = {{ grafana_config_analytics.check_for_plugin_updates | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
   {% if grafana_config_analytics.google_analytics_ua_id is defined and
@@ -41,7 +44,8 @@ rudderstack_sdk_url             = {{ grafana_config_analytics.rudderstack_sdk_ur
         grafana_config_analytics.rudderstack_config_url | string | length > 0 %}
 rudderstack_config_url          = {{ grafana_config_analytics.rudderstack_config_url }}
   {% endif %}
-  {% if grafana_config_analytics.feedback_links_enabled is defined %}
+  {% if grafana_config_analytics.feedback_links_enabled is defined and
+        grafana_config_analytics.feedback_links_enabled | string | length > 0 %}
 feedback_links_enabled          = {{ grafana_config_analytics.feedback_links_enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
 {% endif %}

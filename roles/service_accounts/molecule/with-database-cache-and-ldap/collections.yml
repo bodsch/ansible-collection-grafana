@@ -1,0 +1,5 @@
+---
+
+collections:
+  - name: bodsch.prometheus
+  - name: bodsch.certs

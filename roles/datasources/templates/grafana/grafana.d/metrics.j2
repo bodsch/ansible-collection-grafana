@@ -1,0 +1,49 @@
+{% if grafana_config_metrics is defined and
+      grafana_config_metrics.enabled %}
+
+[metrics]
+enabled                         = true
+  {% if grafana_config_metrics.interval_seconds is defined and
+        grafana_config_metrics.interval_seconds | string | length > 0 %}
+interval_seconds                = {{ grafana_config_metrics.interval_seconds }}
+  {% endif %}
+  {% if grafana_config_metrics.disable_total_stats is defined %}
+disable_total_stats             = {{ grafana_config_metrics.disable_total_stats | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_metrics.basic_auth is defined and
+        grafana_config_metrics.basic_auth | count > 0 %}
+
+    {% if grafana_config_metrics.basic_auth.username is defined and
+          grafana_config_metrics.basic_auth.username | string | length > 0 %}
+basic_auth_username             = {{ grafana_config_metrics.basic_auth.username }}
+    {% endif %}
+    {% if grafana_config_metrics.basic_auth.password is defined and
+          grafana_config_metrics.basic_auth.password | string | length > 0 %}
+basic_auth_password             = {{ grafana_config_metrics.basic_auth.password }}
+    {% endif %}
+  {% endif %}
+
+[metrics.environment_info]
+  {% if grafana_config_metrics.environment_info is defined and
+        grafana_config_metrics.environment_info | count > 0 %}
+    {% for k, v in grafana_config_metrics.environment_info.items() %}
+{{ k }} = {{ v }}
+    {% endfor %}
+; exampleLabel1                  = exampleValue1
+; exampleLabel2                  = exampleValue2
+  {% endif %}
+
+[metrics.graphite]
+  {% if grafana_config_metrics.graphite is defined and
+        grafana_config_metrics.graphite | count > 0 and
+        grafana_config_metrics.graphite.address | default('') | string | length > 0 %}
+    {% if grafana_config_metrics.graphite.address is defined and
+          grafana_config_metrics.graphite.address | string | length > 0 %}
+address                         = {{ grafana_config_metrics.graphite.address }}
+    {% endif %}
+    {% if grafana_config_metrics.graphite.prefix is defined and
+          grafana_config_metrics.graphite.prefix | string | length > 0 %}
+prefix                          = {{ grafana_config_metrics.graphite.prefix }}
+    {% endif %}
+  {% endif %}
+{% endif %}

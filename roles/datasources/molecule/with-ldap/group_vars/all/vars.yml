@@ -1,0 +1,44 @@
+---
+
+grafana_config_log:
+  level: info
+  filters:
+    - "ldap:debug"
+
+grafana_config_auth:
+  ldap:
+    enabled: true
+    config_file: /etc/grafana/ldap.toml
+    allow_sign_up: true
+
+grafana_config_ldap:
+  servers:
+    - hosts:
+        - 127.0.0.1
+      port: 389
+      bind_dn: 'cn=admin,dc=molecule,dc=lan'
+      bind_password: "{{ vault__ldap.admin }}"
+      timeout: 10
+      search_filter: "(cn=%s)"
+      search_base_dns:
+        - 'dc=molecule,dc=lan'
+      # group_search_filter: "(&(objectClass=posixGroup)(memberUid=%s))"
+      # group_search_base_dns:
+      #   - "ou=groups,dc=molecule,dc=lan"
+      # group_search_filter_user_attribute: "uid"
+      attributes:
+        name: givenName
+        surname: sn
+        username: cn
+        member_of: memberOf
+        email: email
+      group_mappings:
+        - group_dn: 'ou=admins,ou=groups,dc=molecule,dc=lan'
+          org_role: Admin
+          # org_id = 1
+        - group_dn: 'ou=grafana,ou=groups,dc=molecule,dc=lan'
+          org_role: Editor
+        - group_dn: '*'
+          org_role: Viewer
+
+...

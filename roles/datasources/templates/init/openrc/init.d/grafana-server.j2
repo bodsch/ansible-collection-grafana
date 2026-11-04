@@ -1,0 +1,66 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+#!/usr/bin/openrc-run
+
+# {{ ansible_managed }}
+
+description="grafana server"
+
+pidfile=${pidfile:-"/run/grafana/${RC_SVCNAME}.pid"}
+user=${user:-${SVCNAME}}
+group=${group:-${SVCNAME}}
+
+command="/usr/sbin/grafana-server"
+supervisor="supervise-daemon"
+
+command_args="${command_args:--config=/etc/grafana/grafana.ini}"
+command_user="${user}"
+# command_chroot="${chroot}"
+
+command_args_background="--background"
+required_files="/etc/grafana/grafana.ini"
+
+output_log="/var/log/grafana/grafana.log"
+error_log="/var/log/grafana/grafana.err"
+extra_started_commands="reload"
+
+depend() {
+  # need localmount net
+  # use dns
+  after sysfs net
+  {% if grafana_config_remote_cache.type is defined and
+        grafana_config_remote_cache.type | string | length > 0 and
+        grafana_config_remote_cache.type in ["redis", "memcached"] %}
+  need {{ grafana_config_remote_cache.type }}
+  {% endif %}
+  {% if grafana_config_database.type is defined and
+        grafana_config_database.type | string | length > 0 and
+        grafana_config_database.type in ["mysql", "postgres"] %}
+  need {{ grafana_config_database.type }}
+  {% endif %}
+
+}
+
+start_pre() {
+  [ -d $(dirname ${output_log}) ] ||  mkdir $(dirname ${output_log})
+  [ -d $(dirname ${pidfile}) ] ||  mkdir $(dirname ${pidfile})
+
+  checkpath -d -o "${command_user}:${group}" -m750 "/var/lib/grafana"
+  checkpath -d -o "${command_user}:${group}" -m750 "/var/lib/grafana/sessions"
+  checkpath -d -o "${command_user}:${group}" -m770 $(dirname ${output_log})
+  checkpath -d -o "${command_user}:${group}" -m750 $(dirname ${pidfile})
+
+  chown -R ${command_user} $(dirname ${output_log})
+  chown -R ${command_user} $(dirname ${pidfile})
+  chown -R ${command_user} /var/lib/grafana/
+}
+
+reload() {
+  ebegin "Reloading ${SVCNAME}"
+
+  if [ ! -r "${pidfile}" ]; then
+    eend 1 "${RC_SVCNAME} not running"
+  else
+    kill -s HUP $(cat "${pidfile}") 2> /dev/null
+    eend $?
+  fi
+}

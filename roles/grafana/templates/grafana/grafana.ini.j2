@@ -10,7 +10,8 @@ app_mode                        = {{ grafana_config_general.app_mode }}
       grafana_config_general.instance_name | string | length > 0 %}
 instance_name                   = {{ grafana_config_general.instance_name }}
 {% endif %}
-{% if grafana_config_general.force_migration is defined %}
+{% if grafana_config_general.force_migration is defined and
+      grafana_config_general.force_migration | string | length > 0 %}
 force_migration                 = {{ grafana_config_general.force_migration | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
 {% endif %}
 
@@ -134,3 +135,5 @@ force_migration                 = {{ grafana_config_general.force_migration | bo
 {% if grafana_config_auth is defined  and grafana_config_auth | count > 0 %}
 {% include('grafana.d/auth.j2') %}
 {% endif %}
+{#
+#}

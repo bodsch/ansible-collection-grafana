@@ -58,14 +58,14 @@
         - stat_grafana_path.stat.path is defined
         - stat_grafana_path.stat.path | string | length > 0
 
-- name: remove grafana apt repository
-  when:
-    - not running_in_check_mode
-    - ansible_facts.pkg_mgr == "apt"
-  ansible.builtin.apt_repository:
-    repo: deb https://packages.grafana.com/oss/deb stable main
-    state: absent
-    update_cache: true
+# - name: remove grafana apt repository
+#   when:
+#     - not running_in_check_mode
+#     - ansible_facts.pkg_mgr == "apt"
+#   ansible.builtin.apt_repository:
+#     repo: deb https://packages.grafana.com/oss/deb stable main
+#     state: absent
+#     update_cache: true
 
 - name: flush handlers
   ansible.builtin.meta: flush_handlers

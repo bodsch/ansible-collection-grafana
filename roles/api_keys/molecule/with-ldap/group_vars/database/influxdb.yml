@@ -1,0 +1,22 @@
+---
+
+influxdb_databases:
+  - name: telegraf-metrics
+    state: present
+  - name: graphite
+    state: present
+  - name: icinga
+    state: present
+
+influxdb_users:
+  - name: influxadm
+    password: influxdbadmpass
+    admin: yes
+  - name: icinga
+    admin: no
+    password: icinga
+    grants:
+      - database: 'icinga'
+        privilege: 'WRITE'
+
+...

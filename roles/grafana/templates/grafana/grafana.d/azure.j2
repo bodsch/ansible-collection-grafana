@@ -5,7 +5,8 @@
 [azure]
 cloud                           = {{ grafana_config_azure.cloud }}
 
-  {% if grafana_config_azure.managed_identity_enabled is defined %}
+  {% if grafana_config_azure.managed_identity_enabled is defined and
+        grafana_config_azure.managed_identity_enabled | string | length > 0 %}
 managed_identity_enabled        = {{ grafana_config_azure.managed_identity_enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
   {% if grafana_config_azure.managed_identity_client_id is defined and

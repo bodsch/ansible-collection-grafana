@@ -1,0 +1,22 @@
+{% if grafana_config_live is defined and
+      grafana_config_live | count > 0 %}
+
+[live]
+  {% if grafana_config_live.max_connections is defined and
+        grafana_config_live.max_connections | string | length > 0 %}
+max_connections                 = {{ grafana_config_live.max_connections }}
+  {% endif %}
+  {% if grafana_config_live.allowed_origins is defined and
+        grafana_config_live.allowed_origins | count > 0 %}
+allowed_origins                 = {{ grafana_config_live.allowed_origins | join(', ') }}
+  {% endif %}
+  {% if grafana_config_live.ha_engine is defined and
+        grafana_config_live.ha_engine | string | length > 0 and
+        grafana_config_live.ha_engine in ["redis"] %}
+ha_engine                       = {{ grafana_config_live.ha_engine }}
+  {% endif %}
+  {% if grafana_config_live.ha_engine_address is defined and
+        grafana_config_live.ha_engine_address | string | length > 0 %}
+ha_engine_address               = "{{ grafana_config_live.ha_engine_address }}"
+  {% endif %}
+{% endif %}

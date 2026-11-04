@@ -1,7 +1,8 @@
 {% if grafana_config_security is defined %}
 
 [security]
-  {% if grafana_config_security.disable_initial_admin_creation is defined %}
+  {% if grafana_config_security.disable_initial_admin_creation is defined and
+        grafana_config_security.disable_initial_admin_creation | string | length > 0 %}
 disable_initial_admin_creation  = {{ grafana_config_security.disable_initial_admin_creation | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
   {% if grafana_config_security.admin_user is defined and
@@ -26,46 +27,56 @@ encryption_provider             = {{ grafana_config_security.encryption_provider
 available_encryption_providers  = {{ grafana_config_security.available_encryption_providers | join(' ') }}
     {% endif %}
   {% endif %}
-  {% if grafana_config_security.disable_gravatar is defined %}
+  {% if grafana_config_security.disable_gravatar is defined and
+        grafana_config_security.disable_gravatar | string | length > 0 %}
 disable_gravatar                = {{ grafana_config_security.disable_gravatar | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
   {% if grafana_config_security.data_source_proxy_whitelist is defined and
         grafana_config_security.data_source_proxy_whitelist | count > 0 %}
 data_source_proxy_whitelist     = {{ grafana_config_security.data_source_proxy_whitelist | join(' ') }}
   {% endif %}
-  {% if grafana_config_security.disable_brute_force_login_protection is defined %}
+  {% if grafana_config_security.disable_brute_force_login_protection is defined and
+        grafana_config_security.disable_brute_force_login_protection | string | length > 0 %}
 disable_brute_force_login_protection = {{ grafana_config_security.disable_brute_force_login_protection | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
-  {% if grafana_config_security.cookie_secure is defined %}
+  {% if grafana_config_security.cookie_secure is defined and
+        grafana_config_security.cookie_secure | string | length > 0 %}
 cookie_secure                   = {{ grafana_config_security.cookie_secure | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
   {% if grafana_config_security.cookie_samesite is defined and
         grafana_config_security.cookie_samesite in ["lax", "strict", "none", "disabled"] %}
 cookie_samesite                 = {{ grafana_config_security.cookie_samesite }}
   {%endif %}
-  {% if grafana_config_security.allow_embedding is defined %}
+  {% if grafana_config_security.allow_embedding is defined and
+        grafana_config_security.allow_embedding | string | length > 0 %}
 allow_embedding                 = {{ grafana_config_security.allow_embedding | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
-  {% if grafana_config_security.strict_transport_security is defined %}
+  {% if grafana_config_security.strict_transport_security is defined and
+        grafana_config_security.strict_transport_security | string | length > 0 %}
 strict_transport_security       = {{ grafana_config_security.strict_transport_security | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
     {% if grafana_config_security.strict_transport_security_max_age_seconds and
           grafana_config_security.strict_transport_security_max_age_seconds | string | length > 0 %}
 strict_transport_security_max_age_seconds = {{ grafana_config_security.strict_transport_security_max_age_seconds }}
     {% endif %}
-    {% if grafana_config_security.strict_transport_security_preload %}
+    {% if grafana_config_security.strict_transport_security_preload and
+          grafana_config_security.strict_transport_security_preload | string | length > 0 %}
 strict_transport_security_preload = {{ grafana_config_security.strict_transport_security_preload | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
     {% endif %}
-    {% if grafana_config_security.strict_transport_security_subdomains %}
+    {% if grafana_config_security.strict_transport_security_subdomains and
+          grafana_config_security.strict_transport_security_subdomains | string | length > 0 %}
 strict_transport_security_subdomains = {{ grafana_config_security.strict_transport_security_subdomains | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
     {% endif %}
   {% endif %}
-  {% if grafana_config_security.x_content_type_options %}
+  {% if grafana_config_security.x_content_type_options and
+        grafana_config_security.x_content_type_options | string | length > 0 %}
 x_content_type_options          = {{ grafana_config_security.x_content_type_options | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
-  {% if grafana_config_security.x_xss_protection %}
+  {% if grafana_config_security.x_xss_protection and
+        grafana_config_security.x_xss_protection | string | length > 0 %}
 x_xss_protection                = {{ grafana_config_security.x_xss_protection | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
-  {% if grafana_config_security.content_security_policy %}
+  {% if grafana_config_security.content_security_policy and
+        grafana_config_security.content_security_policy | string | length > 0 %}
 content_security_policy         = {{ grafana_config_security.content_security_policy | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
     {% if grafana_config_security.content_security_policy_template is defined and
           grafana_config_security.content_security_policy_template | count > 0 %}
@@ -73,7 +84,8 @@ content_security_policy         = {{ grafana_config_security.content_security_po
 content_security_policy_template = """{{ policy }}"""
     {% endif %}
   {% endif %}
-  {% if grafana_config_security.angular_support_enabled is defined %}
+  {% if grafana_config_security.angular_support_enabled is defined and
+        grafana_config_security.angular_support_enabled | string | length > 0 %}
 angular_support_enabled         = {{ grafana_config_security.angular_support_enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
   {% if grafana_config_security.csrf_trusted_origins is defined and

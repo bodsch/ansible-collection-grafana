@@ -15,8 +15,8 @@
       bodsch.scm.github_latest:
         project: grafana
         repository: grafana
-        user: "{{ lookup('env', 'GH_USER') | default(omit) }}"
-        password: "{{ lookup('env', 'GH_TOKEN') | default(omit) }}"
+        user: "{{ _grafana_scm_user | default(omit, true) }}"
+        password: "{{ _grafana_scm_token | default(omit, true) }}"
         github_tags: "{{ grafana_scm.use_tags | default('false') }}"
         without_beta: "{{ grafana_scm.without_beta | default('false') }}"
         filter_elements: "{{ grafana_scm.version_filter | default([]) }}"
@@ -76,6 +76,8 @@
       ansible.builtin.get_url:
         url: "{{ grafana_release.download_url }}/{{ grafana_release.file }}"
         dest: "{{ grafana_local_tmp_directory }}/"
+        url_username: "{{ _grafana_scm_user | default(omit, true) }}"
+        url_password: "{{ _grafana_scm_token | default(omit, true) }}"
         mode: "0644"
       register: _download_archive
       until: _download_archive is succeeded

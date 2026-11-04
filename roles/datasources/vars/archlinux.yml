@@ -1,0 +1,8 @@
+---
+
+grafana_requirements:
+  - iproute
+  - python-pip
+  - python-requests
+
+...

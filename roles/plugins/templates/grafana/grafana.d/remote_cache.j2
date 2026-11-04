@@ -1,0 +1,14 @@
+{% if grafana_config_remote_cache is defined and
+      grafana_config_remote_cache | count > 0 %}
+
+[remote_cache]
+  {% if grafana_config_remote_cache.type is defined and
+        grafana_config_remote_cache.type | string | length > 0 and
+        grafana_config_remote_cache.type in ["redis", "memcached", "database"] %}
+type                            = {{ grafana_config_remote_cache.type }}
+  {% endif %}
+  {% if grafana_config_remote_cache.connstr is defined and
+        grafana_config_remote_cache.connstr | string | length > 0 %}
+connstr                         = {{ grafana_config_remote_cache.connstr }}
+  {% endif %}
+{% endif %}

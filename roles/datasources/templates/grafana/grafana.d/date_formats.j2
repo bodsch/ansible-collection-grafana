@@ -1,0 +1,41 @@
+{% if grafana_config_date_formats is defined and
+      grafana_config_date_formats.enabled %}
+
+[date_formats]
+  {% if grafana_config_date_formats.full_date is defined and
+        grafana_config_date_formats.full_date | string | length > 0 %}
+full_date                       = {{ grafana_config_date_formats.full_date }}
+  {% endif %}
+  {% if grafana_config_date_formats.interval_second is defined and
+        grafana_config_date_formats.interval_second | string | length > 0 %}
+interval_second                 = {{ grafana_config_date_formats.interval_second }}
+  {% endif %}
+  {% if grafana_config_date_formats.interval_minute is defined and
+        grafana_config_date_formats.interval_minute | string | length > 0 %}
+interval_minute                 = {{ grafana_config_date_formats.interval_minute }}
+  {% endif %}
+  {% if grafana_config_date_formats.interval_hour is defined and
+        grafana_config_date_formats.interval_hour | string | length > 0 %}
+interval_hour                   = {{ grafana_config_date_formats.interval_hour }}
+  {% endif %}
+  {% if grafana_config_date_formats.interval_day is defined and
+        grafana_config_date_formats.interval_day | string | length > 0 %}
+interval_day                    = {{ grafana_config_date_formats.interval_day }}
+  {% endif %}
+  {% if grafana_config_date_formats.interval_month is defined and
+        grafana_config_date_formats.interval_month | string | length > 0 %}
+interval_month                  = {{ grafana_config_date_formats.interval_month }}
+  {% endif %}
+  {% if grafana_config_date_formats.interval_year is defined and
+        grafana_config_date_formats.interval_year | string | length > 0 %}
+interval_year                   = {{ grafana_config_date_formats.interval_year }}
+  {% endif %}
+  {% if grafana_config_date_formats.use_browser_locale is defined and
+        grafana_config_date_formats.use_browser_locale | string | length > 0 %}
+use_browser_locale              = {{ grafana_config_date_formats.use_browser_locale | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if grafana_config_date_formats.default_timezone is defined and
+        grafana_config_date_formats.default_timezone | string | length > 0 %}
+default_timezone                = {{ grafana_config_date_formats.default_timezone }}
+  {% endif %}
+{% endif %}

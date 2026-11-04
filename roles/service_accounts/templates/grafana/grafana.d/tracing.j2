@@ -1,0 +1,18 @@
+{#
+[tracing.jaeger]
+;address = localhost:6831
+;always_included_tag = tag1:value1
+;sampler_type = const
+;sampler_param = 1
+;sampling_server_url =
+;zipkin_propagation = false
+;disable_shared_zipkin_spans = false
+
+[tracing.opentelemetry.jaeger]
+; address = http://localhost:14268/api/traces
+; propagation = jaeger
+
+[tracing.opentelemetry.otlp]
+; address = localhost:4317
+; propagation = w3c
+#}

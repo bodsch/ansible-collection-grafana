@@ -5,7 +5,8 @@
 [alerting]
 enabled                         = {{ grafana_config_alerting.enabled | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% if grafana_config_alerting.enabled %}
-    {% if grafana_config_alerting.execute_alerts is defined %}
+    {% if grafana_config_alerting.execute_alerts is defined and
+          grafana_config_alerting.execute_alerts | string | length > 0 %}
 execute_alerts                  = {{ grafana_config_alerting.execute_alerts | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
     {% endif %}
     {% if grafana_config_alerting.error_or_timeout is defined and

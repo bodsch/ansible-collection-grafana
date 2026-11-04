@@ -1,3 +1,4 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
 {{ ansible_managed | comment }}
 
 [Unit]
@@ -12,15 +13,19 @@ Type                    = simple
 Environment             = "GOMAXPROCS={{ ansible_facts.processor_vcpus | default(ansible_facts.processor_count) }}"
 EnvironmentFile         = {{ grafana_defaults_directory }}/grafana-server
 
-User                    = {{ grafana_system_user }}
-Group                   = {{ grafana_system_group }}
+User                    = {{ grafana_system_user.owner }}
+Group                   = {{ grafana_system_user.group }}
 
 WorkingDirectory        = {{ grafana_share_dir }}
 RuntimeDirectory        = grafana
 RuntimeDirectoryMode    = 0750
 
 ExecReload              = /bin/kill -HUP $MAINPID
-ExecStart               = /usr/sbin/grafana-server $OPTIONS
+{% set _service = "grafana-server" %}
+{% if grafana_version is version_compare('12', '>=') %}
+  {% set _service = "grafana server" %}
+{% endif %}
+ExecStart               = /usr/sbin/{{ _service }} $OPTIONS
 
 LimitNOFILE             = 10000
 SyslogIdentifier        = grafana-server

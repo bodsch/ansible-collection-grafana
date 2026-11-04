@@ -9,7 +9,7 @@
   become: true
   ansible.builtin.service:
     name: grafana-server
-    enabled: true
-    state: started
+    state: "{{ grafana_system_service.state | default('started') }}"
+    enabled: "{{ grafana_system_service.enabled | default(true) | bool }}"
 
 ...

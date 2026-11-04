@@ -1,0 +1,9 @@
+{% if grafana_config_panels is defined and
+      grafana_config_panels | count > 0 %}
+
+[panels]
+  {% if grafana_config_panels.disable_sanitize_html is defined and
+        grafana_config_panels.disable_sanitize_html | string | length > 0 %}
+disable_sanitize_html           = {{ grafana_config_panels.disable_sanitize_html | bool | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+{% endif %}

@@ -1,0 +1,11 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# {{ ansible_managed }}
+
+OPTIONS="
+  --config={{ grafana_config_dir }}/grafana.ini            \
+  --pidfile={{ grafana_pidfile }}
+"
+#  cfg:default.paths.logs=/var/log/grafana                  \
+#  cfg:default.paths.data={{ grafana_data_dir }}            \
+#  cfg:default.paths.plugins={{ grafana_data_dir }}/plugins \
+#  cfg:default.paths.provisioning={{ grafana_config_dir }}/provisioning

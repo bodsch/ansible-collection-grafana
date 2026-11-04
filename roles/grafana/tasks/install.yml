@@ -3,18 +3,18 @@
 - name: user and group handling
   when:
     - not running_in_check_mode
-    - grafana_system_user != "root"
+    - grafana_system_user.owner != "root"
   block:
     - name: create grafana group
       ansible.builtin.group:
-        name: "{{ grafana_system_group }}"
+        name: "{{ grafana_system_user.group }}"
         state: present
         system: true
 
     - name: create grafana user
       ansible.builtin.user:
-        name: "{{ grafana_system_user }}"
-        groups: "{{ grafana_system_group }}"
+        name: "{{ grafana_system_user.owner }}"
+        groups: "{{ grafana_system_user.group }}"
         append: true
         shell: /usr/sbin/nologin
         system: true
@@ -25,11 +25,12 @@
   when:
     - not running_in_check_mode
   bodsch.core.directories:
-    owner: "{{ grafana_system_user }}"
-    group: "{{ grafana_system_group }}"
+    owner: "{{ grafana_system_user.owner }}"
+    group: "{{ grafana_system_user.group }}"
     mode: "0750"
     paths:
       - path: "{{ grafana_install_path }}"
+      - path: "{{ grafana_data_dir }}"
       - path: "{{ grafana_data_dir }}/alerting"
       - path: "{{ grafana_data_dir }}/csv"
       - path: "{{ grafana_data_dir }}/dashboards"
@@ -87,8 +88,8 @@
             src: "{{ grafana_local_tmp_directory }}/{{ grafana_release.file }}"
             dest: "{{ grafana_remote_tmp_directory }}"
             mode: "0755"
-            owner: "{{ grafana_system_user }}"
-            group: "{{ grafana_system_group }}"
+            owner: "{{ grafana_system_user.owner }}"
+            group: "{{ grafana_system_user.group }}"
             remote_src: "{{ 'true' if grafana_direct_download else 'false' }}"
 
         - name: extract grafana archive
@@ -141,6 +142,17 @@
           ansible.builtin.fail:
             msg: A serious error occurred during the installation of the binary.
 
+- name: detect installed grafana version
+  bodsch.grafana.grafana_version:
+    grafana_binary: "{{ grafana_binary }}"
+  register: _grafana_version
+
+- name: re-define grafana_binary
+  when:
+    - not running_in_check_mode
+  ansible.builtin.set_fact:
+    grafana_binary: "{{ _grafana_version.binary }}"
+
 - name: find grafana provisioning
   ansible.builtin.stat:
     path: "{{ grafana_config_dir }}/provisioning"
@@ -158,7 +170,7 @@
     src: "{{ grafana_install_path }}/conf/provisioning"
     dest: "{{ grafana_config_dir }}"
     owner: root
-    group: "{{ grafana_system_group }}"
+    group: "{{ grafana_system_user.group }}"
     mode: "0755"
     force: true
     remote_src: true
@@ -176,10 +188,10 @@
         dest: "{{ grafana_defaults_directory }}/grafana-server"
         force: true
         owner: root
-        group: "{{ grafana_system_group }}"
+        group: "{{ grafana_system_user.group }}"
         mode: "0644"
       notify:
-        - validate config
+        - validate grafana config
         - reload grafana
 
     - name: create systemd service unit
@@ -221,7 +233,7 @@
     name: grafana
     facts:
       edition: "{{ grafana_edition }}"
-      version: "{{ grafana_version }}"
+      version: "{{ _grafana_version.versions }}"
 
 - name: python support
   when:

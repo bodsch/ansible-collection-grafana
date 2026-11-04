@@ -1,0 +1,22 @@
+---
+
+influxdb_admin_username: admin
+influxdb_admin_password: admin
+
+influxdb_config_retention:
+  enabled: true
+  check-interval: "30m0s"
+
+influxdb_databases:
+  - name: molecule
+    state: present
+
+influxdb_users:
+  - name: molecule
+    admin: no
+    password: "{{ vault__influxdb.molecule }}"
+    grants:
+      - database: 'molecule'
+        privilege: 'WRITE'
+
+...

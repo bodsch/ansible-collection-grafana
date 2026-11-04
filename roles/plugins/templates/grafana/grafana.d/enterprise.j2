@@ -1,0 +1,6 @@
+
+[enterprise]
+{% if grafana_config_enterprise.license_path is defined and
+      grafana_config_enterprise.license_path | string | length > 0 %}
+license_path                    = {{ grafana_config_enterprise.license_path }}
+{% endif %}
