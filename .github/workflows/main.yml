@@ -3,16 +3,7 @@ name: CI
 
 on:
   workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-        type: choice
-        options:
-          - info
-          - warning
-          - debug
+
   push:
     branches:
       - 'main'
@@ -33,6 +24,10 @@ on:
       - "!Makefile"
       - "!README.md"
       - '!roles/*/*.md'
+
+concurrency:
+  group: ci-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 
 env:
   COLLECTION_NAMESPACE: bodsch
