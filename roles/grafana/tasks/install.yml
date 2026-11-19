@@ -174,8 +174,8 @@
     mode: "0755"
     force: true
     remote_src: true
-  notify:
-    - reload grafana
+  # notify:
+  #   - reload grafana
 
 - name: systemd
   when:
@@ -190,9 +190,9 @@
         owner: root
         group: "{{ grafana_system_user.group }}"
         mode: "0644"
-      notify:
-        - validate grafana config
-        - reload grafana
+      # notify:
+      #   - validate grafana config
+      #   - reload grafana
 
     - name: create systemd service unit
       ansible.builtin.template:

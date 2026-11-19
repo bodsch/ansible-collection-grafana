@@ -65,6 +65,11 @@
     - validate grafana config
     - restart grafana
 
+- name: flush ansible handlers to start grafana-server
+  when:
+    - not running_in_check_mode
+  ansible.builtin.meta: flush_handlers
+
 - name: create ldap.toml
   when:
     - not running_in_check_mode

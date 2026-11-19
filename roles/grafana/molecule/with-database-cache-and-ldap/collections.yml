@@ -4,3 +4,4 @@ collections:
   - name: bodsch.prometheus
   # - name: bodsch.certs
   - name: bodsch.database
+  # - name: bodsch.influx

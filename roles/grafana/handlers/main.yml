@@ -16,18 +16,30 @@
   ansible.builtin.service:
     name: grafana-server
     state: restarted
+  notify:
+    - wait for grafana
 
-- name: reload grafana
-  when:
-    - not running_in_check_mode
-    - grafana_system_service.state | default('started') == 'started'
-  become: true
-  ansible.builtin.service:
-    name: grafana-server
-    state: reloaded
+# - name: reload grafana
+#   when:
+#     - not running_in_check_mode
+#     - grafana_system_service.state | default('started') == 'started'
+#   become: true
+#   ansible.builtin.service:
+#     name: grafana-server
+#     state: reloaded
 
 - name: validate grafana config  # noqa no-changed-when
   ansible.builtin.command: /bin/true
+
+- name: wait for grafana
+  when:
+    - not running_in_check_mode
+  ansible.builtin.wait_for:
+    path: "{{ grafana_pidfile }}"
+    state: present
+    delay: 4
+    msg: "Timeout to find {{ grafana_pidfile }}"
+  ignore_errors: false
 
 
 # - name: list service accounts files

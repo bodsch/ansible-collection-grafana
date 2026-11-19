@@ -68,9 +68,9 @@ grafana_plugins:
   - grafana-clock-panel
 
 grafana_config_log:
-  level: info
+  level: debug
   filters:
-    - "ldap:debug"
+    - "ldap:info"
 
 grafana_config_database:
   type: mysql

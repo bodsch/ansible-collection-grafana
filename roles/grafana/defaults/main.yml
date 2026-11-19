@@ -1,6 +1,6 @@
 ---
 
-grafana_version: 12.3.8
+grafana_version: 12.4.15
 
 # alertmanager_state: installed
 
