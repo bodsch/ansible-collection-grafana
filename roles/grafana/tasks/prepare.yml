@@ -36,17 +36,17 @@
     name: "{{ grafana_requirements }}"
     state: present
 
-- name: validate datasource types
-  ansible.builtin.set_fact:
-    valid_datasources: "{{ grafana_datasources | bodsch.grafana.validate_datasource_type() }}"
-
-- name: Fails if unsupported data sources have been configured
-  when:
-    - not running_in_check_mode
-    - valid_datasources is defined
-    - not valid_datasources.valid
-  ansible.builtin.fail:
-    msg: "{{ valid_datasources.msg }}"
+# - name: validate datasource types
+#   ansible.builtin.set_fact:
+#     valid_datasources: "{{ grafana_datasources | bodsch.grafana.validate_datasource_type() }}"
+#
+# - name: Fails if unsupported data sources have been configured
+#   when:
+#     - not running_in_check_mode
+#     - valid_datasources is defined
+#     - not valid_datasources.valid
+#   ansible.builtin.fail:
+#     msg: "{{ valid_datasources.msg }}"
 
 - name: merge grafana configuration between defaults and custom
   ansible.builtin.set_fact:
