@@ -50,4 +50,5 @@
 
   roles:
     - role: bodsch.grafana.grafana
+
 ...
