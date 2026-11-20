@@ -65,8 +65,8 @@ class GrafanaVersion:
 
         self.grafana_binary = module.params.get("grafana_binary")
 
-        self.grafana_bin_detected = module.get_bin_path("grafana", True)
-        self.grafana_bin_configured = module.get_bin_path(self.grafana_binary, True)
+        self.grafana_bin_detected = module.get_bin_path("grafana", required=False)
+        self.grafana_bin_configured = module.get_bin_path(self.grafana_binary, required=False)
 
         self.module.log(f"  - bin_detected   : {self.grafana_bin_detected}")
         self.module.log(f"  - bin_configured : {self.grafana_bin_configured}")
@@ -158,6 +158,10 @@ class GrafanaVersion:
 
         grafana_version = None
         result = dict(failed=True, changed=False, version=grafana_version)
+
+        if not self.grafana_bin_configured:
+            self.module.log(f"{self.grafana_binary} is no longer available. `grafana` is used instead.")
+            return True
 
         args = []
         args.append(self.grafana_bin_configured)

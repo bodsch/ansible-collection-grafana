@@ -2,4 +2,13 @@
 
 grafana_version: latest
 
+grafana_scm:
+  use_tags: false
+  without_beta: true
+  version_filter:
+    - "test"
+    - "preview"
+    - "beta"
+    - "rc"
+
 ...

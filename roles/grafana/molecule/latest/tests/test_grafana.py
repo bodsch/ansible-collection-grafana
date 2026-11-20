@@ -3,6 +3,7 @@ from __future__ import annotations, unicode_literals
 import os
 
 import pytest
+from packaging.version import Version
 import testinfra.utils.ansible_runner
 from helper.molecule import get_vars, infra_hosts, local_facts
 
@@ -33,22 +34,36 @@ def test_files(host, get_vars):
     print(f"release     : {release}")
 
     version = local_facts(host=host, fact="grafana").get("version")
+    version = version.get("full_version")
+
+    print(f"version     : {version}")
 
     install_dir = get_vars.get("grafana_install_path")
     defaults_dir = get_vars.get("grafana_defaults_directory")
     config_dir = get_vars.get("grafana_config_dir")
 
+    print(f"install_dir : {install_dir}")
+
     if 'latest' in install_dir:
         install_dir = install_dir.replace('latest', version)
 
     files = []
-    files.append("/usr/sbin/grafana-server")
-    files.append("/usr/sbin/grafana-cli")
+
+    grafana_bin = "grafana"
+
+    if (Version(version) <= Version("13")):
+        grafana_bin = "grafana-server"
+        files.append("/usr/sbin/grafana-server")
+        files.append("/usr/sbin/grafana-cli")
+    else:
+        files.append("/usr/sbin/grafana")
 
     if install_dir:
-        files.append(f"{install_dir}/bin/grafana-server")
+        files.append(f"{install_dir}/bin/{grafana_bin}")
+
     if defaults_dir and not distribution == "artix":
         files.append(f"{defaults_dir}/grafana-server")
+
     if config_dir:
         files.append(f"{config_dir}/grafana.ini")
 
