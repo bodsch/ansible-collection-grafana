@@ -1,19 +1,16 @@
 ---
 
-# - name: validate variables
-#   ansible.builtin.fail:
-#     msg: "'grafana_datasources' should be a list!\nPlease update your configuration."
-#   when:
-#     - grafana_datasources | bodsch.core.type != "list"
-
 - name: ensure datasources are present (without provisioning)
+  when:
+    - not running_in_check_mode
+    - not grafana_provisioning.enabled | default(true) | bool
   community.grafana.grafana_datasource:
     name: "{{ item.key }}"
     state: "{{ item.value.state | default('present') }}"
     # grafana
     grafana_url: http://127.0.0.1:3000
-    grafana_user: "{{ grafana_config_security.admin_user }}"
-    grafana_password: "{{ grafana_config_security.admin_password }}"
+    grafana_user: "{{ grafana_config_security.admin_user | default(omit) }}"
+    grafana_password: "{{ grafana_config_security.admin_password | default(omit) }}"
     grafana_api_key: "{{ grafana_config_security.api_key | default(omit) }}"
     # -------------------------------------------------------------------
     # grafana_security: "{{ item.value.user | default(omit) }}"
@@ -60,17 +57,17 @@
     # time_interval: ""
     # -------------------------------------------------------------------
     is_default: "{{ item.value.default | default(omit) }}"
-    org_id: "{{ item.value.org_id | default('1') | int }}"
+    org_id: "{{ item.value.org_id | default(1) | int }}"
     password: "{{ item.value.password | default(omit) }}"
     # sslmode: ""
     # tls_ca_cert: ""
     # tls_client_cert: ""
     # tls_client_key: ""
     # tls_skip_verify: ""
-    use_proxy: "{{ item.value.use_proxy | default('true') | bool }}"
+    use_proxy: "{{ item.value.use_proxy | default(true) | bool }}"
     user: "{{ item.value.user | default(omit) }}"
     # validate_certs: ""
-    with_credentials: "{{ item.value.with_credentials | default('false') | bool }}"
+    with_credentials: "{{ item.value.with_credentials | default(false) | bool }}"
     # opentsdb ...
     # tsdb_resolution: ""
     # tsdb_version: ""
@@ -83,21 +80,22 @@
   loop: "{{ grafana_datasources | dict2items }}"
   loop_control:
     label: "{{ item.key }}, type {{ item.value.datasource.type }}"
-  when:
-    - not grafana_provisioning.enabled | default('true')
+  notify:
+    - restart grafana
 
 - name: create or update datasources file (provisioning)
+  when:
+    - not running_in_check_mode
+    - grafana_provisioning.enabled | default(true) | bool
   become: true
   ansible.builtin.template:
     src: grafana/datasources/datasource.yml.j2
     dest: "/etc/grafana/provisioning/datasources/ansible.yaml"
-    backup: false
     owner: root
-    group: grafana
+    group: "{{ grafana_system_user.group }}"
     mode: "0640"
+    backup: true
   notify:
     - restart grafana
-  when:
-    - grafana_provisioning.enabled | default('true')
 
 ...

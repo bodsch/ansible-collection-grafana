@@ -1,0 +1,12 @@
+---
+
+grafana_provisioning:
+  # Should we use the provisioning capability when possible
+  # (provisioning require grafana >= 5.0)
+  enabled: false
+
+grafana_config_security:
+  secret_key: uvvC9ogZSsf.iVaq7iuM5L;jxh9t,HzKyWLxk.V:jm
+  content_security_policy: true
+
+...

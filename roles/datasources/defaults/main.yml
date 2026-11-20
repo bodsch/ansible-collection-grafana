@@ -1,7 +1,12 @@
 ---
 
-grafana_system_user: grafana
-grafana_system_group: grafana
+grafana_system_user:
+  owner: grafana
+  group: grafana
+
+# grafana_system_user: grafana
+# grafana_system_group: grafana
+
 grafana_config_dir: /etc/grafana
 grafana_data_dir: "{{ grafana_config_paths.data }}"
 grafana_share_dir: /usr/share/grafana
