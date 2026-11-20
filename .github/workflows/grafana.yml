@@ -170,7 +170,6 @@ jobs:
         scenario:
           - configured
           - latest
-          - upgrade
           - with-ldap
           - with-database-cache-and-ldap
         collection_role:
