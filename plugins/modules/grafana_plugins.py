@@ -5,9 +5,12 @@
 
 from __future__ import absolute_import, division, print_function
 
+import os
 import re
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.bodsch.grafana.plugins.module_utils.grafana_bin import (
+    grafana_binary, grafana_detect_version)
 
 # ---------------------------------------------------------------------------------------
 
@@ -31,7 +34,7 @@ RETURN = """
 # ---------------------------------------------------------------------------------------
 
 
-class GrafanaCLI(object):
+class GrafanaPlugins():
     """ """
 
     def __init__(self, module):
@@ -39,17 +42,23 @@ class GrafanaCLI(object):
         Initialize all needed Variables
         """
         self.module = module
+        self.module.log("GrafanaPlugins::__init__()")
 
         self.command = module.params.get("command")
         self.plugins_dir = module.params.get("plugins_dir")
+        self.install_dir = module.params.get("install_dir")
+
         self.plugins = module.params.get("plugins")
 
-        self._grafana_cli = module.get_bin_path("grafana-cli", True)
+        _, self._grafana_cli = grafana_binary(module)
+        self.module.log(msg=f"  cli : '{self._grafana_cli}'")
 
     def run(self):
         """
         runner
         """
+        self.module.log("GrafanaPlugins::run()")
+
         result = dict(rc=0, failed=False, changed=False, msg="Grafana Plugins ...")
 
         if self.command == "list":
@@ -70,13 +79,20 @@ class GrafanaCLI(object):
         USAGE:
            Grafana CLI plugins ls [command options] [arguments...]
         """
+        self.module.log("GrafanaPlugins::list()")
+
         _failed = True
         _changed = False
+
+        # obsolete = grafana_detect_version(self.module, grafana=self._grafana_cli)
+        # self.module.log(msg=f"  obsolete : '{obsolete}'")
         # _msg = "grafana plugin ls"
 
         args = []
 
         args.append(self._grafana_cli)
+        if os.path.basename(self._grafana_cli) == "grafana":
+            args.append("cli")
 
         if self.plugins_dir:
             args.append("--pluginsDir")
@@ -84,6 +100,8 @@ class GrafanaCLI(object):
 
         args.append("plugins")
         args.append("ls")
+
+        self.module.log(msg=f"  args : {args}")
 
         rc, out, err = self.__exec(args)
 
@@ -103,6 +121,8 @@ class GrafanaCLI(object):
         USAGE:
            Grafana CLI plugins list-remote [command options] [arguments...]
         """
+        self.module.log("GrafanaPlugins::_list_remote()")
+
         pass
 
     def _list_versions(self):
@@ -114,6 +134,8 @@ class GrafanaCLI(object):
         USAGE:
            Grafana CLI plugins list-versions [command options] [arguments...]
         """
+        self.module.log("GrafanaPlugins::_list_versions()")
+
         pass
 
     def _update(self):
@@ -125,6 +147,8 @@ class GrafanaCLI(object):
         USAGE:
            Grafana CLI plugins update [command options] [arguments...]
         """
+        self.module.log("GrafanaPlugins::_update()")
+
         pass
 
     def _update_all(self):
@@ -136,6 +160,8 @@ class GrafanaCLI(object):
         USAGE:
            Grafana CLI plugins update-all [command options] [arguments...]
         """
+        self.module.log("GrafanaPlugins::_update_all()")
+
         pass
 
     def _install(self):
@@ -147,9 +173,7 @@ class GrafanaCLI(object):
         USAGE:
            Grafana CLI plugins install [command options] [arguments...]
         """
-        # _failed = True
-        # _changed = False
-        # _msg = "grafana plugin install"
+        self.module.log("GrafanaPlugins::_install()")
 
         if len(self.plugins) == 0:
             return dict(
@@ -163,15 +187,22 @@ class GrafanaCLI(object):
             i for s in [d.keys() for d in installed_plugins] for i in s
         ]
 
+        self.module.log(f"  - installed_plugin_list: {installed_plugin_list}")
+
         result_state = []
 
         args = []
 
         args.append(self._grafana_cli)
+        if os.path.basename(self._grafana_cli) == "grafana":
+            args.append("cli")
 
         if self.plugins_dir:
             args.append("--pluginsDir")
             args.append(self.plugins_dir)
+        if self.install_dir:
+            args.append("--homepath")
+            args.append(self.install_dir)
 
         args.append("plugins")
         args.append("install")
@@ -179,6 +210,9 @@ class GrafanaCLI(object):
         copy_args = args.copy()
 
         for p in self.plugins:
+
+            self.module.log(msg=f"  plugin : {p}")
+
             if p in installed_plugin_list:
                 """ """
                 v = {
@@ -200,6 +234,8 @@ class GrafanaCLI(object):
             else:
                 copy_args = args.copy()
                 copy_args.append(p)
+
+                self.module.log(msg=f"  copy_args : {copy_args}")
 
                 rc, out, err = self.__exec(copy_args)
 
@@ -253,6 +289,8 @@ class GrafanaCLI(object):
         USAGE:
            Grafana CLI plugins uninstall [command options] [arguments...]
         """
+        self.module.log("GrafanaPlugins::_uninstall()")
+
         pass
 
     def __filter_plugins(self, data):
@@ -266,6 +304,8 @@ class GrafanaCLI(object):
             {'raintank-worldping-app': {'version': '1.2.9'}}
           ]
         """
+        self.module.log(f"GrafanaPlugins::__filter_plugins(data: {data})")
+
         result = []
 
         plugins_array = "|".join(data.splitlines())
@@ -312,11 +352,6 @@ class GrafanaCLI(object):
         return rc, out, err
 
 
-# ===========================================
-# Module execution.
-#
-
-
 def main():
 
     module = AnsibleModule(
@@ -337,12 +372,13 @@ def main():
                 ],
             ),
             plugins_dir=dict(required=False, type="str"),
+            install_dir=dict(required=False, type="str"),
             plugins=dict(required=False, type="list"),
         ),
         supports_check_mode=False,
     )
 
-    o = GrafanaCLI(module)
+    o = GrafanaPlugins(module)
     result = o.run()
 
     module.log(msg=f"= result: {result}")
@@ -353,26 +389,3 @@ def main():
 # import module snippets
 if __name__ == "__main__":
     main()
-
-
-"""
-# grafana-cli plugins --help
-NAME:
-   Grafana CLI plugins - Manage plugins for grafana
-
-USAGE:
-   Grafana CLI plugins command [command options] [arguments...]
-
-COMMANDS:
-   install                  install <plugin id> <plugin version (optional)>
-   list-remote              list remote available plugins
-   list-versions            list-versions <plugin id>
-   update, upgrade          update <plugin id>
-   update-all, upgrade-all  update all your installed plugins
-   ls                       list all installed plugins
-   uninstall, remove        uninstall <plugin id>
-   help, h                  Shows a list of commands or help for one command
-
-OPTIONS:
-   --help, -h  show help (default: false)
-"""

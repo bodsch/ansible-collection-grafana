@@ -1,7 +1,0 @@
----
-
-grafana_config_security:
-  admin_user: admin
-  admin_password: sUp3R
-
-...

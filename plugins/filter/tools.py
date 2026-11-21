@@ -19,6 +19,8 @@ class FilterModule(object):
 
     def file_list(self, data):
         """ """
+        display.v(f"bodsch.grafana.file_list(data: {data})")
+
         result = []
         if isinstance(data, list):
             result = [x.get("path") for x in data if x.get("path")]
