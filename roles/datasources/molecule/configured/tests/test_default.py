@@ -37,16 +37,16 @@ def test_files(host, get_vars):
     print(f"release         : {release}")
     print(f"grafana version : {version}")
 
-    install_dir = get_vars.get("grafana_install_path")
+    # install_dir = get_vars.get("grafana_install_path")
     defaults_dir = get_vars.get("grafana_defaults_directory")
     config_dir = get_vars.get("grafana_config_dir")
 
-    print(f"grafana install_dir : {install_dir}")
+    # print(f"grafana install_dir : {install_dir}")
     print(f"grafana defaults_dir: {defaults_dir}")
     print(f"grafana config_dir  : {config_dir}")
 
-    if 'latest' in install_dir:
-        install_dir = install_dir.replace('latest', version)
+    # if 'latest' in install_dir:
+    #     install_dir = install_dir.replace('latest', version)
 
     files = []
 
