@@ -1,0 +1,95 @@
+# coding: utf-8
+
+from __future__ import annotations, unicode_literals
+
+import os
+
+import pytest
+from packaging.version import Version
+import testinfra.utils.ansible_runner
+from helper.molecule import get_vars, infra_hosts, local_facts
+
+testinfra_hosts = infra_hosts(host_name="instance")
+
+# --- tests -----------------------------------------------------------------
+
+
+@pytest.mark.parametrize("dirs", [
+    "/etc/grafana",
+    "/var/lib/grafana",
+    "/opt/grafana",
+])
+def test_directories(host, dirs):
+    d = host.file(dirs)
+    assert d.is_directory
+
+
+def test_files(host, get_vars):
+    """
+    """
+    distribution = host.system_info.distribution
+    release = host.system_info.release
+
+    version = local_facts(host=host, fact="grafana").get("version")
+    version = version.get("full_version")
+
+    print(f"distribution    : {distribution}")
+    print(f"release         : {release}")
+    print(f"grafana version : {version}")
+
+    # install_dir = get_vars.get("grafana_install_path")
+    defaults_dir = get_vars.get("grafana_defaults_directory")
+    config_dir = get_vars.get("grafana_config_dir")
+
+    # print(f"grafana install_dir : {install_dir}")
+    print(f"grafana defaults_dir: {defaults_dir}")
+    print(f"grafana config_dir  : {config_dir}")
+
+    # if 'latest' in install_dir:
+    #     install_dir = install_dir.replace('latest', version)
+
+    files = []
+
+    grafana_bin = "grafana"
+
+    if (Version(version) <= Version("13")):
+        grafana_bin = "grafana-server"
+        files.append("/usr/sbin/grafana-server")
+        files.append("/usr/sbin/grafana-cli")
+    else:
+        files.append("/usr/sbin/grafana")
+
+    # if install_dir:
+        # files.append(os.path.join(install_dir, versionf, "bin/{grafana_bin}"))
+
+    if defaults_dir and not distribution == "artix":
+        files.append(f"{defaults_dir}/grafana-server")
+
+    if config_dir:
+        files.append(f"{config_dir}/grafana.ini")
+
+    print(files)
+
+    for _file in files:
+        f = host.file(_file)
+        assert f.exists
+        assert f.is_file
+
+
+def test_user(host, get_vars):
+    """ """
+    system_user = get_vars.get("grafana_system_user", {})
+
+    owner = system_user.get("owner", "grafana")
+    group = system_user.get("group", "grafana")
+
+    assert host.group(group).exists
+    assert host.user(owner).exists
+    assert group in host.user(owner).groups
+    assert host.user(owner).home == "/nonexistent"
+
+
+def test_service(host, get_vars):
+    service = host.service("grafana-server")
+    assert service.is_enabled
+    assert service.is_running

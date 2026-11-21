@@ -25,28 +25,28 @@
   notify:
     - restart grafana
 
-- name: list service accounts files
-  run_once: true
-  ansible.builtin.debug:
-    msg: "{{ found_sa_keyfiles.files | bodsch.grafana.file_list }}"
-  when:
-    - found_sa_keyfiles is defined
-    - found_sa_keyfiles.files is defined
-
-- name: list api key files
-  run_once: true
-  ansible.builtin.debug:
-    msg: "{{ found_api_keyfiles.files | bodsch.grafana.file_list }}"
-  when:
-    - found_api_keyfiles is defined
-    - found_api_keyfiles.files is defined
+# - name: list service accounts files
+#   run_once: true
+#   ansible.builtin.debug:
+#     msg: "{{ found_sa_keyfiles.files | bodsch.grafana.file_list }}"
+#   when:
+#     - found_sa_keyfiles is defined
+#     - found_sa_keyfiles.files is defined
+#
+# - name: list api key files
+#   run_once: true
+#   ansible.builtin.debug:
+#     msg: "{{ found_api_keyfiles.files | bodsch.grafana.file_list }}"
+#   when:
+#     - found_api_keyfiles is defined
+#     - found_api_keyfiles.files is defined
 
 
 - name: information about grafana plugins
   ansible.builtin.debug:
-    msg: "{{ install_plugins.msg }}"
+    msg: "{{ grafana_install_plugins.msg }}"
   when:
-    - install_plugins is defined
-    - install_plugins.msg is defined
+    - grafana_install_plugins is defined
+    - grafana_install_plugins.msg is defined
 
 ...
