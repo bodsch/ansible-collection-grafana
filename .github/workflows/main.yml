@@ -52,6 +52,8 @@ jobs:
           - default
         collection_role:
           - grafana
+          - datasources
+          - plugins
           - dashboards
           - loki
           - promtail

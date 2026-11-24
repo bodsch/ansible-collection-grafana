@@ -4,6 +4,10 @@ name: plugins
 
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        description: "branch to test"
+        required: false
 
   push:
     branches:
@@ -12,10 +16,11 @@ on:
       - 'fix/**'
       - '!doc/**'
     paths:
-      - "!Makefile"
-      - "!README.md"
+      - "plugins/**"
       - 'roles/plugins/**'
       - '.github/workflows/plugins.yml'
+      - "!Makefile"
+      - "!README.md"
 
   pull_request:
     branches:
@@ -24,10 +29,11 @@ on:
       - 'fix/**'
       - '!doc/**'
     paths:
-      - "!Makefile"
-      - "!README.md"
+      - "plugins/**"
       - 'roles/plugins/**'
       - '.github/workflows/plugins.yml'
+      - "!Makefile"
+      - "!README.md"
 
 concurrency:
   group: plugins-ci-${{ github.head_ref || github.ref_name }}
@@ -60,6 +66,8 @@ jobs:
     steps:
       - name: check out the codebase.
         uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ inputs.branch || github.event.pull_request.head.sha || github.sha }}
 
       - name: 🐍 set up python
         uses: actions/setup-python@v7.0.0
@@ -113,7 +121,7 @@ jobs:
       - name: check out the codebase.
         uses: actions/checkout@v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+          ref: ${{ inputs.branch || github.event.pull_request.head.sha || github.sha }}
 
       - name: 🐍 set up python
         uses: actions/setup-python@v7.0.0
