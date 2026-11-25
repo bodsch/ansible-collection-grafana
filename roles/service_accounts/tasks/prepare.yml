@@ -42,5 +42,6 @@
     grafana_config_paths: "{{ grafana_defaults_config_paths | combine(grafana_config_paths, recursive=True) }}"
     grafana_config_security: "{{ grafana_defaults_config_security | combine(grafana_config_security, recursive=True) }}"
     grafana_service_accounts: "{{ grafana_defaults_service_accounts | combine(grafana_service_accounts, recursive=True) }}"
+  no_log: true
 
 ...

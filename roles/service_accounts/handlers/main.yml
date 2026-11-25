@@ -32,12 +32,4 @@
     msg: "Timeout to find {{ grafana_pidfile }}"
   ignore_errors: false
 
-- name: list service accounts files
-  run_once: true
-  ansible.builtin.debug:
-    msg: "{{ found_sa_keyfiles.files | bodsch.grafana.file_list }}"
-  when:
-    - found_sa_keyfiles is defined
-    - found_sa_keyfiles.files is defined
-
 ...
